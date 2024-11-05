@@ -9,8 +9,6 @@ deploy:
   variables:
     GIT_STRATEGY: clone
   when: always # skip this stage on auto run
-  only:
-    - main
   script:
     - echo "hello world"
     - pwd
