@@ -1,8 +1,14 @@
-# image:
-#   name: alpine/alpine
-
 stages:
   - deploy
+
+before_script:
+    # Before script: Set up SSH access
+    - 'which ssh-agent || ( apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H 192.168.140.114 >> ~/.ssh/known_hosts
 
 deploy:
   stage: deploy
@@ -10,7 +16,7 @@ deploy:
     GIT_STRATEGY: clone
   when: always # skip this stage on auto run
   script:
-    - echo "hello world"
-    - pwd
-    - whoami
-    - ls -la
+    - echo "Copying local-conf to NGINX server..."
+    - scp -r local-conf root@192.168.140.114:/tmp/
+    - echo "Reloading NGINX..."
+    - ssh root@192.168.140.114 'sudo nginx -s reload'
