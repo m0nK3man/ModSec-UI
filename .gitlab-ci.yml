@@ -1,5 +1,5 @@
-image:
-  name: alpine/alpine
+# image:
+#   name: alpine/alpine
 
 stages:
   - deploy
