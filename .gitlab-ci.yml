@@ -1,0 +1,26 @@
+image:
+  name: alpine/alpine
+
+stages:
+  - deploy
+
+# before_script:
+#   - echo "Add SSH Private Key to Agent"
+#   - ls -la && pwd
+#   #- echo "$SSH_Private_Key" > ~/.ssh/id_rsa
+#   - cp controller.key ~/.ssh/id_rsa
+#   - chmod 600 ~/.ssh/id_rsa
+#   #- cat ~/.ssh/id_rsa
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+  when: always # skip this stage on auto run
+  only:
+    - main
+  script:
+    - echo "hello world"
+    - pwd
+    - whoami
+    - ls -la
