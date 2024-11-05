@@ -5,12 +5,9 @@ before_script:
     # Before script: Set up SSH access
     - echo "Add SSH Private Key to Agent"
     - apk add --no-cache openssh-client
-    - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-    - echo "$SSH_PRIVATE_KEY"
     - chmod 600 ~/.ssh/id_ed25519
-    - cat ~/.ssh/id_ed25519
     - ssh-keyscan -H 192.168.140.114 >> ~/.ssh/known_hosts
 
 deploy:
