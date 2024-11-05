@@ -1,0 +1,3 @@
+[submodule "local-conf"]
+	path = local-conf
+	url = https://github.com/m0nK3man/nginx-modsec-conf.git
