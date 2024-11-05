@@ -19,6 +19,11 @@ deploy:
     # Copy the configuration to the NGINX server
     - echo "Copying local-conf to NGINX server..."
     - scp -r local-conf root@192.168.140.114:/tmp/
-    # Reload NGINX
+
+    # Test NGINX configuration
+    - echo "Testing NGINX configuration..."
+    - ssh root@192.168.140.114 'nginx -t'
+
+    # Reload NGINX if configuration is valid
     - echo "Reloading NGINX..."
-    - ssh root@192.168.140.114 'sudo nginx -s reload'
+    - ssh root@192.168.140.114 'sudo nginx -s reload'    
