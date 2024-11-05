@@ -18,7 +18,7 @@ deploy:
   script:
     # Copy the configuration to the NGINX server
     - echo "Copying local-conf to NGINX server..."
-    - scp -r local-conf root@192.168.140.114:/tmp/
+    - scp -r local-conf/* root@192.168.140.114:/tmp/local-conf
 
     # Test NGINX configuration
     - echo "Testing NGINX configuration..."
