@@ -3,6 +3,7 @@ stages:
 
 before_script:
     # Before script: Set up SSH access
+    - cat /etc/os-release
     - 'which ssh-agent || ( apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
