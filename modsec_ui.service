@@ -10,6 +10,7 @@ User=root
 Group=root
 Restart=no
 Environment="FLASK_APP=/root/modsec-ui/app.py"
+Environment="PYTHONDONTWRITEBYTECODE=1"
 
 [Install]
 WantedBy=multi-user.target
