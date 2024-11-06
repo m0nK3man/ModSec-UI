@@ -1,5 +1,5 @@
 # routes/rules.py
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
 from modsec_manager import list_rules, toggle_rule, save_rule, commit_changes
 from flask_login import login_required
 
@@ -8,8 +8,11 @@ bp = Blueprint('rules', __name__)
 @bp.route('/rules')
 @login_required
 def rules():
+    # Get view_mode from query parameter, fallback to session, then default to 'view'
+    view_mode = request.args.get('view_mode', session.get('view_mode', 'view'))
+    # Store the current view_mode in session
+    session['view_mode'] = view_mode
     enabled_rules, disabled_rules = list_rules()
-    view_mode = request.args.get('view_mode', 'view')  # Default to view mode
     return render_template('rules.html', 
                          enabled_rules=enabled_rules, 
                          disabled_rules=disabled_rules,
@@ -18,7 +21,8 @@ def rules():
 @bp.route('/toggle_rule/<filename>')
 @login_required
 def toggle_rule_view(filename):
-    if request.args.get('view_mode') == 'view':
+    view_mode = session.get('view_mode', 'view')
+    if view_mode == 'view':
         flash("Cannot modify rules in view mode!")
         return redirect(url_for('rules.rules'))
     
@@ -34,7 +38,8 @@ def toggle_rule_view(filename):
 @bp.route('/edit_rule/<filename>', methods=['GET', 'POST'])
 @login_required
 def edit_rule(filename):
-    if request.args.get('view_mode') == 'view':
+    view_mode = session.get('view_mode', 'view')
+    if view_mode == 'view':
         flash("Cannot edit rules in view mode!")
         return redirect(url_for('rules.rules'))
 
