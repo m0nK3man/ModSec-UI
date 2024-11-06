@@ -5,9 +5,11 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/bin/python3 /root/modsec-ui/app.py
+WorkingDirectory=/root/modsec-ui
 User=root
 Group=root
 Restart=no
+Environment="FLASK_APP=/root/modsec-ui/app.py"
 
 [Install]
 WantedBy=multi-user.target
