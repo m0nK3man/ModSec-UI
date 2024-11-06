@@ -41,7 +41,7 @@ sudo -u postgres psql
 modsec_users=# CREATE DATABASE modsec_ui;
 CREATE DATABASE
 
-modsec_users=# CREATE USER modsec_admin WITH PASSWORD 'Bravo@123';
+modsec_users=# CREATE USER modsec_admin WITH PASSWORD 'bravo123';
 CREATE ROLE
 
 modsec_users=# GRANT ALL PRIVILEGES ON DATABASE modsec_ui TO modsec_admin;
