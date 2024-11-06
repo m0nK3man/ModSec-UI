@@ -4,17 +4,17 @@
 
 <div class="rules-header">
     <div class="mode-toggle">
-        <a href="{{ url_for('rules.rules', view_mode='view') }}" 
+        <a href="{{ url_for('rules.rules', view_mode='view') }}"
            class="button {% if view_mode == 'view' %}active{% endif %}">View Mode</a>
-        <a href="{{ url_for('rules.rules', view_mode='edit') }}" 
+        <a href="{{ url_for('rules.rules', view_mode='edit') }}"
            class="button {% if view_mode == 'edit' %}active{% endif %}">Edit Mode</a>
     </div>
 
-    {% if enabled_rules|selectattr('changed', 'true')|list or disabled_rules|selectattr('changed', 'true')|list %}    
+    {% if enabled_rules|selectattr('changed', 'true')|list or disabled_rules|selectattr('changed', 'true')|list %}
     <form action="{{ url_for('rules.commit_changes_view') }}" method="post" class="commit-form">
         <!-- Preserve view mode when committing -->
         <input type="hidden" name="view_mode" value="{{ view_mode }}">
-        <button type="submit" 
+        <button type="submit"
                 class="button {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
                 {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}>
             Commit Changes
@@ -27,19 +27,23 @@
     <h2>Enabled Rules</h2>
     <table>
         <tr>
-            <th>Rule File</th>
-            <th>Status</th>
+            <th style="display:none;">ID</th> <!-- ID hidden but used for sorting -->
+            <th>Rule Code</th>
+            <th>Rule Name</th>
             <th>File Status</th>
+            <th>Last Modified</th>
             {% if view_mode == 'edit' %}
             <th>Actions</th>
             {% endif %}
         </tr>
-        {% for rule in enabled_rules %}
+        {% for rule in enabled_rules|sort(attribute='id') %}
         <tr class="{% if rule.changed %}changed{% endif %}">
-            <td>{{ rule.filename }}</td>
-            <td>Enabled</td>
+            <td style="display:none;">{{ rule.id }}</td> <!-- Hidden ID column -->
+            <td>{{ rule.rule_code }}</td>
+            <td>{{ rule.rule_name }}</td>
             <td>{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
-            {% if view_mode == 'edit' %}
+            <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
+	    {% if view_mode == 'edit' %}
             <td>
                 <a class="button" href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}">Disable</a> |
                 <a class="button" href="{{ url_for('rules.edit_rule', filename=rule.filename) }}">Edit</a>
@@ -54,19 +58,23 @@
     <h2>Disabled Rules</h2>
     <table>
         <tr>
-            <th>Rule File</th>
-            <th>Status</th>
+            <th style="display:none;">ID</th> <!-- ID hidden but used for sorting -->
+            <th>Rule Code</th>
+            <th>Rule Name</th>
             <th>File Status</th>
+            <th>Last Modified</th>
             {% if view_mode == 'edit' %}
             <th>Actions</th>
             {% endif %}
         </tr>
-        {% for rule in disabled_rules %}
+        {% for rule in disabled_rules|sort(attribute='id') %}
         <tr class="{% if rule.changed %}changed{% endif %}">
-            <td>{{ rule.filename.lstrip('.') }}</td>
-            <td>Disabled</td>
+            <td style="display:none;">{{ rule.id }}</td> <!-- Hidden ID column -->
+            <td>{{ rule.rule_code }}</td>
+            <td>{{ rule.rule_name }}</td>
             <td>{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
-            {% if view_mode == 'edit' %}
+            <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
+	    {% if view_mode == 'edit' %}
             <td>
                 <a class="button" href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}">Enable</a> |
                 <a class="button" href="{{ url_for('rules.edit_rule', filename=rule.filename) }}">Edit</a>
@@ -78,3 +86,4 @@
 </div>
 
 {% endblock %}
+

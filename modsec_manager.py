@@ -225,7 +225,11 @@ def list_rules():
                     content = f.read()
                 
                 rule_info = {
+                    'id': rule.id,
+                    'rule_code': rule.rule_code,
+                    'rule_name': rule.rule_name,
                     'filename': rule.rule_path,
+                    'last_modified': rule.last_modified,  # Ensure this is passed
                     'content': content,
                     'enabled': not rule.rule_path.endswith(".disable"),
                     'changed': rule.is_modified
