@@ -121,4 +121,40 @@ modsec_ui=# SELECT * FROM "modsec_users";
 (1 row)
 ```
 
+### init rule info
 
+```sh
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('900', 'Exclusion Rules Before Crs', 'REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('901', 'Initialization', 'REQUEST-901-INITIALIZATION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('905', 'Common Exceptions', 'REQUEST-905-COMMON-EXCEPTIONS.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('911', 'Method Enforcement', 'REQUEST-911-METHOD-ENFORCEMENT.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('913', 'Scanner Detection', 'REQUEST-913-SCANNER-DETECTION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('920', 'Protocol Enforcement', 'REQUEST-920-PROTOCOL-ENFORCEMENT.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('921', 'Protocol Attack', 'REQUEST-921-PROTOCOL-ATTACK.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('922', 'Multipart Attack', 'REQUEST-922-MULTIPART-ATTACK.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('930', 'Application Attack Lfi', 'REQUEST-930-APPLICATION-ATTACK-LFI.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('931', 'Application Attack Rfi', 'REQUEST-931-APPLICATION-ATTACK-RFI.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('932', 'Application Attack Rce', 'REQUEST-932-APPLICATION-ATTACK-RCE.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('933', 'Application Attack Php', 'REQUEST-933-APPLICATION-ATTACK-PHP.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('934', 'Application Attack Generic', 'REQUEST-934-APPLICATION-ATTACK-GENERIC.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('941', 'Application Attack Xss', 'REQUEST-941-APPLICATION-ATTACK-XSS.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('942', 'Application Attack Sqli', 'REQUEST-942-APPLICATION-ATTACK-SQLI.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('943', 'Application Attack Session Fixation', 'REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('944', 'Application Attack Java', 'REQUEST-944-APPLICATION-ATTACK-JAVA.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('949', 'Blocking Evaluation', 'REQUEST-949-BLOCKING-EVALUATION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('950', 'Data Leakages', 'RESPONSE-950-DATA-LEAKAGES.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('951', 'Data Leakages Sql', 'RESPONSE-951-DATA-LEAKAGES-SQL.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('952', 'Data Leakages Java', 'RESPONSE-952-DATA-LEAKAGES-JAVA.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('953', 'Data Leakages Php', 'RESPONSE-953-DATA-LEAKAGES-PHP.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('954', 'Data Leakages Iis', 'RESPONSE-954-DATA-LEAKAGES-IIS.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('955', 'Web Shells', 'RESPONSE-955-WEB-SHELLS.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('959', 'Blocking Evaluation', 'RESPONSE-959-BLOCKING-EVALUATION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('980', 'Correlation', 'RESPONSE-980-CORRELATION.conf');
+```
+
+view rule in db
+
+```
+SELECT * FROM modsec_rules;
+SELECT * FROM modsec_rules WHERE rule_code = '900';
+```
