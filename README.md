@@ -77,7 +77,7 @@ GRANT
 ### create app user
 
 ```sh
-root@test-docker:~/modsec-ui# sudo -u postgres psql
+root@mosecurity:~/modsec-ui# sudo -u postgres psql
 psql (14.13 (Ubuntu 14.13-0ubuntu0.22.04.1))
 Type "help" for help.
 
@@ -90,33 +90,31 @@ postgres=# \l
               |          |          |             |             | modsec_user=CTc/postgres
  postgres     | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
 
-postgres=# \c modsec_users
-You are now connected to database "modsec_users" as user "postgres".
+postgres=# \c modsec_ui
+You are now connected to database "modsec_ui" as user "postgres".
 
-modsec_users=# \d
-               List of relations
- Schema |    Name     |   Type   |    Owner
---------+-------------+----------+-------------
- public | user        | table    | modsec_user
- public | user_id_seq | sequence | modsec_user
-(2 rows)
+modsec_ui=# \d
+                 List of relations
+ Schema |        Name         |   Type   |  Owner
+--------+---------------------+----------+----------
+ public | modsec_rules        | table    | postgres
+ public | modsec_rules_id_seq | sequence | postgres
+ public | modsec_users        | table    | postgres
+ public | modsec_users_id_seq | sequence | postgres
+(4 rows)
 
-modsec_users=# SELECT * FROM "user";
- id | username |                                                                      password
-----+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------
-  1 | test     | 123
-  2 | anhnht   | 123
-(2 rows)
+modsec_ui=# SELECT * FROM "modsec_users";
+ id | username | password | created_at
+----+----------+----------+------------
+(0 rows)
 
-modsec_users=# INSERT INTO "user" (username, password) VALUES ('newuser', '123');
+modsec_ui=# INSERT INTO "modsec_users" (username, password) VALUES ('admin', '123');
 INSERT 0 1
-modsec_users=# SELECT * FROM "user";
- id | username |                                                                      password
-----+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------
-  1 | test     | 123
-  2 | anhnht   | 123
-  3 | newuser  | 123
-(3 rows)
+modsec_ui=# SELECT * FROM "modsec_users";
+ id | username | password |         created_at
+----+----------+----------+----------------------------
+  1 | admin    | 123      | 2024-11-06 14:08:08.576257
+(1 row)
 ```
 
 
