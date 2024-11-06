@@ -4,12 +4,67 @@ import subprocess
 import requests
 import hashlib
 import git
-import hashlib
 from datetime import datetime
 from libs.var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT_REPO_PATH, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL
-from flask import flash
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from models import ModsecRule
+
+# Database connection
+engine = create_engine('postgresql://modsec_admin:bravo123@localhost/modsec_ui')
+Session = sessionmaker(bind=engine)
 
 # ==================== Global ====================
+
+def track_rule_change(session, rule_path, content):
+    """Track changes to rule files in the database"""
+    rule = session.query(ModsecRule).filter_by(rule_path=rule_path).first()
+    if not rule:
+        return False
+    
+    # Calculate current content hash
+    current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
+    
+    # Update rule change tracking
+    if rule.content_hash != current_hash:
+        rule.content_hash = current_hash
+        rule.is_modified = True
+        rule.last_modified = datetime.now()
+        session.commit()
+    
+    return True
+
+def track_config_change(session, config_type, content):
+    """Track changes to configuration files in the database"""
+    # For config files, we'll use special reserved rule_codes
+    config_codes = {
+        'modsecurity': 'CONFIG_MODSEC',
+        'crs': 'CONFIG_CRS'
+    }
+    
+    current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
+    
+    config = session.query(ModsecRule).filter_by(rule_code=config_codes[config_type]).first()
+    if not config:
+        # Create config entry if it doesn't exist
+        config = ModsecRule(
+            rule_code=config_codes[config_type],
+            rule_name=f"{config_type.title()} Configuration",
+            rule_path=MODSECURITY_CONF_PATH if config_type == 'modsecurity' else CRS_CONF_PATH,
+            content_hash=current_hash,
+            is_modified=True,
+            last_modified=datetime.now()
+        )
+        session.add(config)
+    else:
+        # Update existing config entry
+        if config.content_hash != current_hash:
+            config.content_hash = current_hash
+            config.is_modified = True
+            config.last_modified = datetime.now()
+    
+    session.commit()
+    return True
 
 def _get_repo():
     """Initialize or get the Git repository"""
@@ -19,69 +74,73 @@ def _get_repo():
         # Initialize new repository if it doesn't exist
         return git.Repo.init(GIT_REPO_PATH)
 
-def _create_commit_message():
-    """Create a detailed commit message based on changes"""
-    message = [""]
-    
-    # Add changed rules
-    if _changed_files:
-        message.append("Modified Rules:")
-        for rule in _changed_files:
-            message.append(f"- {rule}")
-        message.append("")
-    
-    # Add changed configs
-    if _changed_configs:
-        message.append("Modified Configurations:")
-        for config in _changed_configs:
-            if config == 'modsecurity':
-                message.append("- ModSecurity main configuration")
-            elif config == 'crs':
-                message.append("- CRS configuration")
-        message.append("")
-    
-    return "\n".join(message)
+# ==================== Git Integration ====================
 
 def commit_changes():
-    """Commit all changes to Git repository"""
+    """Commit all pending changes to Git repository"""
+    session = Session()
     try:
-        if not (_changed_files or _changed_configs):
+        # Get all modified rules and configs
+        modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
+        if not modified_entries:
             return True  # No changes to commit
-        
+
         repo = _get_repo()
         
-        # Add changed rules
-        for rule in _changed_files:
-            rule_path = os.path.join(MODSECURITY_RULES_DIR, rule)
-            relative_path = os.path.relpath(rule_path, GIT_REPO_PATH)
+        # Add changed files to git
+        for entry in modified_entries:
+            if entry.rule_code == 'CONFIG_MODSEC':
+                relative_path = os.path.relpath(MODSECURITY_CONF_PATH, GIT_REPO_PATH)
+            elif entry.rule_code == 'CONFIG_CRS':
+                relative_path = os.path.relpath(CRS_CONF_PATH, GIT_REPO_PATH)
+            else:
+                rule_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
+                relative_path = os.path.relpath(rule_path, GIT_REPO_PATH)
+            
             repo.index.add([relative_path])
-        
-        # Add changed configs
-        if 'modsecurity' in _changed_configs:
-            relative_path = os.path.relpath(MODSECURITY_CONF_PATH, GIT_REPO_PATH)
-            repo.index.add([relative_path])
-        
-        if 'crs' in _changed_configs:
-            relative_path = os.path.relpath(CRS_CONF_PATH, GIT_REPO_PATH)
-            repo.index.add([relative_path])
-        
-        # Create commit with the specified author
-        commit_message = _create_commit_message()
+
+        # Create commit
+        commit_message = _create_commit_message(modified_entries)
         repo.index.commit(
             commit_message,
             author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
             committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
         )
-        
-        # Clear the change tracking sets
-        _changed_files.clear()
-        _changed_configs.clear()
-        
+
+        # Reset modification flags
+        for entry in modified_entries:
+            entry.is_modified = False
+        session.commit()
+
         return True
-        
+
     except Exception as e:
         print(f"Error committing changes: {e}")
         return False
+    finally:
+        session.close()
+
+def _create_commit_message(modified_entries):
+    """Create a detailed commit message based on database changes"""
+    message = ["ModSecurity Configuration Update"]
+    
+    rules = [e for e in modified_entries if e.rule_code not in ['CONFIG_MODSEC', 'CONFIG_CRS']]
+    configs = [e for e in modified_entries if e.rule_code in ['CONFIG_MODSEC', 'CONFIG_CRS']]
+    
+    if rules:
+        message.append("\nModified Rules:")
+        for rule in rules:
+            message.append(f"- {rule.rule_path}")
+    
+    if configs:
+        message.append("\nModified Configurations:")
+        for config in configs:
+            if config.rule_code == 'CONFIG_MODSEC':
+                message.append("- ModSecurity main configuration")
+            elif config.rule_code == 'CONFIG_CRS':
+                message.append("- CRS configuration")
+    
+    return "\n".join(message)
 
 def get_commit_history(max_count=10):
     """Get the commit history for the repository"""
@@ -148,57 +207,88 @@ def _is_file_changed(filename, content):
     return _file_hashes[filename] != _calculate_file_hash(content)
 
 def list_rules():
+    """List all rules with their change status from the database"""
+    session = Session()
     enabled_rules = []
     disabled_rules = []
 
-    for filename in sorted(os.listdir(MODSECURITY_RULES_DIR)):
-        if ".conf" in filename:
-            with open(os.path.join(MODSECURITY_RULES_DIR, filename), "r") as f:
-                content = f.read()
-                if filename not in _file_hashes:
-                    _update_file_hash(filename, content)
+    try:
+        # Exclude config entries
+        rules = session.query(ModsecRule).filter(
+            ~ModsecRule.rule_code.in_(['CONFIG_MODSEC', 'CONFIG_CRS'])
+        ).all()
+        
+        for rule in rules:
+            rule_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
+            if os.path.exists(rule_path):
+                with open(rule_path, "r") as f:
+                    content = f.read()
                 
-                rule = {
-                    'filename': filename,
+                rule_info = {
+                    'filename': rule.rule_path,
                     'content': content,
-                    'enabled': not filename.endswith(".disable"),
-                    'changed': filename in _changed_files
+                    'enabled': not rule.rule_path.endswith(".disable"),
+                    'changed': rule.is_modified
                 }
-                if rule['enabled']:
-                    enabled_rules.append(rule)
+                
+                if rule_info['enabled']:
+                    enabled_rules.append(rule_info)
                 else:
-                    disabled_rules.append(rule)
+                    disabled_rules.append(rule_info)
+
+    finally:
+        session.close()
 
     return enabled_rules, disabled_rules
 
 def save_rule(filename, content):
-    with open(os.path.join(MODSECURITY_RULES_DIR, filename), "w") as f:
-        f.write(content)
-    
-    if _is_file_changed(filename, content):
-        _changed_files.add(filename)
-    else:
-        _changed_files.discard(filename)
-
-# Keep other existing functions unchanged
+    """Save rule content and track changes in database"""
+    session = Session()
+    try:
+        # Save file content
+        with open(os.path.join(MODSECURITY_RULES_DIR, filename), "w") as f:
+            f.write(content)
+        
+        # Track change in database
+        track_rule_change(session, filename, content)
+        
+    finally:
+        session.close()
 
 def toggle_rule(filename, enable):
-    file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
-    
-    if enable:
-        flash('1')
-        # Remove .disable suffix to enable
-        if filename.endswith(".disable"):
-            flash('2')
-            new_filename = filename[:-8]  # Remove the '.disable' suffix
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
-    else:
-        flash('3')
-        # Add .disable suffix to disable
-        if not filename.endswith(".disable"):
-            new_filename = f"{filename}.disable"
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
-#    reload_nginx()
+    """Enable or disable a rule and update rule path in database."""
+    session = Session()
+    try:
+        # Retrieve the rule from the database
+        rule = session.query(ModsecRule).filter_by(rule_path=filename).first()
+        
+        if rule is None:
+            raise ValueError(f"No rule found with the filename {filename}")
+
+        file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
+
+        # Determine the new filename based on the `enable` flag
+        if enable:
+            # Remove .disable suffix to enable
+            if filename.endswith(".disable"):
+                new_filename = filename[:-8]  # Remove the '.disable' suffix
+                os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
+                rule.rule_path = new_filename  # Update rule path in database
+        else:
+            # Add .disable suffix to disable
+            if not filename.endswith(".disable"):
+                new_filename = f"{filename}.disable"
+                os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
+                rule.rule_path = new_filename  # Update rule path in database
+
+        # Commit the changes to the database
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error toggling rule: {e}")
+    finally:
+        session.close()
 
 # ==================== Configuration ====================
 
@@ -219,49 +309,65 @@ def _is_config_changed(config_type, content):
     return _config_hashes[config_type] != _calculate_file_hash(content)
 
 def read_modsecurity_conf():
-    with open(MODSECURITY_CONF_PATH, 'r') as f:
-        content = f.read()
-        if 'modsecurity' not in _config_hashes:
-            _update_config_hash('modsecurity', content)
+    """Read ModSecurity configuration and check for changes"""
+    session = Session()
+    try:
+        with open(MODSECURITY_CONF_PATH, 'r') as f:
+            content = f.read()
+        
+        # Check for changes
+        config = session.query(ModsecRule).filter_by(rule_code='CONFIG_MODSEC').first()
+        
         return {
             'content': content,
-            'changed': 'modsecurity' in _changed_configs
+            'changed': config.is_modified if config else False
         }
+    finally:
+        session.close()
 
 def read_crs_conf():
-    with open(CRS_CONF_PATH, 'r') as f:
-        content = f.read()
-        if 'crs' not in _config_hashes:
-            _update_config_hash('crs', content)
+    """Read CRS configuration and check for changes"""
+    session = Session()
+    try:
+        with open(CRS_CONF_PATH, 'r') as f:
+            content = f.read()
+        
+        # Check for changes
+        config = session.query(ModsecRule).filter_by(rule_code='CONFIG_CRS').first()
+        
         return {
             'content': content,
-            'changed': 'crs' in _changed_configs
+            'changed': config.is_modified if config else False
         }
+    finally:
+        session.close()
 
 def save_modsecurity_conf(content):
+    """Save ModSecurity configuration and track changes"""
+    session = Session()
     try:
         with open(MODSECURITY_CONF_PATH, 'w') as f:
             f.write(content)
         
-        if _is_config_changed('modsecurity', content):
-            _changed_configs.add('modsecurity')
-        else:
-            _changed_configs.discard('modsecurity')
+        track_config_change(session, 'modsecurity', content)
         return True
     except Exception as e:
         print(f"Error saving modsecurity.conf: {e}")
         return False
+    finally:
+        session.close()
 
 def save_crs_conf(content):
+    """Save CRS configuration and track changes"""
+    session = Session()
     try:
         with open(CRS_CONF_PATH, 'w') as f:
             f.write(content)
         
-        if _is_config_changed('crs', content):
-            _changed_configs.add('crs')
-        else:
-            _changed_configs.discard('crs')
+        track_config_change(session, 'crs', content)
         return True
     except Exception as e:
         print(f"Error saving crs-setup.conf: {e}")
         return False
+    finally:
+        session.close()
