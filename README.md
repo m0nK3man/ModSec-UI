@@ -15,8 +15,8 @@
 + Report summary (home tab)
 
 + Logs nav (access,error,audit,..)
-+ Reload button (Rule tab)
-
++ Save/Commit button (Rule tab)
++ Get rules info,status from db
 + search log
 
 + setup guide
@@ -28,7 +28,11 @@
 pip install requirements.txt
 git clone https://git.bravo.com.vn/security/bravo.security.waf.manager.git modsec-ui
 cd modsec-ui
-python3 app.py
+ln -s $(pwd)/modsec_ui.service /etc/systemd/system/modsec_ui.service
+systemctl daemon-reload
+systemctl start modsec_ui.service
+systemctl enable modsec_ui.service
+systemctl status modsec_ui.service
 ```
 
 go to http://localhost:5000 to access app
