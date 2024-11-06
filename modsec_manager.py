@@ -2,6 +2,7 @@
 import os
 import subprocess
 import requests
+import hashlib
 from var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GITHUB_API_URL
 
 # ==================== Global ====================
@@ -38,26 +39,61 @@ def set_mode(mode):
 
 # ==================== Rules ====================
 
+# Add file tracking functionality
+_file_hashes = {}
+_changed_files = set()
+
+def _calculate_file_hash(content):
+    return hashlib.md5(content.encode('utf-8')).hexdigest()
+
+def _update_file_hash(filename, content):
+    _file_hashes[filename] = _calculate_file_hash(content)
+
+def _is_file_changed(filename, content):
+    if filename not in _file_hashes:
+        with open(os.path.join(MODSECURITY_RULES_DIR, filename), 'r') as f:
+            _update_file_hash(filename, f.read())
+    return _file_hashes[filename] != _calculate_file_hash(content)
+
 def list_rules():
     enabled_rules = []
     disabled_rules = []
 
-    # List and categorize rules based on their filename (dot prefix for disabled)
     for filename in sorted(os.listdir(MODSECURITY_RULES_DIR)):
         if filename.endswith(".conf"):
             with open(os.path.join(MODSECURITY_RULES_DIR, filename), "r") as f:
+                content = f.read()
+                if filename not in _file_hashes:
+                    _update_file_hash(filename, content)
+                
                 rule = {
                     'filename': filename,
-                    'content': f.read(),
-                    'enabled': not filename.startswith(".")
+                    'content': content,
+                    'enabled': not filename.startswith("."),
+                    'changed': filename in _changed_files
                 }
                 if rule['enabled']:
                     enabled_rules.append(rule)
                 else:
                     disabled_rules.append(rule)
 
-    # Return two separate lists for enabled and disabled rules
     return enabled_rules, disabled_rules
+
+def save_rule(filename, content):
+    with open(os.path.join(MODSECURITY_RULES_DIR, filename), "w") as f:
+        f.write(content)
+    
+    if _is_file_changed(filename, content):
+        _changed_files.add(filename)
+    else:
+        _changed_files.discard(filename)
+
+def commit_changes():
+    _changed_files.clear()
+    # Here you would typically add git commit functionality
+    return True
+
+# Keep other existing functions unchanged
 
 def toggle_rule(filename, enable):
     file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
@@ -69,11 +105,6 @@ def toggle_rule(filename, enable):
         # Add dot prefix to disable
         if not filename.startswith("."):
             os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, f".{filename}"))
-#    reload_nginx()
-
-def save_rule(filename, content):
-    with open(os.path.join(MODSECURITY_RULES_DIR, filename), "w") as f:
-        f.write(content)
 #    reload_nginx()
 
 # ==================== Configuration ====================
