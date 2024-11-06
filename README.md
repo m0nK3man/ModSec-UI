@@ -33,13 +33,45 @@ python3 app.py
 
 go to http://localhost:5000 to access app
 
-### create DB
+### setup DataBase
 
 ```sh
 sudo -u postgres psql
-CREATE DATABASE modsec_users;
-CREATE USER modsec_user WITH PASSWORD 'yourpassword';
-GRANT ALL PRIVILEGES ON DATABASE modsec_users TO modsec_user;
+
+modsec_users=# CREATE DATABASE modsec_ui;
+CREATE DATABASE
+
+modsec_users=# CREATE USER modsec_admin WITH PASSWORD 'Bravo@123';
+CREATE ROLE
+
+modsec_users=# GRANT ALL PRIVILEGES ON DATABASE modsec_ui TO modsec_admin;
+GRANT
+
+modsec_users=# \c modsec_ui
+You are now connected to database "modsec_ui" as user "postgres".
+
+modsec_ui=# CREATE TABLE modsec_users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE
+
+modsec_ui=# CREATE TABLE modsec_rules (
+    id SERIAL PRIMARY KEY,
+    rule_code TEXT NOT NULL,
+    rule_name TEXT NOT NULL,
+    rule_path TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE
+
+modsec_ui=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO modsec_admin;
+GRANT
+
+modsec_ui=# GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO modsec_admin;
+GRANT
 ```
 
 ### create app user
