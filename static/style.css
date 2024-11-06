@@ -154,12 +154,16 @@ a {
     text-align: center;
 }
 
-.rule-block table th:first-child {
-    color: red;
-    min-width: 350px;
+.rule-block table tr:first-child {
+    color: #007cff;
 }
 .rule-block table td:last-child {
     min-width: 130px;
+}
+
+.rule-block .modified {
+  background: #ffaf1b;
+  font-style: italic;
 }
 
 /* # ==================== Logs ==================== */

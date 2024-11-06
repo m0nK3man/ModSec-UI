@@ -41,7 +41,7 @@
             <td style="display:none;">{{ rule.id }}</td> <!-- Hidden ID column -->
             <td>{{ rule.rule_code }}</td>
             <td>{{ rule.rule_name }}</td>
-            <td>{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
+            <td class="{{ 'modified' if rule.changed }}">{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
             <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
 	    {% if view_mode == 'edit' %}
             <td>
@@ -72,7 +72,7 @@
             <td style="display:none;">{{ rule.id }}</td> <!-- Hidden ID column -->
             <td>{{ rule.rule_code }}</td>
             <td>{{ rule.rule_name }}</td>
-            <td>{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
+            <td class="{{ 'modified' if rule.changed }}">{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
             <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
 	    {% if view_mode == 'edit' %}
             <td>
