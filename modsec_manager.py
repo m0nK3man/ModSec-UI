@@ -7,6 +7,11 @@ from var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT
 
 # ==================== Global ====================
 
+def commit_changes():
+    _changed_files.clear()
+    _changed_configs.clear()
+    # Here you would typically add git commit functionality
+    return True
 
 # ==================== Home ====================
 
@@ -88,11 +93,6 @@ def save_rule(filename, content):
     else:
         _changed_files.discard(filename)
 
-def commit_changes():
-    _changed_files.clear()
-    # Here you would typically add git commit functionality
-    return True
-
 # Keep other existing functions unchanged
 
 def toggle_rule(filename, enable):
@@ -109,31 +109,66 @@ def toggle_rule(filename, enable):
 
 # ==================== Configuration ====================
 
+_config_hashes = {}
+_changed_configs = set()
+
+def _update_config_hash(config_type, content):
+    _config_hashes[config_type] = _calculate_file_hash(content)
+
+def _is_config_changed(config_type, content):
+    if config_type not in _config_hashes:
+        if config_type == 'modsecurity':
+            with open(MODSECURITY_CONF_PATH, 'r') as f:
+                _update_config_hash('modsecurity', f.read())
+        elif config_type == 'crs':
+            with open(CRS_CONF_PATH, 'r') as f:
+                _update_config_hash('crs', f.read())
+    return _config_hashes[config_type] != _calculate_file_hash(content)
+
 def read_modsecurity_conf():
     with open(MODSECURITY_CONF_PATH, 'r') as f:
-        return f.read()
+        content = f.read()
+        if 'modsecurity' not in _config_hashes:
+            _update_config_hash('modsecurity', content)
+        return {
+            'content': content,
+            'changed': 'modsecurity' in _changed_configs
+        }
+
+def read_crs_conf():
+    with open(CRS_CONF_PATH, 'r') as f:
+        content = f.read()
+        if 'crs' not in _config_hashes:
+            _update_config_hash('crs', content)
+        return {
+            'content': content,
+            'changed': 'crs' in _changed_configs
+        }
 
 def save_modsecurity_conf(content):
     try:
         with open(MODSECURITY_CONF_PATH, 'w') as f:
             f.write(content)
-#        reload_nginx()
+        
+        if _is_config_changed('modsecurity', content):
+            _changed_configs.add('modsecurity')
+        else:
+            _changed_configs.discard('modsecurity')
         return True
     except Exception as e:
         print(f"Error saving modsecurity.conf: {e}")
         return False
 
-def read_crs_conf():
-    with open(CRS_CONF_PATH, 'r') as f:
-        return f.read()
-
 def save_crs_conf(content):
     try:
         with open(CRS_CONF_PATH, 'w') as f:
             f.write(content)
-#        reload_nginx()
+        
+        if _is_config_changed('crs', content):
+            _changed_configs.add('crs')
+        else:
+            _changed_configs.discard('crs')
         return True
     except Exception as e:
         print(f"Error saving crs-setup.conf: {e}")
         return False
-
