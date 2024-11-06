@@ -16,7 +16,12 @@
 
 + Logs nav (access,error,audit,..)
 + Save/Commit button (Rule tab)
-+ Get rules info,status from db
++ Get rules from db
+  - Lấy thông tin info,status từ db parse ra fe
+  - Bắt sự kiện change file/rename push to db
+  - Nếu rule disable rename to .disable
+  - Sort by id
+  - Nếu status file là editing thì user khác lock edit
 + search log
 
 + setup guide
