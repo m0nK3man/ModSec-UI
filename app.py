@@ -1,6 +1,6 @@
 from flask import Flask
 from routes import home, configuration, rules, dashboard, auth
-from config import db, login_manager
+from libs.config import db, login_manager
 from models import User  # Create this file and class
 
 app = Flask(__name__)

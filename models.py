@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from config import db
+from libs.config import db
 
 class User(UserMixin, db.Model):
     __tablename__ = 'modsec_users'

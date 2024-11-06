@@ -6,7 +6,7 @@ import hashlib
 import git
 import hashlib
 from datetime import datetime
-from var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT_REPO_PATH, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL
+from libs.var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT_REPO_PATH, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL
 
 # ==================== Global ====================
 
