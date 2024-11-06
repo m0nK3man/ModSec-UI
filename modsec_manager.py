@@ -3,15 +3,101 @@ import os
 import subprocess
 import requests
 import hashlib
-from var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GITHUB_API_URL
+import git
+import hashlib
+from datetime import datetime
+from var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT_REPO_PATH, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL
 
 # ==================== Global ====================
 
+def _get_repo():
+    """Initialize or get the Git repository"""
+    try:
+        return git.Repo(GIT_REPO_PATH)
+    except git.exc.InvalidGitRepositoryError:
+        # Initialize new repository if it doesn't exist
+        return git.Repo.init(GIT_REPO_PATH)
+
+def _create_commit_message():
+    """Create a detailed commit message based on changes"""
+    message = [""]
+    
+    # Add changed rules
+    if _changed_files:
+        message.append("Modified Rules:")
+        for rule in _changed_files:
+            message.append(f"- {rule}")
+        message.append("")
+    
+    # Add changed configs
+    if _changed_configs:
+        message.append("Modified Configurations:")
+        for config in _changed_configs:
+            if config == 'modsecurity':
+                message.append("- ModSecurity main configuration")
+            elif config == 'crs':
+                message.append("- CRS configuration")
+        message.append("")
+    
+    return "\n".join(message)
+
 def commit_changes():
-    _changed_files.clear()
-    _changed_configs.clear()
-    # Here you would typically add git commit functionality
-    return True
+    """Commit all changes to Git repository"""
+    try:
+        if not (_changed_files or _changed_configs):
+            return True  # No changes to commit
+        
+        repo = _get_repo()
+        
+        # Add changed rules
+        for rule in _changed_files:
+            rule_path = os.path.join(MODSECURITY_RULES_DIR, rule)
+            relative_path = os.path.relpath(rule_path, GIT_REPO_PATH)
+            repo.index.add([relative_path])
+        
+        # Add changed configs
+        if 'modsecurity' in _changed_configs:
+            relative_path = os.path.relpath(MODSECURITY_CONF_PATH, GIT_REPO_PATH)
+            repo.index.add([relative_path])
+        
+        if 'crs' in _changed_configs:
+            relative_path = os.path.relpath(CRS_CONF_PATH, GIT_REPO_PATH)
+            repo.index.add([relative_path])
+        
+        # Create commit with the specified author
+        commit_message = _create_commit_message()
+        repo.index.commit(
+            commit_message,
+            author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
+            committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
+        )
+        
+        # Clear the change tracking sets
+        _changed_files.clear()
+        _changed_configs.clear()
+        
+        return True
+        
+    except Exception as e:
+        print(f"Error committing changes: {e}")
+        return False
+
+def get_commit_history(max_count=10):
+    """Get the commit history for the repository"""
+    try:
+        repo = _get_repo()
+        commits = []
+        for commit in repo.iter_commits(max_count=max_count):
+            commits.append({
+                'hash': commit.hexsha[:7],
+                'message': commit.message,
+                'author': commit.author.name,
+                'date': datetime.fromtimestamp(commit.committed_date).strftime('%Y-%m-%d %H:%M:%S')
+            })
+        return commits
+    except Exception as e:
+        print(f"Error getting commit history: {e}")
+        return []
 
 # ==================== Home ====================
 
