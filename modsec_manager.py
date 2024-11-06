@@ -7,6 +7,7 @@ import git
 import hashlib
 from datetime import datetime
 from libs.var import MODSECURITY_RULES_DIR, MODSECURITY_CONF_PATH, CRS_CONF_PATH, GIT_REPO_PATH, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL
+from flask import flash
 
 # ==================== Global ====================
 
@@ -151,7 +152,7 @@ def list_rules():
     disabled_rules = []
 
     for filename in sorted(os.listdir(MODSECURITY_RULES_DIR)):
-        if filename.endswith(".conf"):
+        if ".conf" in filename:
             with open(os.path.join(MODSECURITY_RULES_DIR, filename), "r") as f:
                 content = f.read()
                 if filename not in _file_hashes:
@@ -160,7 +161,7 @@ def list_rules():
                 rule = {
                     'filename': filename,
                     'content': content,
-                    'enabled': not filename.startswith("."),
+                    'enabled': not filename.endswith(".disable"),
                     'changed': filename in _changed_files
                 }
                 if rule['enabled']:
@@ -183,14 +184,20 @@ def save_rule(filename, content):
 
 def toggle_rule(filename, enable):
     file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
+    
     if enable:
-        # Remove dot prefix to enable
-        if filename.startswith("."):
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, filename[1:]))
+        flash('1')
+        # Remove .disable suffix to enable
+        if filename.endswith(".disable"):
+            flash('2')
+            new_filename = filename[:-8]  # Remove the '.disable' suffix
+            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
     else:
-        # Add dot prefix to disable
-        if not filename.startswith("."):
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, f".{filename}"))
+        flash('3')
+        # Add .disable suffix to disable
+        if not filename.endswith(".disable"):
+            new_filename = f"{filename}.disable"
+            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
 #    reload_nginx()
 
 # ==================== Configuration ====================

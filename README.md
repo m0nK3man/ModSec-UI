@@ -156,6 +156,7 @@ INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('954', 'Data 
 INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('955', 'Web Shells', 'RESPONSE-955-WEB-SHELLS.conf');
 INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('959', 'Blocking Evaluation', 'RESPONSE-959-BLOCKING-EVALUATION.conf');
 INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('980', 'Correlation', 'RESPONSE-980-CORRELATION.conf');
+INSERT INTO modsec_rules (rule_code, rule_name, rule_path) VALUES ('999', 'Exclusion Rules After Crs', 'RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf');
 ```
 
 view rule in db
