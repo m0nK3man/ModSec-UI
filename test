@@ -1,0 +1,49 @@
+# Lặp qua từng IP trong biến NGINX_IPS
+NGINX_IPS="192.168.140.114"
+for IP in $NGINX_IPS; do
+    echo "Deploying on $IP"
+
+    # Tạo thư mục /tmp/waf-manager trên server từ xa
+    ssh root@$IP "mkdir -p /tmp/waf-manager/"
+
+    # Copy thư mục local-conf đến /tmp/waf-manager/
+    scp -r local-conf root@$IP:/tmp/waf-manager/
+
+    # SSH vào IP để thực hiện các lệnh kiểm tra ban đầu và copy config
+    ssh root@$IP << 'EOF'
+      # Kiểm tra nginx có tồn tại hay không
+      if ! command -v nginx &> /dev/null; then
+            echo "[Error] Nginx is not installed!"
+            exit 1
+      fi
+
+      # Kiểm tra thư mục /etc/nginx/modsec có tồn tại hay không
+      if [ ! -d "/etc/nginx/modsec" ]; then
+            echo "[Error] Folder /etc/nginx/modsec not exist!"
+            exit 1
+      fi
+
+      # Copy /etc/nginx/modsec vào /tmp/waf-manager/modsec để backup
+      cp -r /etc/nginx/modsec /tmp/waf-manager/modsec
+
+      # Di chuyển local-conf vào /etc/nginx/modsec
+      mv /tmp/waf-manager/local-conf /etc/nginx/modsec/
+EOF
+
+    # SSH vào IP để kiểm tra nginx config và xử lý theo kết quả
+    ssh root@$IP << 'EOF'
+      # Kiểm tra cấu hình nginx
+      if nginx -t; then
+            # Nếu cấu hình hợp lệ, reload nginx
+            nginx -s reload
+            echo "[OK] Nginx reloaded successfully on $IP"
+            exit 0
+      else
+            # Nếu cấu hình không hợp lệ, khôi phục lại modsec từ bản backup
+            echo "[Error] Restoring previous modsec configuration..."
+            cp -r /tmp/waf-manager/modsec /etc/nginx/modsec
+            exit 1
+      fi
+EOF
+
+done
