@@ -1,5 +1,6 @@
 import os
 import git
+import hashlib
 from datetime import datetime
 from libs.database import Session
 from libs.utils import track_rule_change, track_config_change
@@ -27,14 +28,22 @@ def commit_changes():
 
         # Add changed files to git
         for entry in modified_entries:
+            # Determine relative path based on rule_code
             if entry.rule_code == 'CONFIG_MODSEC':
+                # For the modsecurity configuration file
                 relative_path = os.path.relpath(MODSECURITY_CONF_PATH, GIT_REPO_PATH)
+                file_path = MODSECURITY_CONF_PATH
             elif entry.rule_code == 'CONFIG_CRS':
+                # For the CRS setup configuration file
                 relative_path = os.path.relpath(CRS_CONF_PATH, GIT_REPO_PATH)
+                file_path = CRS_CONF_PATH
             else:
+                # For regular rule files in the MODSECURITY_RULES_DIR
                 rule_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
                 relative_path = os.path.relpath(rule_path, GIT_REPO_PATH)
+                file_path = rule_path  # Set file_path for content hash update
 
+            # Add the file to the git index
             repo.index.add([relative_path])
 
         # Create commit
@@ -47,11 +56,13 @@ def commit_changes():
 
         # Reset modification flags and update content hash
         for entry in modified_entries:
-            entry.original_content_hash = entry.content_hash  # Update original hash
-            entry.content_hash = hashlib.md5(open(os.path.join(MODSECURITY_RULES_DIR, entry.rule_path), "rb").read()).hexdigest()  # Save the new hash
+            # Update hash with the correct path based on whether it's a config or rule file
+            with open(file_path, "rb") as file:
+                entry.original_content_hash = entry.content_hash
+                entry.content_hash = hashlib.md5(file.read()).hexdigest()  # Save the new hash
             entry.is_modified = False  # Reset modified flag
-        session.commit()
 
+        session.commit()
         return True
 
     except Exception as e:
