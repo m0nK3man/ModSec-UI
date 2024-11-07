@@ -21,7 +21,7 @@ a {
 }
 
 .container {
-    margin: 0 auto;
+    margin-top: 35px;
     padding: 25px;
     display: flex;
     justify-content: space-evenly;
