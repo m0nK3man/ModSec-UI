@@ -34,7 +34,6 @@ deploy:
     # Copy the configuration to the NGINX server
     - |
       # Lặp qua từng IP trong biến NGINX_IPS
-      NGINX_IPS="192.168.140.114"
       for IP in $NGINX_IPS; do
           echo "Deploying on $IP"
 
