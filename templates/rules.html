@@ -15,7 +15,7 @@
         <!-- Preserve view mode when committing -->
         <input type="hidden" name="view_mode" value="{{ view_mode }}">
         <button type="submit"
-                class="button {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
+                class="button commit {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
                 {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}>
             Commit Changes
         </button>

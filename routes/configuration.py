@@ -22,35 +22,35 @@ def configuration():
 @login_required
 def modsecurity_conf():
     if session.get('view_mode') == 'view':
-        flash("Cannot modify configuration in view mode!")
+        flash("Cannot modify configuration in view mode!","error")
         return redirect(url_for('configuration.configuration'))
         
     modsecurity_conf_content = request.form.get('modsecurity_conf')
     if save_modsecurity_conf(modsecurity_conf_content):
-        flash("ModSecurity configuration saved successfully.")
+        flash("ModSecurity configuration saved successfully.","success")
     else:
-        flash("Failed to save ModSecurity configuration.")
+        flash("Failed to save ModSecurity configuration.","error")
     return redirect(url_for('configuration.configuration'))
 
 @bp.route('/save_crs_conf', methods=['POST'])
 @login_required
 def crs_conf():
     if session.get('view_mode') == 'view':
-        flash("Cannot modify configuration in view mode!")
+        flash("Cannot modify configuration in view mode!","error")
         return redirect(url_for('configuration.configuration'))
         
     crs_conf_content = request.form.get('crs_conf')
     if save_crs_conf(crs_conf_content):
-        flash("CRS configuration saved successfully.")
+        flash("CRS configuration saved successfully.","success")
     else:
-        flash("Failed to save CRS configuration.")
+        flash("Failed to save CRS configuration.","error")
     return redirect(url_for('configuration.configuration'))
 
 @bp.route('/commit_config_changes', methods=['POST'])
 @login_required
 def commit_changes_view():
     if commit_changes():
-        flash("Changes committed successfully!")
+        flash("Changes committed successfully!","success")
     else:
         flash("Error committing changes!", "error")
     return redirect(url_for('configuration.configuration'))

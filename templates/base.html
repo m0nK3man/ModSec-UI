@@ -18,11 +18,11 @@
     <h1 id="title">ModSecurity Dashboard</h1>
 
     <!-- Flash messages -->
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             <div class="message">
-                {% for message in messages %}
-                    <i>{{ message }}</i>
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}

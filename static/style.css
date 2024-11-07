@@ -28,8 +28,8 @@ a {
 }
 
 .container form > div {
-  margin: 0 auto;
-  padding: 25px;
+    margin: 0 auto;
+    padding: 25px;
 }
 
 .button {
@@ -44,7 +44,45 @@ a {
 }
 
 .button:hover {
-    background-color: #5c89ff;
+    opacity: 90%;
+}
+
+.button.commit {
+    position: absolute;
+    top: 85px;
+    right: 15px;
+    background: #00b700;
+}
+
+.mode-toggle {
+  position: absolute;
+  top: 150px;
+  left: 50px;
+}
+
+.button.active {
+    background: #00b700;
+}
+
+.message {
+    cursor: pointer;
+    position: absolute;
+    top: 140px;
+    right: 10px;
+}
+
+.message .success {
+    padding: 8px 15px;
+    border: 1px solid rgb(84 185 69 / 46%);
+    background-color: rgb(11 255 113 / 12%);
+    color: #0ad406;
+}
+
+.message .error {
+    padding: 8px 15px;
+    border: 1px solid rgba(185, 69, 69, 0.46);
+    background-color: rgba(255, 11, 11, 0.12);
+    color: #f00;
 }
 
 /* # ==================== Navigator ==================== */
@@ -123,17 +161,6 @@ a {
 
 .rule-block {
     padding: 0 20px;
-}
-
-.message {
-    border: 1px solid rgb(84 185 69 / 46%);
-    background-color: rgb(11 255 113 / 12%);
-    box-shadow: 0px 0px 2px #259c08;
-    color: #0ad406;
-    cursor: pointer;
-    padding: 8px 15px;
-    display: inline-block;
-    margin: 10px;
 }
 
 .rule-block h2 {

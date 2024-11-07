@@ -24,7 +24,7 @@ def rules():
 def toggle_rule_view(filename):
     view_mode = session.get('view_mode', 'view')
     if view_mode == 'view':
-        flash("Cannot modify rules in view mode!")
+        flash("Cannot modify rules in view mode!","error")
         return redirect(url_for('rules.rules'))
     
     enabled_rules, disabled_rules = list_rules()
@@ -33,7 +33,7 @@ def toggle_rule_view(filename):
     rule = next((rule for rule in all_rules if rule['filename'] == filename), None)
     if rule:
         toggle_rule(filename, not rule['enabled'])
-        flash(f"Rule '{filename}' {'enabled' if not rule['enabled'] else 'disabled'} successfully!")
+        flash(f"Rule '{filename}' {'enabled' if not rule['enabled'] else 'disabled'} successfully!","success")
     return redirect(url_for('rules.rules'))
 
 @bp.route('/edit_rule/<filename>', methods=['GET', 'POST'])
@@ -41,7 +41,7 @@ def toggle_rule_view(filename):
 def edit_rule(filename):
     view_mode = session.get('view_mode', 'view')
     if view_mode == 'view':
-        flash("Cannot edit rules in view mode!")
+        flash("Cannot edit rules in view mode!","error")
         return redirect(url_for('rules.rules'))
 
     enabled_rules, disabled_rules = list_rules()
@@ -49,13 +49,13 @@ def edit_rule(filename):
 
     rule = next((rule for rule in all_rules if rule['filename'] == filename), None)
     if not rule:
-        flash("Rule not found.")
+        flash("Rule not found!","error")
         return redirect(url_for('rules.rules'))
 
     if request.method == 'POST':
         content = request.form['content']
         save_rule(filename, content)
-        flash(f"Rule '{filename}' updated successfully.")
+        flash(f"Rule '{filename}' updated successfully.","success")
         return redirect(url_for('rules.rules'))
 
     return render_template('rule_editor.html', rule=rule)
@@ -64,7 +64,7 @@ def edit_rule(filename):
 @login_required
 def commit_changes_view():
     if commit_changes():
-        flash("Changes committed successfully!")
+        flash("Changes committed successfully!","success")
     else:
         flash("Error committing changes!", "error")
     return redirect(url_for('rules.rules'))
