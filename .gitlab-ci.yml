@@ -81,8 +81,8 @@ deploy:
                   exit 0
             else
                   # If config is invalid, restore backup
-                  rm -rf /etc/nginx/modsec/*
-                  cp -rf /tmp/waf-manager/modsec/* /etc/nginx/modsec/
+                  # rm -rf /etc/nginx/modsec/*
+                  # cp -rf /tmp/waf-manager/modsec/* /etc/nginx/modsec/
                   echo "[Error] Restored previous modsec configuration due to config test failure!"
                   exit 1
             fi
