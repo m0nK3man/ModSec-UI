@@ -79,7 +79,7 @@ deploy:
                   exit 0
             else
                   # Nếu cấu hình không hợp lệ, khôi phục lại modsec từ bản backup
-                  mv -f /tmp/waf-manager/modsec/* /etc/nginx/modsec/
+                  # mv -f /tmp/waf-manager/modsec/* /etc/nginx/modsec/
                   echo "[Error] Restoring previous modsec configuration..."
                   exit 1
             fi
