@@ -19,30 +19,34 @@
 </div>
 
 <div class="rule-block {% if modsecurity_conf.changed %}changed{% endif %}">
-    <!-- ModSecurity Configuration Section -->
+    <h3>ModSecurity Configuration (modsecurity.conf)</h3>
+    <div class="status-indicator">
+        Status: <span class="{% if modsecurity_conf.changed %}modified{% else %}unchanged{% endif %}">
+            {{ 'Changed' if modsecurity_conf.changed else 'Unchanged' }}
+        </span>
+    </div>
     <form method="post" action="{{ url_for('configuration.modsecurity_conf') }}">
-        <div>
-            <h3>ModSecurity Configuration (modsecurity.conf)</h3>
-            <textarea class="config-area" name="modsecurity_conf" rows="20" cols="100" 
-                      {% if view_mode == 'view' %}readonly{% endif %}>{{ modsecurity_conf.content }}</textarea><br>
-            {% if view_mode == 'edit' %}
-            <button class="button" type="submit">Save ModSecurity Configuration</button>
-            {% endif %}
-        </div>
+        <textarea class="config-area" name="modsecurity_conf" rows="20" cols="100" 
+                  {% if view_mode == 'view' %}readonly{% endif %}>{{ modsecurity_conf.content }}</textarea><br>
+        {% if view_mode == 'edit' %}
+        <button class="button" type="submit">Save ModSecurity Configuration</button>
+        {% endif %}
     </form>
 </div>
 
 <div class="rule-block {% if crs_conf.changed %}changed{% endif %}">
-    <!-- CRS Configuration Section -->
+    <h3>CRS Configuration (crs-setup.conf)</h3>
+    <div class="status-indicator">
+        Status: <span class="{% if crs_conf.changed %}modified{% else %}unchanged{% endif %}">
+            {{ 'Changed' if crs_conf.changed else 'Unchanged' }}
+        </span>
+    </div>
     <form method="post" action="{{ url_for('configuration.crs_conf') }}">
-        <div>
-            <h3>CRS Configuration (crs-setup.conf)</h3>
-            <textarea class="config-area" name="crs_conf" rows="20" cols="100"
-                      {% if view_mode == 'view' %}readonly{% endif %}>{{ crs_conf.content }}</textarea><br>
-            {% if view_mode == 'edit' %}
-            <button class="button" type="submit">Save CRS Configuration</button>
-            {% endif %}
-        </div>
+        <textarea class="config-area" name="crs_conf" rows="20" cols="100"
+                  {% if view_mode == 'view' %}readonly{% endif %}>{{ crs_conf.content }}</textarea><br>
+        {% if view_mode == 'edit' %}
+        <button class="button" type="submit">Save CRS Configuration</button>
+        {% endif %}
     </form>
 </div>
 

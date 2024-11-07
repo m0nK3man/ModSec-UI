@@ -51,9 +51,9 @@ def crs_conf():
 def commit_changes_view():
     if commit_changes():
         if push_changes():
-            flash("Changes pushed successfully!","success")
+            flash("Changes pushed successfully!", "success")
         else:
-            flash("Changes committed, but push failed!","error") 
+            flash("Changes committed, but push failed!", "error") 
     else:
         flash("Error committing changes!", "error")
     return redirect(url_for('configuration.configuration'))

@@ -31,14 +31,8 @@ def track_config_change(session, config_type, content):
         'crs': 'CONFIG_CRS'
     }
 
-    # Calculate the content hash
+    # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
-
-    # Determine the relative path without MODSECURITY_RULES_DIR
-    relative_path = os.path.relpath(
-        MODSECURITY_CONF_PATH if config_type == 'modsecurity' else CRS_CONF_PATH, 
-        'path-to-repo'
-    )
 
     # Query the database for the configuration entry
     config = session.query(ModsecRule).filter_by(rule_code=config_codes[config_type]).first()
@@ -48,21 +42,15 @@ def track_config_change(session, config_type, content):
         config = ModsecRule(
             rule_code=config_codes[config_type],
             rule_name=f"{config_type.title()} Configuration",
-            rule_path=relative_path,  # Store the relative path for the config file
+            rule_path=MODSECURITY_CONF_PATH if config_type == 'modsecurity' else CRS_CONF_PATH,
             content_hash=current_hash,
-            is_modified=True,
+            is_modified=False,
             last_modified=datetime.now()
         )
         session.add(config)
     else:
-        # Update existing config entry if the content hash has changed
-        if config.content_hash != current_hash:
-            config.content_hash = current_hash
-            config.is_modified = True
-            config.last_modified = datetime.now()
-        else:
-            # Reset is_modified to False if the content is unchanged
-            config.is_modified = False
+        # Update modified state based on hash comparison
+        config.is_modified = (config.content_hash != current_hash)
 
     session.commit()
     return True
