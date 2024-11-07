@@ -12,21 +12,19 @@ def track_rule_change(session, rule_path, content):
     """Track changes to rule files in the database"""
     rule = session.query(ModsecRule).filter_by(rule_path=rule_path).first()
     if not rule:
+        # Logic to handle case where rule doesn't exist (optional)
         return False
 
     # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    # Update rule change tracking
+    # Only update the modified state
     if rule.content_hash != current_hash:
-        rule.content_hash = current_hash
         rule.is_modified = True
-        rule.last_modified = datetime.now()
     else:
-        # Reset is_modified to False if the content is the same as original
-        rule.is_modified = False
+        rule.is_modified = False  # Reset if unchanged
 
-    session.commit()
+    session.commit()  # Commit the change to is_modified only
     return True
 
 def track_config_change(session, config_type, content):

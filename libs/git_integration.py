@@ -44,9 +44,11 @@ def commit_changes():
             committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
         )
 
-        # Reset modification flags
+        # Reset modification flags and update content hash
         for entry in modified_entries:
-            entry.is_modified = False
+            entry.original_content_hash = entry.content_hash  # Update original hash
+            entry.content_hash = hashlib.md5(open(os.path.join(MODSECURITY_RULES_DIR, entry.rule_path), "rb").read()).hexdigest()  # Save the new hash
+            entry.is_modified = False  # Reset modified flag
         session.commit()
 
         return True
