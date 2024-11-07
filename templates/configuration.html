@@ -13,7 +13,7 @@
     {% if modsecurity_conf.changed or crs_conf.changed %}
     <form action="{{ url_for('configuration.commit_changes_view') }}" method="post" class="commit-form">
         <input type="hidden" name="view_mode" value="{{ view_mode }}">
-        <button type="submit" class="button commit">Commit Changes</button>
+        <button type="submit" class="button commit">Save Changes</button>
     </form>
     {% endif %}
 </div>

@@ -65,7 +65,7 @@ def edit_rule(filename):
 def commit_changes_view():
     if commit_changes():
         if push_changes():
-            flash("Changes pushed to remote repository successfully!","success")
+            flash("Changes pushed successfully!","success")
         else:
             flash("Changes committed, but push failed!","error") 
     else:
