@@ -1,6 +1,7 @@
 from models import ModsecRule
 import hashlib
 from datetime import datetime
+from libs.var import *
 
 def track_rule_change(session, rule_path, content):
     """Track changes to rule files in the database"""
