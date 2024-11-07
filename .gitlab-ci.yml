@@ -31,11 +31,10 @@ deploy:
       done
   
   script:
-    # Copy the configuration to the NGINX server
+    # Lặp qua từng IP trong biến NGINX_IPS
     - |
-      # Lặp qua từng IP trong biến NGINX_IPS
       for IP in $NGINX_IPS; do
-          echo "Deploying on $IP"
+          echo "[Info] Copy local-conf to $IP:/tmp/"
 
           # Tạo thư mục /tmp/waf-manager trên server từ xa
           ssh root@$IP "mkdir -p /tmp/waf-manager/"
@@ -43,6 +42,7 @@ deploy:
           # Copy thư mục local-conf đến /tmp/waf-manager/
           scp -r local-conf root@$IP:/tmp/waf-manager/
 
+          echo "[Info] Check condition requirements"
           # SSH vào IP để thực hiện các lệnh kiểm tra ban đầu và copy config
           ssh root@$IP << 'EOF'
             # Kiểm tra nginx có tồn tại hay không
@@ -61,9 +61,10 @@ deploy:
             cp -r /etc/nginx/modsec /tmp/waf-manager/modsec
 
             # Di chuyển local-conf vào /etc/nginx/modsec
-            mv /tmp/waf-manager/local-conf /etc/nginx/modsec
+            mv /tmp/waf-manager/local-conf/* /etc/nginx/modsec
       EOF
 
+          echo "[Info] Test config and reload"
           # SSH vào IP để kiểm tra nginx config và xử lý theo kết quả
           ssh root@$IP << 'EOF'
             # Kiểm tra cấu hình nginx
