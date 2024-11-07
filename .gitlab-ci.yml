@@ -32,7 +32,8 @@ deploy:
   
   script:
     # Copy the configuration to the NGINX server
-    - for IP in $NGINX_IPS; do
+    - |
+      for IP in $NGINX_IPS; do
         echo "Deploying to NGINX server at $IP...";
 
         # Check if NGINX is installed and if /etc/nginx/modsec exists on the server
