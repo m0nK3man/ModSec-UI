@@ -1,5 +1,6 @@
 import os
-from libs.database import Session, track_rule_change
+from libs.database import Session
+from libs.utils import track_rule_change
 from models import ModsecRule
 from libs.var import MODSECURITY_RULES_DIR
 

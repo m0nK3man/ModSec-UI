@@ -1,5 +1,6 @@
 import os
-from libs.database import Session, track_config_change
+from libs.database import Session
+from libs.utils import track_config_change
 from libs.var import MODSECURITY_CONF_PATH, CRS_CONF_PATH
 from models import ModsecRule
 
