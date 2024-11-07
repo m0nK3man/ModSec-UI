@@ -1,6 +1,7 @@
 # routes/configuration.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from modsec_manager import read_modsecurity_conf, save_modsecurity_conf, read_crs_conf, save_crs_conf, commit_changes
+from modsec_manager.configuration_func import read_modsecurity_conf, save_modsecurity_conf, read_crs_conf, save_crs_conf
+from libs.git_integration import commit_changes
 from flask_login import login_required
 
 bp = Blueprint('configuration', __name__)

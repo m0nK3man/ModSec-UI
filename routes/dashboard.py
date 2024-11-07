@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from modsec_manager import get_current_mode, set_mode
+from modsec_manager.dashboard_func import get_current_mode, set_mode
 from flask_login import login_required
 
 bp = Blueprint('dashboard', __name__)

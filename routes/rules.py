@@ -1,6 +1,7 @@
 # routes/rules.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
-from modsec_manager import list_rules, toggle_rule, save_rule, commit_changes
+from modsec_manager.rules_func import list_rules, toggle_rule, save_rule
+from libs.git_integration import commit_changes
 from flask_login import login_required
 
 bp = Blueprint('rules', __name__)
