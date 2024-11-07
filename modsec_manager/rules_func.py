@@ -7,8 +7,7 @@ from libs.var import MODSECURITY_RULES_DIR
 def list_rules():
     """List all rules with their change status from the database"""
     session = Session()
-    enabled_rules = []
-    disabled_rules = []
+    all_rules = []
 
     try:
         # Exclude config entries
@@ -32,16 +31,12 @@ def list_rules():
                     'enabled': not rule.rule_path.endswith(".disable"),
                     'changed': rule.is_modified
                 }
-
-                if rule_info['enabled']:
-                    enabled_rules.append(rule_info)
-                else:
-                    disabled_rules.append(rule_info)
+                all_rules.append(rule_info)
 
     finally:
         session.close()
 
-    return enabled_rules, disabled_rules
+    return all_rules
 
 def save_rule(filename, content):
     """Save rule content and track changes in database"""

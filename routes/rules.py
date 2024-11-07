@@ -13,10 +13,9 @@ def rules():
     view_mode = request.args.get('view_mode', session.get('view_mode', 'view'))
     # Store the current view_mode in session
     session['view_mode'] = view_mode
-    enabled_rules, disabled_rules = list_rules()
+    all_rules = list_rules()
     return render_template('rules.html', 
-                         enabled_rules=enabled_rules, 
-                         disabled_rules=disabled_rules,
+                         all_rules=all_rules,
                          view_mode=view_mode)
 
 @bp.route('/toggle_rule/<filename>')
@@ -27,8 +26,7 @@ def toggle_rule_view(filename):
         flash("Cannot modify rules in view mode!","error")
         return redirect(url_for('rules.rules'))
     
-    enabled_rules, disabled_rules = list_rules()
-    all_rules = enabled_rules + disabled_rules
+    all_rules = list_rules()
 
     rule = next((rule for rule in all_rules if rule['filename'] == filename), None)
     if rule:
@@ -44,8 +42,7 @@ def edit_rule(filename):
         flash("Cannot edit rules in view mode!","error")
         return redirect(url_for('rules.rules'))
 
-    enabled_rules, disabled_rules = list_rules()
-    all_rules = enabled_rules + disabled_rules
+    all_rules = list_rules()
 
     rule = next((rule for rule in all_rules if rule['filename'] == filename), None)
     if not rule:
