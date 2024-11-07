@@ -3,9 +3,25 @@ import git
 import hashlib
 from datetime import datetime
 from libs.database import Session
-from libs.utils import track_rule_change, track_config_change
 from models import ModsecRule
 from libs.var import *
+
+def push_changes():
+    """Push committed changes to the remote Git repository"""
+    try:
+        repo = _get_repo()
+        # Ensure the remote is set (you might want to customize the remote name)
+        remote_name = 'origin'
+        remote = repo.remote(remote_name)
+        
+        # Push changes to the remote repository
+        remote.push()
+        print(f"Successfully pushed changes to {remote_name}.")
+        return True
+
+    except Exception as e:
+        print(f"Error pushing changes: {e}")
+        return False
 
 def _get_repo():
     """Initialize or get the Git repository"""

@@ -1,7 +1,7 @@
 # routes/configuration.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from modsec_manager.configuration_func import read_modsecurity_conf, save_modsecurity_conf, read_crs_conf, save_crs_conf
-from libs.git_integration import commit_changes
+from libs.git_integration import commit_changes, push_changes
 from flask_login import login_required
 
 bp = Blueprint('configuration', __name__)
@@ -50,7 +50,10 @@ def crs_conf():
 @login_required
 def commit_changes_view():
     if commit_changes():
-        flash("Changes committed successfully!","success")
+        if push_changes():
+            flash("Changes pushed to remote repository successfully!","success")
+        else:
+            flash("Changes committed, but push failed!","error") 
     else:
         flash("Error committing changes!", "error")
     return redirect(url_for('configuration.configuration'))
