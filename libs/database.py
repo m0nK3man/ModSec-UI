@@ -22,8 +22,11 @@ def track_rule_change(session, rule_path, content):
         rule.content_hash = current_hash
         rule.is_modified = True
         rule.last_modified = datetime.now()
-        session.commit()
+    else:
+        # Reset is_modified to False if the content is the same as original
+        rule.is_modified = False
 
+    session.commit()
     return True
 
 def track_config_change(session, config_type, content):
@@ -54,6 +57,9 @@ def track_config_change(session, config_type, content):
             config.content_hash = current_hash
             config.is_modified = True
             config.last_modified = datetime.now()
+        else:
+            # Reset is_modified to False if the content is the same as original
+            config.is_modified = False
 
     session.commit()
     return True
