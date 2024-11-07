@@ -1,29 +1,65 @@
 stages:
   - deploy
 
-before_script:
+#before_script:
+    # Before script: Set up SSH access
+#    - echo "Add SSH Private Key to Agent"
+#    - apk add --no-cache openssh-client
+#    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+#    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+#   - chmod 600 ~/.ssh/id_ed25519
+#    - ssh-keyscan -H 192.168.140.114 >> ~/.ssh/known_hosts
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: clone
+    NGINX_IPS: "192.168.140.114"
+  when: always # skip this stage on auto run
+  before_script:
     # Before script: Set up SSH access
     - echo "Add SSH Private Key to Agent"
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
-    - ssh-keyscan -H 192.168.140.114 >> ~/.ssh/known_hosts
-
-deploy:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: clone
-  when: always # skip this stage on auto run
+    
+    # Adding SSH keys for all NGINX IPs to known hosts
+    - for IP in $NGINX_IPS; do
+        echo "Adding $IP to known_hosts";
+        ssh-keyscan -H $IP >> ~/.ssh/known_hosts;
+      done
+  
   script:
     # Copy the configuration to the NGINX server
-    - echo "Copying local-conf to NGINX server..."
-    - scp -r local-conf/* root@192.168.140.114:/tmp/local-conf
+    - for IP in $NGINX_IPS; do
+        echo "Deploying to NGINX server at $IP...";
 
-    # Test NGINX configuration
-    - echo "Testing NGINX configuration..."
-    - ssh root@192.168.140.114 'nginx -t'
+        # Check if NGINX is installed and if /etc/nginx/modsec exists on the server
+        ssh root@$IP '
+          if ! command -v nginx &> /dev/null; then
+              echo "NGINX is not installed on server $IP. Exiting with failure."
+              exit 1
+          fi
 
-    # Reload NGINX if configuration is valid
-    - echo "Reloading NGINX..."
-    - ssh root@192.168.140.114 'sudo nginx -s reload'    
+          if [ -d "/etc/nginx/modsec" ]; then
+              echo "Directory exists on server $IP. Copying local-conf to /etc/nginx/modsec...";
+              scp -r local-conf/* root@$IP:/etc/nginx/modsec
+          else
+              echo "Directory /etc/nginx/modsec does not exist on server $IP. Exiting with failure."
+              exit 1
+          fi
+
+          # Test NGINX configuration
+          echo "Testing NGINX configuration on server $IP...";
+          if ! nginx -t; then
+              echo "NGINX configuration test failed on server $IP. Exiting with failure."
+              exit 1
+          fi
+        '
+
+        # Reload NGINX if configuration is valid
+        echo "Reloading NGINX on server $IP...";
+        ssh root@$IP 'nginx -s reload'
+
+      done
