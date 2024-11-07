@@ -62,7 +62,7 @@ deploy:
             cp -r /etc/nginx/modsec /tmp/waf-manager/modsec
 
             # Di chuyển local-conf vào /etc/nginx/modsec
-            mv /tmp/waf-manager/local-conf /etc/nginx/modsec/
+            mv /tmp/waf-manager/local-conf /etc/nginx/modsec
       EOF
 
           # SSH vào IP để kiểm tra nginx config và xử lý theo kết quả
