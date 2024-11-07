@@ -37,6 +37,34 @@ def commit_changes():
     try:
         # Get all modified rules and configs
         modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
+
+        # Check for renamed files
+        all_files = {entry.rule_path: entry for entry in modified_entries}
+        for entry in modified_entries:
+            # Determine the current file path based on rule_code
+            if entry.rule_code == 'CONFIG_MODSEC':
+                current_file_path = MODSECURITY_CONF_PATH
+            elif entry.rule_code == 'CONFIG_CRS':
+                current_file_path = CRS_CONF_PATH
+            else:
+                current_file_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
+
+            # Check if the file exists
+            if not os.path.exists(current_file_path):
+                # File does not exist, check if it has been renamed
+                for file_name in os.listdir(MODSECURITY_RULES_DIR):
+                    if file_name != entry.rule_path and file_name.startswith(entry.rule_path.split('.')[0]):
+                        # A file with a similar name exists, assume it has been renamed
+                        new_rule_path = file_name
+                        # Update the entry in the database
+                        entry.rule_path = new_rule_path
+                        entry.is_modified = True  # Mark as modified
+                        print(f"Detected rename: {entry.rule_path} -> {new_rule_path}")
+                        break
+
+        # Re-query modified entries after checking for renames
+        modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
+
         if not modified_entries:
             return True  # No changes to commit
 
@@ -46,15 +74,12 @@ def commit_changes():
         for entry in modified_entries:
             # Determine relative path based on rule_code
             if entry.rule_code == 'CONFIG_MODSEC':
-                # For the modsecurity configuration file
                 relative_path = os.path.relpath(MODSECURITY_CONF_PATH, GIT_REPO_PATH)
                 file_path = MODSECURITY_CONF_PATH
             elif entry.rule_code == 'CONFIG_CRS':
-                # For the CRS setup configuration file
                 relative_path = os.path.relpath(CRS_CONF_PATH, GIT_REPO_PATH)
                 file_path = CRS_CONF_PATH
             else:
-                # For regular rule files in the MODSECURITY_RULES_DIR
                 rule_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
                 relative_path = os.path.relpath(rule_path, GIT_REPO_PATH)
                 file_path = rule_path  # Set file_path for content hash update
@@ -72,7 +97,6 @@ def commit_changes():
 
         # Reset modification flags and update content hash
         for entry in modified_entries:
-            # Update hash with the correct path based on whether it's a config or rule file
             with open(file_path, "rb") as file:
                 entry.original_content_hash = entry.content_hash
                 entry.content_hash = hashlib.md5(file.read()).hexdigest()  # Save the new hash
@@ -86,7 +110,6 @@ def commit_changes():
         return False
     finally:
         session.close()
-
 def _create_commit_message(modified_entries):
     """Create a detailed commit message based on database changes"""
     message = ["ModSecurity Configuration Update"]
