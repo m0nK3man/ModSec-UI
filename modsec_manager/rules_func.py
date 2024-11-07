@@ -53,7 +53,7 @@ def save_rule(filename, content):
         session.close()
 
 def toggle_rule(filename, enable):
-    """Enable or disable a rule and update rule path in database."""
+    """Enable or disable a rule and update rule path in the database."""
     session = Session()
     try:
         # Retrieve the rule from the database
@@ -62,21 +62,24 @@ def toggle_rule(filename, enable):
         if rule is None:
             raise ValueError(f"No rule found with the filename {filename}")
 
+        # Determine the file path
         file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
 
-        # Determine the new filename based on the `enable` flag
+        # Enable or disable the rule based on the `enable` flag
         if enable:
-            # Remove .disable suffix to enable
+            # Enable the rule
             if filename.endswith(".disable"):
                 new_filename = filename[:-8]  # Remove the '.disable' suffix
                 os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
                 rule.rule_path = new_filename  # Update rule path in database
+                rule.is_enabled = True  # Update is_enabled status
         else:
-            # Add .disable suffix to disable
+            # Disable the rule
             if not filename.endswith(".disable"):
                 new_filename = f"{filename}.disable"
                 os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
                 rule.rule_path = new_filename  # Update rule path in database
+                rule.is_enabled = False  # Update is_enabled status
 
         # Commit the changes to the database
         session.commit()

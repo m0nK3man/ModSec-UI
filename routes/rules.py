@@ -25,7 +25,7 @@ def toggle_rule_view(filename):
     if view_mode == 'view':
         flash("Cannot modify rules in view mode!","error")
         return redirect(url_for('rules.rules'))
-    
+
     all_rules = list_rules()
 
     rule = next((rule for rule in all_rules if rule['filename'] == filename), None)

@@ -30,7 +30,8 @@
             <th style="display:none;">ID</th> <!-- ID hidden but used for sorting -->
             <th>Rule Code</th>
             <th>Rule Name</th>
-            <th>File Status</th>
+            <th>Content</th> <!-- Changed from File Status to Content -->
+            <th>Status</th> <!-- New column for Status -->
             <th>Last Modified</th>
             {% if view_mode == 'edit' %}
             <th>Actions</th>
@@ -42,10 +43,11 @@
             <td>{{ rule.rule_code }}</td>
             <td>{{ rule.rule_name }}</td>
             <td class="{{ 'modified' if rule.changed }}">{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
+            <td>{{ 'Enabled' if rule.enabled else 'Disabled' }}</td> <!-- Display Enabled/Disabled status -->
             <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
-	    {% if view_mode == 'edit' %}
+            {% if view_mode == 'edit' %}
             <td>
-                <a class="button" href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}">Disable</a> |
+                <a class="button" href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}">Toggle</a> |
                 <a class="button" href="{{ url_for('rules.edit_rule', filename=rule.filename) }}">Edit</a>
             </td>
             {% endif %}
@@ -55,4 +57,3 @@
 </div>
 
 {% endblock %}
-
