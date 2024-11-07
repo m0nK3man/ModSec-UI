@@ -57,26 +57,30 @@ deploy:
                   exit 1
             fi
 
-            # Copy /etc/nginx/modsec vào /tmp/waf-manager/modsec để backup
-            cp -rf /etc/nginx/modsec /tmp/waf-manager/modsec
+            echo "[Info] Copy Backup"
+            # Copy /etc/nginx/modsec/ vào /tmp/waf-manager/modsec/ để backup
+            mv -f /etc/nginx/modsec/ /tmp/waf-manager/modsec/
 
+            echo "[Info] Copy Config"
             # Di chuyển local-conf vào /etc/nginx/modsec
-            mv -f /tmp/waf-manager/local-conf/* /etc/nginx/modsec
+            mv -f /tmp/waf-manager/local-conf/ /etc/nginx/modsec/
       EOF
 
           echo "[Info] Test config and reload"
           # SSH vào IP để kiểm tra nginx config và xử lý theo kết quả
           ssh root@$IP << 'EOF'
             # Kiểm tra cấu hình nginx
+            echo "[Info] Test Config"
             if nginx -t; then
+                  echo "[Info] Reload Config"
                   # Nếu cấu hình hợp lệ, reload nginx
                   nginx -s reload
                   echo "[OK] Nginx reloaded successfully on $IP"
                   exit 0
             else
                   # Nếu cấu hình không hợp lệ, khôi phục lại modsec từ bản backup
+                  mv -f /tmp/waf-manager/modsec/* /etc/nginx/modsec/
                   echo "[Error] Restoring previous modsec configuration..."
-                  mv -f /tmp/waf-manager/modsec /etc/nginx/modsec
                   exit 1
             fi
       EOF
