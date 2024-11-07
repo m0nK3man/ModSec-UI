@@ -7,7 +7,7 @@
   - Runner xử lý config (Sync config cho nginx)
 
 + Lấy log từ ELK
-
++ Check các bộ rules bắt buộc !!!!!!! ko được disable
 
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab
