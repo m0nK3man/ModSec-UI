@@ -8,6 +8,7 @@
 
 + Lấy log từ ELK
 + Check các bộ rules bắt buộc !!!!!!! ko được disable
++ commit file .disabled/enabled
 
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab
