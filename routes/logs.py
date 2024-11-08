@@ -4,6 +4,8 @@ from libs.elasticsearch_client import ElasticsearchClient
 from libs.var import TIME_RANGES, LOGS_CONFIG, SEVERITY_LEVELS
 from flask_login import login_required
 import json
+from datetime import datetime
+import pytz
 
 bp = Blueprint('logs', __name__)
 
@@ -35,13 +37,31 @@ def logs():
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('dashboard.dashboard'))
-
+    
+    # Convert UTC time to UTC+7
+    utc_zone = pytz.utc
+    tz_utc7 = pytz.timezone('Asia/Bangkok')
+    for log in logs:
+        # Assuming the timestamp is in ISO format, you need to parse it and convert
+        log['timestamp'] = convert_to_utc7(log['timestamp'], utc_zone, tz_utc7)
+    
     return render_template('logs.html',
                      logs=logs,
                      stats=stats,
                      time_range=time_range,
                      search_query=search_query,
                      config=config)
+
+def convert_to_utc7(timestamp_str, utc_zone, target_zone):
+    # Parse the timestamp string to datetime object with milliseconds
+    timestamp = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # Localize to UTC and then convert to target timezone (UTC+7)
+    timestamp = utc_zone.localize(timestamp)  # Localize to UTC
+    timestamp_utc7 = timestamp.astimezone(target_zone)  # Convert to UTC+7
+
+    # Return the formatted timestamp
+    return timestamp_utc7.strftime("%Y-%m-%d %H:%M:%S")
 
 @bp.route('/api/logs', methods=['GET'])
 @login_required
