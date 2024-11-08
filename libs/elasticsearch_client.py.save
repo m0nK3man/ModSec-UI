@@ -25,7 +25,7 @@ class ElasticsearchClient:
         try:
             # Use provided size or default from config
             size = size or self.max_results
-    
+
             # Calculate time range
             now = datetime.utcnow()
             if time_range.endswith('m'):
@@ -34,11 +34,11 @@ class ElasticsearchClient:
                 from_time = now - timedelta(hours=int(time_range[:-1]))
             elif time_range.endswith('d'):
                 from_time = now - timedelta(days=int(time_range[:-1]))
-    
+
             # Base query
             query = {
                 "bool": {
-                    "must": [
+                   "must": [
                         {
                             "range": {
                                 "@timestamp": {
@@ -50,48 +50,55 @@ class ElasticsearchClient:
                     ]
                 }
             }
-    
-            # Add search query if provided
-            if search_query:
-                query["bool"]["must"].append({
-                    "query_string": {
-                        "query": search_query,
-                        "fields": ["transaction.client_ip", "transaction.request.uri"]
-                    }
-                })
-    
-            # Execute search
-            response = self.es.search(
-                index=self.index_pattern,
-                body={
-                    "query": query,
-                    "sort": [{"@timestamp": {"order": "desc"}}],
-                    "size": size
+
+        # Add search query if provided
+        if search_query:
+            query["bool"]["must"].append({
+                "query_string": {
+                    "query": search_query,
+                    "fields": ["transaction.request.headers.Host", "transaction.client_ip", "transaction.request.uri"]
                 }
-            )
-    
-            # Process and format results
-            logs = []
-            for hit in response['hits']['hits']:
-                source = hit['_source']
-                log_entry = {
-                    'timestamp': source.get('@timestamp', 'N/A'),
-                    'rule_id': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('file', 'N/A'),
-                    'message': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('data', 'N/A'),
-                    'severity': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('severity', 'N/A'),
-                    'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
-                    'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
-                    'request_method': source.get('transaction', {}).get('request', {}).get('method', 'N/A'),
-                    'hostname': source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', 'N/A')
+            })
+
+        # Execute search
+        response = self.es.search(
+            index=self.index_pattern,
+            body={
+                "query": query,
+                "sort": [{"@timestamp": {"order": "desc"}}],
+                "size": size
+            }
+        )
+
+        # Process and format results
+        logs = []
+        for hit in response['hits']['hits']:
+            source = hit['_source']
+            log_entry = {
+                'timestamp': source.get('@timestamp'),
+                'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
+                'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
+                'request_method': source.get('transaction', {}).get('request', {}).get('method', 'N/A'),
+                'http_code': source.get('transaction', {}).get('response', {}).get('http_code', 'N/A'),
+                'messages': []
+            }
+            for message in source.get('transaction', {}).get('messages', []):
+                message_details = {
+                    'message': message.get('message', 'N/A'),
+                    'severity': message.get('details', {}).get('severity', 'N/A'),
+                    'rule_id': message.get('details', {}).get('ruleId', 'N/A'),
+                    'file': message.get('details', {}).get('file', 'N/A'),
+                    'line_number': message.get('details', {}).get('lineNumber', 'N/A')
                 }
-    
-                logs.append(log_entry)
-    
-            return logs
-    
-        except Exception as e:
-            print(f"Error querying Elasticsearch: {e}")
-            return []
+                log_entry['messages'].append(message_details)
+
+            logs.append(log_entry)
+
+        return logs
+
+    except Exception as e:
+        print(f"Error querying Elasticsearch: {e}")
+        return []
 
     def get_stats(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE']):
         """
