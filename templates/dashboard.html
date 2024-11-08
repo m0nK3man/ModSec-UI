@@ -243,8 +243,8 @@
 
 {% block scripts %}
 <script>
-const REFRESH_INTERVAL = {{ config.DASHBOARD_CONFIG.REFRESH_INTERVAL * 1000 }};
-const STATS_REFRESH_INTERVAL = {{ config.DASHBOARD_CONFIG.STATS_REFRESH_INTERVAL * 1000 }};
+const REFRESH_INTERVAL = {{ config['dashboard_config']['REFRESH_INTERVAL'] * 1000 }};
+const STATS_REFRESH_INTERVAL = {{ config['dashboard_config']['STATS_REFRESH_INTERVAL'] * 1000 }};
 
 // Function to update logs
 async function updateLogs() {

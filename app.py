@@ -2,9 +2,12 @@ from flask import Flask
 from routes import home, configuration, rules, dashboard, auth
 from libs.database import db, login_manager
 from models import User  # Create this file and class
+from flask_moment import Moment
 
 app = Flask(__name__)
 app.secret_key = 'a3f0b8c42fa67a5de4e0b8f21d7b3a76'
+moment = Moment(app)
+
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://modsec_admin:bravo123@localhost/modsec_ui'

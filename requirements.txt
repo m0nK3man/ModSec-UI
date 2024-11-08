@@ -1,0 +1,16 @@
+# Flask for web application and login management
+Flask==2.0.2
+Flask-SQLAlchemy==2.5.1
+Flask-Login==0.5.0
+
+# SQLAlchemy for database interactions
+SQLAlchemy==1.4.27
+
+# GitPython for Git integration
+GitPython==3.1.18
+
+# Elasticsearch client for interfacing with Elasticsearch
+elasticsearch==8.15.1
+
+Werkzeug==2.0.3
+psycopg2-binary==2.9.1  # or the latest stable version

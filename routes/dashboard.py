@@ -1,12 +1,15 @@
 # routes/rules.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, current_app
-from modsec_manager.dashboard_func import get_current_mode, set_mode, get_logs, get_stats
+from modsec_manager.dashboard_func import get_current_mode, set_mode
+from libs.elasticsearch_client import ElasticsearchClient
 from libs.git_integration import commit_changes, push_changes
 from libs.var import TIME_RANGES, DASHBOARD_CONFIG, SEVERITY_LEVELS
 from flask_login import login_required
 import json
 
 bp = Blueprint('dashboard', __name__)
+
+es_client = ElasticsearchClient()
 
 @bp.before_app_first_request
 def initialize_config():
@@ -42,8 +45,8 @@ def dashboard():
         # Get logs and statistics
         time_range = request.args.get('time_range', DASHBOARD_CONFIG['DEFAULT_TIME_RANGE'])
         search_query = request.args.get('search', None)
-        logs = get_logs(time_range=time_range, search_query=search_query)
-        stats = get_stats(time_range=time_range)
+        logs = es_client.get_logs(time_range=time_range, search_query=search_query)
+        stats = es_client.get_stats(time_range=time_range)
         
         # Pass configuration to template
         config = {
