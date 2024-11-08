@@ -10,7 +10,7 @@
 + Check các bộ rules bắt buộc !!!!!!! ko được disable
 + commit file .disabled/enabled
 + limit max log query by time
-
++ check l?i css ghi dè
 
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab

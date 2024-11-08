@@ -43,7 +43,6 @@
             </ul>
         </div>
     </div>
-
     <!-- Logs Table -->
     <div class="logs-section">
         <table class="logs-table">
@@ -61,17 +60,70 @@
             <tbody>
                 {% for log in logs %}
                 <tr class="severity-{{ log.severity|lower }}">
-                    <td>{{ log.timestamp }}</td>
-                    <td>{{ log.rule_id }}</td>
-                    <td>{{ log.severity }}</td>
-                    <td>{{ log.client_ip }}</td>
-                    <td>{{ log.request_method }}</td>
-                    <td>{{ log.request_uri }}</td>
-                    <td>{{ log.message }}</td>
+                    <td class="timestamp-cell">
+			{{ log.timestamp }}
+		    </td>
+                    <td class="ruleid-cell">
+			{{ log.rule_id }}
+		    </td>
+                    <td class="severity-cell">
+			{{ log.severity }}
+		    </td>
+                    <td class="ip-cell">
+			{{ log.client_ip }}
+		    </td>
+                    <td class="method-cell">
+			{{ log.request_method }}
+		    </td>
+                    <td class="url-cell">
+			{{ log.request_uri }}
+		    </td>
+                    <td class="msg-cell">
+			{{ log.message }}
+		    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+  function wrapUrlsInDetails() {
+    const urlCells = document.querySelectorAll('.logs-table td.url-cell'); // Select url column cells
+
+    urlCells.forEach(cell => {
+      const url = cell.textContent.trim();
+      if (url.length > 50) { // Adjust threshold as needed
+	cell.classList.add('url-cell');
+
+        // Create truncated version (first 50 chars + ...)
+        const truncated = url.substring(0, 50);
+
+        // Create details structure
+        cell.innerHTML = `
+            <details>
+                <summary>${truncated}</summary>
+                <div class="full-url">${url}</div>
+            </details>
+        `;
+	// Add toggle event listener
+        const details = cell.querySelector('details');
+        const summary = cell.querySelector('summary');
+        const originalText = summary.textContent;
+
+        details.addEventListener('toggle', (e) => {
+          if (details.open) {
+            summary.textContent = 'Close';
+          } else {
+            summary.textContent = originalText;
+          }
+        });
+      }
+    });
+  }
+  // Run when page loads
+  document.addEventListener('DOMContentLoaded', wrapUrlsInDetails);
+</script>
+
 {% endblock %}
