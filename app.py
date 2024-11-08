@@ -1,5 +1,5 @@
 from flask import Flask
-from routes import home, configuration, rules, dashboard, auth
+from routes import home, configuration, rules, dashboard, auth, logs
 from libs.database import db, login_manager
 from models import User  # Create this file and class
 from flask_moment import Moment
@@ -20,6 +20,7 @@ login_manager.login_view = 'auth.login'
 # Register Blueprints
 app.register_blueprint(home.bp)
 app.register_blueprint(dashboard.bp)
+app.register_blueprint(logs.bp)
 app.register_blueprint(rules.bp)
 app.register_blueprint(configuration.bp)
 app.register_blueprint(auth.bp)

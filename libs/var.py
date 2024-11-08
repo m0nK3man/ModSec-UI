@@ -12,9 +12,9 @@ GIT_AUTHOR_EMAIL = "modsec-ui@bravo.com"
 
 # Elasticsearch Configuration
 ELASTICSEARCH_CONFIG = {
-    'HOST': os.getenv('ELASTICSEARCH_HOST', 'http://localhost:9200'),
+    'HOST': os.getenv('ELASTICSEARCH_HOST', 'https://172.16.20.51:9200'),
     'USER': os.getenv('ELASTICSEARCH_USER', 'elastic'),
-    'PASSWORD': os.getenv('ELASTICSEARCH_PASSWORD', ''),
+    'PASSWORD': os.getenv('ELASTICSEARCH_PASSWORD', 'CJ0lHpS2dVnUOgE'),
     'INDEX_PATTERN': os.getenv('ELASTICSEARCH_INDEX', 'modsec-*'),
     'MAX_RESULTS': int(os.getenv('ELASTICSEARCH_MAX_RESULTS', 100)),
 }
@@ -40,9 +40,9 @@ SEVERITY_LEVELS = {
     'INFO': '#33b5e5'
 }
 
-# Dashboard configuration
-DASHBOARD_CONFIG = {
-    'REFRESH_INTERVAL': int(os.getenv('DASHBOARD_REFRESH_INTERVAL', 30)),  # in seconds
+# Logs configuration
+LOGS_CONFIG = {
+    'REFRESH_INTERVAL': int(os.getenv('LOGS_REFRESH_INTERVAL', 30)),  # in seconds
     'DEFAULT_TIME_RANGE': '15m',
     'STATS_REFRESH_INTERVAL': int(os.getenv('STATS_REFRESH_INTERVAL', 60)),  # in seconds
     'MAX_STATS_ITEMS': int(os.getenv('MAX_STATS_ITEMS', 5))

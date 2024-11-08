@@ -1,7 +1,7 @@
 # libs/elasticsearch_client.py
 from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
-from libs.var import ELASTICSEARCH_CONFIG, TIME_RANGES, DASHBOARD_CONFIG
+from libs.var import ELASTICSEARCH_CONFIG, TIME_RANGES, LOGS_CONFIG
 
 class ElasticsearchClient:
     def __init__(self):
@@ -10,12 +10,14 @@ class ElasticsearchClient:
             basic_auth=(
                 ELASTICSEARCH_CONFIG['USER'],
                 ELASTICSEARCH_CONFIG['PASSWORD']
-            )
+            ),
+            verify_certs=False,
+            ssl_show_warn=False
         )
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=DASHBOARD_CONFIG['DEFAULT_TIME_RANGE'], 
+    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], 
                 size=None, search_query=None):
         """
         Query Elasticsearch for ModSecurity logs
@@ -91,7 +93,7 @@ class ElasticsearchClient:
             print(f"Error querying Elasticsearch: {e}")
             return []
 
-    def get_stats(self, time_range=DASHBOARD_CONFIG['DEFAULT_TIME_RANGE']):
+    def get_stats(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE']):
         """
         Get statistics about ModSecurity events
         """
@@ -119,19 +121,19 @@ class ElasticsearchClient:
                         "severity_breakdown": {
                             "terms": {
                                 "field": "severity.keyword",
-                                "size": DASHBOARD_CONFIG['MAX_STATS_ITEMS']
+                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         },
                         "top_rules": {
                             "terms": {
                                 "field": "rule_id.keyword",
-                                "size": DASHBOARD_CONFIG['MAX_STATS_ITEMS']
+                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         },
                         "top_ips": {
                             "terms": {
                                 "field": "client_ip.keyword",
-                                "size": DASHBOARD_CONFIG['MAX_STATS_ITEMS']
+                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         }
                     },
