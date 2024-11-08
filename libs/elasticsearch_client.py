@@ -17,8 +17,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'],
-                 size=None, search_query=None):
+    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=None, search_query=None):
         """
         Query Elasticsearch for ModSecurity logs
         """
@@ -56,7 +55,7 @@ class ElasticsearchClient:
                 query["bool"]["must"].append({
                     "query_string": {
                         "query": search_query,
-                        "fields": ["transaction.client_ip", "transaction.request.uri"]
+                        "fields": ["message", "rule_id", "request.headers.host", "client_ip", "request.uri"]
                     }
                 })
     
@@ -74,18 +73,19 @@ class ElasticsearchClient:
             logs = []
             for hit in response['hits']['hits']:
                 source = hit['_source']
-                log_entry = {
-                    'timestamp': source.get('@timestamp', 'N/A'),
-                    'rule_id': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('file', 'N/A'),
-                    'message': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('data', 'N/A'),
-                    'severity': source.get('transaction', {}).get('messages', [{}])[0].get('details', {}).get('severity', 'N/A'),
-                    'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
-                    'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
-                    'request_method': source.get('transaction', {}).get('request', {}).get('method', 'N/A'),
-                    'hostname': source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', 'N/A')
-                }
-    
-                logs.append(log_entry)
+                # Extracting details from the log structure
+                messages = source.get('transaction', {}).get('messages', [])
+                for msg in messages:
+                    log_entry = {
+                        'timestamp': source.get('@timestamp'),
+                        'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
+                        'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
+                        'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
+                        'request_method': source.get('transaction', {}).get('request', {}).get('method', 'N/A'),
+                        'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
+                        'message': msg.get('message', 'N/A')  # Message from the transaction
+                    }
+                    logs.append(log_entry)
     
             return logs
     
