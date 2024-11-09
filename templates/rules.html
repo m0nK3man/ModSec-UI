@@ -12,7 +12,6 @@
 
     {% if all_rules|selectattr('changed', 'true')|list %}
     <form action="{{ url_for('rules.commit_changes_view') }}" method="post" class="commit-form">
-        <!-- Preserve view mode when committing -->
         <input type="hidden" name="view_mode" value="{{ view_mode }}">
         <button type="submit"
                 class="button commit {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
@@ -27,27 +26,35 @@
     <h2>All Rules</h2>
     <table>
         <tr>
-            <th style="display:none;">ID</th> <!-- ID hidden but used for sorting -->
             <th>Rule Code</th>
             <th>Rule Name</th>
-            <th>Content</th> <!-- Changed from File Status to Content -->
-            <th>Status</th> <!-- New column for Status -->
+            <th>Content</th>
+            <th>Status</th>
             <th>Last Modified</th>
             {% if view_mode == 'edit' %}
             <th>Actions</th>
             {% endif %}
         </tr>
-        {% for rule in all_rules|sort(attribute='id') %}
+        {% for rule in all_rules|sort(attribute='rule_code') %}
         <tr class="{% if rule.changed %}changed{% endif %}">
-            <td style="display:none;">{{ rule.id }}</td> <!-- Hidden ID column -->
             <td>{{ rule.rule_code }}</td>
             <td>{{ rule.rule_name }}</td>
             <td class="{{ 'modified' if rule.changed }}">{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
-            <td>{{ 'Enabled' if rule.enabled else 'Disabled' }}</td> <!-- Display Enabled/Disabled status -->
+            <td>
+                {% if view_mode == 'edit' %}
+                <a href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}" 
+                   class="button {% if rule.enabled %}status-enabled{% else %}status-disabled{% endif %}">
+                    {{ 'Enabled' if rule.enabled else 'Disabled' }}
+                </a>
+                {% else %}
+                <span class="status-text {% if rule.enabled %}status-enabled{% else %}status-disabled{% endif %}">
+                    {{ 'Enabled' if rule.enabled else 'Disabled' }}
+                </span>
+                {% endif %}
+            </td>
             <td>{{ rule.last_modified.strftime('%Y-%m-%d %H:%M:%S') if rule.last_modified else 'N/A' }}</td>
             {% if view_mode == 'edit' %}
             <td>
-                <a class="button" href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}">Toggle</a> |
                 <a class="button" href="{{ url_for('rules.edit_rule', filename=rule.filename) }}">Edit</a>
             </td>
             {% endif %}

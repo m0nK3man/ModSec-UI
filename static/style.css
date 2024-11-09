@@ -31,20 +31,20 @@ a {
     margin: 0 auto;
     padding: 25px;
 }
-
 .button {
-    padding: 5px;
-    cursor: pointer;
-    background-color: #3a70ff;
-    border: 1px solid #1652F0;
+    padding: 8px 16px;
+    border: none;
     border-radius: 4px;
-    color: #fff;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
     font-size: 14px;
     text-decoration: none;
 }
 
 .button:hover {
-    opacity: 90%;
+    background-color: #0056b3;
 }
 
 .button.commit {
@@ -52,6 +52,11 @@ a {
     top: 85px;
     right: 15px;
     background: #00b700;
+    background-color: #28a745;
+}
+
+.button.commit:hover {
+    background-color: #218838;
 }
 
 .mode-toggle {
@@ -173,6 +178,7 @@ a {
 }
 
 .rule-block table, th, td {
+    border: 1px solid black;
     padding: 10px;
 }
 
@@ -184,12 +190,33 @@ a {
     color: #007cff;
 }
 .rule-block table td:last-child {
-    min-width: 130px;
+    min-width: 60px;
 }
 
 .rule-block .modified {
   background: #ffaf1b;
   font-style: italic;
+}
+
+.button.status-enabled {
+    background-color: #00b700;  /* Using the same green as your .button.active */
+    border-color: #009900;
+}
+
+.button.status-disabled {
+    background-color: #ff3333;
+    border-color: #cc0000;
+}
+
+/* For view mode status text */
+.status-text.status-enabled {
+    color: #00b700;
+    font-weight: bold;
+}
+
+.status-text.status-disabled {
+    color: #ff3333;
+    font-weight: bold;
 }
 
 /* # ==================== Logs ==================== */
@@ -339,28 +366,6 @@ a {
 .severity-warning { background-color: #fff8e6; }
 .severity-notice { background-color: #e6ffe6; }
 .severity-info { background-color: #e6f7ff; }
-
-.button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.button:hover {
-    background-color: #0056b3;
-}
-
-.button.commit {
-    background-color: #28a745;
-}
-
-.button.commit:hover {
-    background-color: #218838;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
