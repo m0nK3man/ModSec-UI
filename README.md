@@ -6,19 +6,20 @@
   - Quản lý CD qua runner
   - Runner xử lý config (Sync config cho nginx)
 
-+ Lấy log từ ELK
 + Check các bộ rules bắt buộc !!!!!!! ko được disable
 + commit file .disabled/enabled
 + limit max log query by time
 + check l?i css ghi dè
++ check l?i hàm search logs elastic
++ s?a l?i track config change gi?ng rules
+
 
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab
 
-+ Report summary (home tab)
++ Report summary (dashboard tab)
 
 + Logs nav (access,error,audit,..)
-+ Save/Commit button (Rule tab)
 + Get rules from db
   - Lấy thông tin info,status từ db parse ra fe
   - Bắt sự kiện change file/rename push to db
@@ -26,10 +27,8 @@
   - Sort by id
   - Nếu status file là editing thì user khác lock edit
   - Xử lý push realtime status to existing user
-+ search log
 
 + setup guide
-+ running service
 
 ## Setup
 
