@@ -31,7 +31,8 @@ def commit_changes():
         modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
 
         if not modified_entries:
-            return True  # No changes to commit
+            pass
+            #return True  # No changes to commit
 
         repo = _get_repo()
         print("Called commit_changes()")
