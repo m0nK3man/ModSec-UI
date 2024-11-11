@@ -42,16 +42,11 @@ def dashboard():
 @bp.route('/commit_changes', methods=['POST'])
 @login_required
 def commit_changes_view():
-    try:
-        if commit_changes():
-            if push_changes():
-                flash("Changes pushed successfully!", "success")
-                session['original_mode'] = get_current_mode()
-            else:
-                flash("Changes committed, but push failed!", "error")
+    if commit_changes():
+        if push_changes():
+            flash("Changes pushed successfully!","success")
         else:
-            flash("Error committing changes!", "error")
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
-    
+            flash("Changes committed, but push failed!","error")
+    else:
+        flash("Error committing changes!", "error")
     return redirect(url_for('dashboard.dashboard'))
