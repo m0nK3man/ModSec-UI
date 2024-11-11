@@ -13,7 +13,7 @@ def push_changes():
         # Ensure the remote is set (you might want to customize the remote name)
         remote_name = 'origin'
         remote = repo.remote(remote_name)
-        
+        print(2)
         # Push changes to the remote repository
         remote.push()
         print(f"Successfully pushed changes to {remote_name}.")
@@ -34,19 +34,9 @@ def commit_changes():
             return True  # No changes to commit
 
         repo = _get_repo()
-
+        print(1)
         # Add changed files to git
-        for entry in modified_entries:
-            # Determine the file path based on rule_code
-            if entry.rule_code == 'CONFIG_MODSEC':
-                file_path = MODSECURITY_CONF_PATH
-            elif entry.rule_code == 'CONFIG_CRS':
-                file_path = CRS_CONF_PATH
-            else:
-                file_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
-
-            # Add the file to the git index
-            repo.index.add([file_path])
+        os.system("git add -A")  # Add the file to the git index
 
         # Create commit
         commit_message = _create_commit_message(modified_entries)
@@ -60,11 +50,11 @@ def commit_changes():
         for entry in modified_entries:
             # Determine the file path again for each entry
             if entry.rule_code == 'CONFIG_MODSEC':
-                file_path = MODSECURITY_CONF_PATH
+                file_path = os.path.join(LOCAL_CONF_PATH, "modsecurity.conf")
             elif entry.rule_code == 'CONFIG_CRS':
-                file_path = CRS_CONF_PATH
+                file_path = os.path.join(LOCAL_CONF_PATH, "crs/crs-setup.conf")
             else:
-                file_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
+                file_path = os.path.join(LOCAL_CONF_PATH, "crs/rules", entry.rule_path)
 
             # Reset the modified flag and update content hash
             entry.is_modified = False

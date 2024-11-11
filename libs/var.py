@@ -1,6 +1,7 @@
 import os
 
 # config.py
+LOCAL_CONF_PATH = "local-conf/"
 MODSECURITY_CONF_PATH = 'local-conf/modsecurity.conf'
 CRS_CONF_PATH = 'local-conf/crs/crs-setup.conf'
 MODSECURITY_RULES_DIR = 'local-conf/crs/rules'
