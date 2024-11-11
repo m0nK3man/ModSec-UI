@@ -32,7 +32,6 @@ def commit_changes():
 
         if not modified_entries:
             pass
-            #return True  # No changes to commit
 
         repo = _get_repo()
         print("Called commit_changes()")
