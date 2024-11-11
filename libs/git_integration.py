@@ -37,7 +37,7 @@ def commit_changes():
         print(1)
         # Add changed files to git
         os.system("git add -A")  # Add the file to the git index
-
+        os.system("git status")
         # Create commit
         commit_message = _create_commit_message(modified_entries)
         repo.index.commit(
