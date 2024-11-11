@@ -14,7 +14,7 @@
     <form action="{{ url_for('rules.commit_changes_view') }}" method="post" class="commit-form">
         <input type="hidden" name="view_mode" value="{{ view_mode }}">
         <button type="submit"
-                class="button commit {% if not (enabled_rules|selectattr('changed', 'true')|list + disabled_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
+                class="button commit {% if not (all_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}"
                 {% if not (all_rules|selectattr('changed', 'true')|list) %}disabled{% endif %}>
             Save Changes
         </button>
