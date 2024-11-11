@@ -55,11 +55,21 @@ def commit_changes():
             author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
             committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
         )
-
+        
         # Reset modification flags
         for entry in modified_entries:
-            entry.is_modified = False  # Reset modified flag
-            entry.content_hash = hashlib.md5(open(file_path, "rb").read()).hexdigest()  # Update hash
+            # Determine the file path again for each entry
+            if entry.rule_code == 'CONFIG_MODSEC':
+                file_path = MODSECURITY_CONF_PATH
+            elif entry.rule_code == 'CONFIG_CRS':
+                file_path = CRS_CONF_PATH
+            else:
+                file_path = os.path.join(MODSECURITY_RULES_DIR, entry.rule_path)
+
+            # Reset the modified flag and update content hash
+            entry.is_modified = False
+            with open(file_path, "rb") as f:
+                entry.content_hash = hashlib.md5(f.read()).hexdigest()
 
         session.commit()
         return True
