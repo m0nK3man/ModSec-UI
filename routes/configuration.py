@@ -15,6 +15,7 @@ def configuration():
     crs_conf = read_crs_conf()
     return render_template('configuration.html', 
                          modsecurity_conf=modsecurity_conf, 
+                         save_change=modsecurity_conf.changed or crs_conf.changed,
                          crs_conf=crs_conf,
                          view_mode=view_mode)
 
