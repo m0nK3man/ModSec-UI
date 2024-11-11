@@ -17,8 +17,7 @@ def dashboard():
         # Get the original mode from the session, or set it if not present
         if 'original_mode' not in session:
             session['original_mode'] = current_mode
-
-        mode_changed = current_mode != session['original_mode']
+            mode_changed = current_mode != session['original_mode']
         
         if request.method == 'POST':
             if 'mode' in request.form:
@@ -37,7 +36,7 @@ def dashboard():
     
     return render_template('dashboard.html', 
                          current_mode=current_mode,
-                         mode_changed=mode_changed)
+                         save_change=mode_changed)
 
 @bp.route('/commit_changes', methods=['POST'])
 @login_required
