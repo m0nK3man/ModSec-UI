@@ -24,9 +24,10 @@
   - Lấy thông tin info,status từ db parse ra fe
   - Bắt sự kiện change file/rename push to db
   - Nếu rule disable rename to .disable
-  - Sort by id
+  - Sort by rulecode
   - Nếu status file là editing thì user khác lock edit
   - Xử lý push realtime status to existing user
+  - S?a l?i absolute config path
 
 + setup guide
 
@@ -44,7 +45,7 @@ systemctl enable postgresql
 
 ```sh
 cd modsec-ui
-ln -s $(pwd)/modsec_ui.service /etc/systemd/system/modsec_ui.service
+cp $(pwd)/modsec_ui.service /etc/systemd/system/modsec_ui.service
 systemctl daemon-reload
 systemctl start modsec_ui.service
 systemctl enable modsec_ui.service
