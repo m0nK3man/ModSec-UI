@@ -12,7 +12,7 @@ def read_modsecurity_conf():
             content = f.read()
         
         # Track changes using the config tracking function
-        track_config_change(session, 'modsecurity', content)
+#        track_config_change(session, 'modsecurity', content)
         
         # Get config status from database
         config = session.query(ModsecRule).filter_by(rule_code='CONFIG_MODSEC').first()
@@ -32,7 +32,7 @@ def read_crs_conf():
             content = f.read()
         
         # Track changes using the config tracking function
-        track_config_change(session, 'crs', content)
+#        track_config_change(session, 'crs', content)
         
         # Get config status from database
         config = session.query(ModsecRule).filter_by(rule_code='CONFIG_CRS').first()
