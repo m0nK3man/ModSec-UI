@@ -14,8 +14,15 @@ def rules():
     # Store the current view_mode in session
     session['view_mode'] = view_mode
     all_rules = list_rules()
+
+    save_change=False
+    for rule in all_rules:
+        if rule['changed']:
+            save_change=True
+    print(save_change)
     return render_template('rules.html', 
                          all_rules=all_rules,
+                         save_change=save_change,
                          view_mode=view_mode)
 
 @bp.route('/toggle_rule/<filename>')
