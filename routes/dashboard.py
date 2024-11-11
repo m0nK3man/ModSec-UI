@@ -43,9 +43,7 @@ def dashboard():
 @login_required
 def commit_changes_view():
     try:
-        commit_message = request.form.get('commit_message', 'Updated WAF configuration')
-        
-        if commit_changes(commit_message):
+        if commit_changes():
             if push_changes():
                 flash("Changes pushed successfully!", "success")
                 session['original_mode'] = get_current_mode()
