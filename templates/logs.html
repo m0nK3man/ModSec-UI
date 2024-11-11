@@ -53,7 +53,7 @@
                     <th>Severity</th>
                     <th>Client IP</th>
                     <th>Host</th>
-                    <th>URI</th>
+                    <th>Detail</th>
                     <th>Message</th>
                 </tr>
             </thead>
@@ -75,8 +75,8 @@
                     <td class="host-cell">
 			{{ log.request_host }}
 		    </td>
-                    <td class="url-cell">
-			{{ log.request_uri }}
+                    <td class="msg-cell">
+			{{ log.detail }}
 		    </td>
                     <td class="msg-cell">
 			{{ log.message }}
@@ -90,15 +90,15 @@
 
 <script>
   function wrapUrlsInDetails() {
-    const urlCells = document.querySelectorAll('.logs-table td.url-cell'); // Select url column cells
+    const urlCells = document.querySelectorAll('.logs-table td.msg-cell'); // Select url column cells
 
     urlCells.forEach(cell => {
-      const url = cell.textContent.trim();
-      if (url.length > 50) { // Adjust threshold as needed
+      const url = cell.innerHTML.trim();
+      if (url.length > 40) { // Adjust threshold as needed
 	cell.classList.add('url-cell');
 
-        // Create truncated version (first 50 chars + ...)
-        const truncated = url.substring(0, 50);
+        // Create truncated version (first 45 chars + ...)
+        const truncated = "▽ " + url.substring(0, 40);
 
         // Create details structure
         cell.innerHTML = `
@@ -110,13 +110,13 @@
 	// Add toggle event listener
         const details = cell.querySelector('details');
         const summary = cell.querySelector('summary');
-        const originalText = summary.textContent;
+        const originalText = summary.innerHTML;
 
         details.addEventListener('toggle', (e) => {
           if (details.open) {
-            summary.textContent = 'Close';
+            summary.innerHTML = "△";
           } else {
-            summary.textContent = originalText;
+            summary.innerHTML = originalText;
           }
         });
       }

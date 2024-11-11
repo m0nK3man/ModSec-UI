@@ -82,7 +82,7 @@ class ElasticsearchClient:
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
                         'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
                         'request_host': source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', 'N/A'),
-                        'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
+                        'detail': msg.get('details', {}).get('data', 'N/A'),
                         'message': msg.get('message', 'N/A')  # Message from the transaction
                     }
                     logs.append(log_entry)

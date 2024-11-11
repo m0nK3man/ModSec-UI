@@ -316,18 +316,17 @@ a {
 }
 
 .logs-table .ruleid-cell,
-.logs-table .severity-cell,
-.logs-table .host-cell {
+.logs-table .severity-cell{
     width: 80px; /* Adjust this value based on your needs */
     text-align: center;
 }
 
-.logs-table .ip-cell {
-    width: 130px; /* Adjust this value based on your needs */
+.logs-table .host-cell {
+    width: 220px; /* Adjust this value based on your needs */
 }
 
-.logs-table .url-cell {
-    max-width: 300px; /* Adjust this value based on your needs */
+.logs-table .ip-cell {
+    width: 130px; /* Adjust this value based on your needs */
 }
 
 .logs-table .msg-cell {
