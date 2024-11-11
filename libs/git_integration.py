@@ -13,7 +13,7 @@ def push_changes():
         # Ensure the remote is set (you might want to customize the remote name)
         remote_name = 'origin'
         remote = repo.remote(remote_name)
-        print(2)
+        print("Called push_changes()")
         # Push changes to the remote repository
         remote.push()
         print(f"Successfully pushed changes to {remote_name}.")
@@ -34,10 +34,10 @@ def commit_changes():
             return True  # No changes to commit
 
         repo = _get_repo()
-        print(1)
+        print("Called commit_changes()")
         # Add changed files to git
         os.system("git add -A")  # Add the file to the git index
-        os.system("git status")
+        
         # Create commit
         commit_message = _create_commit_message(modified_entries)
         repo.index.commit(
@@ -80,7 +80,7 @@ def _get_repo():
 
 def _create_commit_message(modified_entries):
     """Create a detailed commit message based on database changes"""
-    message = ["ModSecurity Configuration Update"]
+    message = [""]
 
     rules = [e for e in modified_entries if e.rule_code not in ['CONFIG_MODSEC', 'CONFIG_CRS']]
     configs = [e for e in modified_entries if e.rule_code in ['CONFIG_MODSEC', 'CONFIG_CRS']]
