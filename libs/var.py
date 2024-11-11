@@ -12,9 +12,9 @@ GIT_AUTHOR_EMAIL = "modsec-ui@bravo.com"
 
 # Elasticsearch Configuration
 ELASTICSEARCH_CONFIG = {
-    'HOST': os.getenv('ELASTICSEARCH_HOST', 'https://172.16.20.51:9200'),
+    'HOST': os.getenv('ELASTICSEARCH_HOST', 'https://172.16.20.31:9200'),
     'USER': os.getenv('ELASTICSEARCH_USER', 'elastic'),
-    'PASSWORD': os.getenv('ELASTICSEARCH_PASSWORD', 'CJ0lHpS2dVnUOgE'),
+    'PASSWORD': os.getenv('ELASTICSEARCH_PASSWORD', 'BravoSOC@2024'),
     'INDEX_PATTERN': os.getenv('ELASTICSEARCH_INDEX', 'modsec-*'),
     'MAX_RESULTS': int(os.getenv('ELASTICSEARCH_MAX_RESULTS', 100)),
 }

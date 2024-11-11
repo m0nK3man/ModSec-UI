@@ -81,7 +81,7 @@ class ElasticsearchClient:
                         'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
                         'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
-                        'request_method': source.get('transaction', {}).get('request', {}).get('method', 'N/A'),
+                        'request_host': source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', 'N/A'),
                         'request_uri': source.get('transaction', {}).get('request', {}).get('uri', 'N/A'),
                         'message': msg.get('message', 'N/A')  # Message from the transaction
                     }

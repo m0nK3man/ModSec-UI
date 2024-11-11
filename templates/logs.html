@@ -52,7 +52,7 @@
                     <th>Rule ID</th>
                     <th>Severity</th>
                     <th>Client IP</th>
-                    <th>Method</th>
+                    <th>Host</th>
                     <th>URI</th>
                     <th>Message</th>
                 </tr>
@@ -72,8 +72,8 @@
                     <td class="ip-cell">
 			{{ log.client_ip }}
 		    </td>
-                    <td class="method-cell">
-			{{ log.request_method }}
+                    <td class="host-cell">
+			{{ log.request_host }}
 		    </td>
                     <td class="url-cell">
 			{{ log.request_uri }}
