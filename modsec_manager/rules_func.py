@@ -20,17 +20,17 @@ def list_rules():
             if os.path.exists(rule_path):
                 with open(rule_path, "r") as f:
                     content = f.read()
-
+                
                 rule_info = {
                     'id': rule.id,
                     'rule_code': rule.rule_code,
                     'rule_name': rule.rule_name,
                     'filename': rule.rule_path,
                     'last_modified': rule.last_modified,  # Ensure this is passed
-                    'content': content,
-                    'enabled': rule.is_enabled,
-                    'modified': rule.is_modified,
-        		    'changed': rule.is_modified
+                    'content': content, # Use to calculate hash
+                    'modified': rule.is_modified, # Check content modified by hash
+                    'enabled': rule.is_enabled, # Current status
+                    'changed': rule.is_modified or (rule.is_enabled == rule.rule_path.endswith(".disable")) # Change if content is modified or current status != origin status
                 }
                 all_rules.append(rule_info)
 
@@ -57,21 +57,10 @@ def update_status(rule, filename, enable):
     # Determine the file path
     file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
 
-    # Enable or disable the rule based on the `enable` flag
     if enable:
-        # Enable the rule
-        if filename.endswith(".disable"):
-            new_filename = filename[:-8]  # Remove the '.disable' suffix
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
-            rule.rule_path = new_filename  # Update rule path in database
-            rule.is_enabled = True  # Update is_enabled status
+        rule.is_enabled = True  # Update is_enabled status
     else:
-        # Disable the rule
-        if not filename.endswith(".disable"):
-            new_filename = f"{filename}.disable"
-            os.rename(file_path, os.path.join(MODSECURITY_RULES_DIR, new_filename))
-            rule.rule_path = new_filename  # Update rule path in database
-            rule.is_enabled = False  # Update is_enabled status
+        rule.is_enabled = False  # Update is_enabled status
     return True
 
 def toggle_rule(filename, enable):
