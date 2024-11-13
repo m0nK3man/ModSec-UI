@@ -8,18 +8,18 @@ from functools import wraps
 from flask import current_app, jsonify
 import traceback
 
-def track_rule_change(session, rule_path, content):
+def track_rule_content(session, rule_path, content):
     """Track changes to rule files in the database"""
     rule = session.query(ModsecRule).filter_by(rule_path=rule_path).first()
 
     # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    track_change(session,rule,current_hash)
+    compare_content(session,rule,current_hash)
     
     return True
 
-def track_config_change(session, config_type, content):
+def track_config_content(session, config_type, content):
     """Track changes to configuration files in the database"""
     # Define config codes
     config_codes = {
@@ -33,14 +33,14 @@ def track_config_change(session, config_type, content):
     # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    track_change(session,config,current_hash)
+    compare_content(session,config,current_hash)
     
     return True
 
-def track_change(session, entry, current_hash):
+def compare_content(session, entry, current_hash):
     if entry:
         # Update modified state based on hash comparison
-        entry.is_modified = (entry.content_hash != current_hash)
+        entry.is_modified = (entry.content_hash != current_hash) # or entry.is_enabled != )
     else:
         # Logic to handle case where rule doesn't exist (optional)
         return False

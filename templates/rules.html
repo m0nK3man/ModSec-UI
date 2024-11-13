@@ -34,10 +34,10 @@
             {% endif %}
         </tr>
         {% for rule in all_rules|sort(attribute='rule_code') %}
-        <tr class="{% if rule.changed %}changed{% endif %}">
+        <tr class="{% if rule.modified %}changed{% endif %}">
             <td>{{ rule.rule_code }}</td>
             <td>{{ rule.rule_name }}</td>
-            <td class="{{ 'modified' if rule.changed }}">{{ 'Changed' if rule.changed else 'Unchanged' }}</td>
+            <td class="{{ 'modified' if rule.modified }}">{{ 'Modified' if rule.modified else 'Unchanged' }}</td>
             <td>
                 {% if view_mode == 'edit' %}
                 <a href="{{ url_for('rules.toggle_rule_view', filename=rule.filename) }}" 
