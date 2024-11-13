@@ -120,19 +120,19 @@ class ElasticsearchClient:
                     "aggs": {
                         "severity_breakdown": {
                             "terms": {
-                                "field": "severity.keyword",
+                                "field": "transaction.messages.details.severity.keyword",
                                 "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         },
                         "top_rules": {
                             "terms": {
-                                "field": "rule_id.keyword",
+                                "field": "transaction.messages.details.ruleId.keyword",
                                 "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         },
                         "top_ips": {
                             "terms": {
-                                "field": "client_ip.keyword",
+                                "field": "transaction.client_ip.keyword",
                                 "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                             }
                         }
