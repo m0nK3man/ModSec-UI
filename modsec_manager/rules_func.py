@@ -53,10 +53,7 @@ def save_rule(filename, content):
     finally:
         session.close()
 
-def update_status(rule, filename, enable):
-    # Determine the file path
-    file_path = os.path.join(MODSECURITY_RULES_DIR, filename)
-
+def update_status(rule, enable):
     if enable:
         rule.is_enabled = True  # Update is_enabled status
     else:
@@ -73,7 +70,7 @@ def toggle_rule(filename, enable):
         if rule is None:
             raise ValueError(f"No rule found with the filename {filename}")
 
-        update_status(rule, filename, enable)
+        update_status(rule, enable)
 
         # Commit the changes to the database
         session.commit()

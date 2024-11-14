@@ -23,10 +23,6 @@ def push_changes():
         print(f"Error pushing changes: {e}")
         return False
 
-def get_modified_entries(session):
-    """Retrieve all modified entries from the database."""
-    return session.query(ModsecRule).filter_by(is_modified=True).all()
-
 def commit_to_git(modified_entries):
     """Create a Git commit with a message based on modified entries."""
     repo = _get_repo()
@@ -53,12 +49,18 @@ def reset_modification_flags(modified_entries):
         with open(file_path, "rb") as f:
             entry.content_hash = hashlib.md5(f.read()).hexdigest()
 
+def reset_modification_flags2(modified_entries):
+    """Reset modification flags and update content hashes for modified entries."""
+    for entry in modified_entries:
+        # Determine the file path for each entry
+        print(entry.rule_path,'-',entry.is_enabled)
+
 def commit_changes():
     """Orchestrate the commit process for all modified entries."""
     session = Session()
     try:
         # Step 1: Get modified entries
-        modified_entries = get_modified_entries(session)
+        modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
         if not modified_entries:
             return False
 
@@ -72,7 +74,7 @@ def commit_changes():
 
         # Step 4: Reset modification flags and update content hashes
         reset_modification_flags(modified_entries)
-
+        reset_modification_flags2(modified_entries)
         # Step 5: Commit database transaction
         session.commit()
         return True
