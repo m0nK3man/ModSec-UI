@@ -57,11 +57,11 @@ def reset_modification_flags2(modified_entries):
         origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
 	
 	    # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
-        if entry.is_enabled and rule.rule_path.endswith(".disable"):
+        if rule.is_enabled and rule.rule_path.endswith(".disable"):
             new_rule_path = rule.rule_path[:-8] # Remove the '.disable' suffix
 		
     	# mismatch: if rule is disabled and rulepath is enable -> rulepath rename to disabled
-        if (not entry.is_enabled) and rule.rule_path.endswith(".conf"):
+        if (not rule.is_enabled) and rule.rule_path.endswith(".conf"):
             new_rule_path = f"{rule.rule_path}.disable" # Add the '.disable' suffix
 
         os.rename(origin_file_path, os.path.join(MODSECURITY_RULES_DIR, new_rule_path))
