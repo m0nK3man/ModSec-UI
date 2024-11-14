@@ -1,6 +1,6 @@
 import os
 from libs.database import Session
-from libs.utils import track_rule_content, update_is_modified
+from libs.utils import track_rule_content, update_is_modified_by_status
 from models import ModsecRule
 from libs.var import MODSECURITY_RULES_DIR
 
