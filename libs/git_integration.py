@@ -56,7 +56,7 @@ def rename_filepath_with_status(modified_entries):
     for rule in modified_entries:
         # Determine the file path for each entry
         origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
-	
+        new_rule_path=rule.rule_path	
 	    # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
         if rule.is_enabled and rule.rule_path.endswith(".disable"):
             new_rule_path = rule.rule_path[:-8] # Remove the '.disable' suffix
