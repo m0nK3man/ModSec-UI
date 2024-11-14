@@ -47,7 +47,7 @@ def update_is_modified(session, entry, current_hash):
     session.commit()  # Commit the change to is_modified only
     return True
 
-def update_is_modified(session, entry):
+def update_is_modified_by_status(session, entry):
     if entry:
         # Update modified state based on hash comparison
         entry.is_modified = entry.is_modified or (entry.is_enabled == entry.rule_path.endswith(".disable"))

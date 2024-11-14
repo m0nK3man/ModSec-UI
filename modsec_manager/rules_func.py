@@ -30,7 +30,7 @@ def list_rules():
                     'content': content, # Use to calculate hash
                     'modified': rule.is_modified, # Check content modified by hash
                     'enabled': rule.is_enabled, # Current status
-                    'changed': rule.is_modified or (rule.is_enabled == rule.rule_path.endswith(".disable")) # Change if content is modified or current status != origin status
+                    'changed': rule.is_modified #or (rule.is_enabled == rule.rule_path.endswith(".disable")) # Change if content is modified or current status != origin status
                 }
                 all_rules.append(rule_info)
 
@@ -71,7 +71,7 @@ def toggle_rule(filename, enable):
             raise ValueError(f"No rule found with the filename {filename}")
 
         update_status(rule, enable)
-        update_is_modified(session, rule)
+        update_is_modified_by_status(session, rule)
         # Commit the changes to the database
         session.commit()
 
