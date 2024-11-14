@@ -93,30 +93,18 @@
     const expandCells = document.querySelectorAll('.logs-table td.msg-cell'); // Select expand column cells
 
     expandCells.forEach(cell => {
-      const url = cell.innerHTML.trim();
-      if (url.length > 40) { // Adjust threshold as needed
-        // Create truncated version (first 45 chars + ...)
-        const truncated = "▽ " + url.substring(0, 40);
-
+      const fullText = cell.innerText.trim();
+      const separatorIndex = fullText.indexOf('---');
+      if (separatorIndex !== -1) {
+	const MSGText = fullText.substring(0, separatorIndex).trim();
+	const DetailsText = fullText.substring(separatorIndex + 3).trim();
         // Create details structure
         cell.innerHTML = `
             <details>
-                <summary>${truncated}</summary>
-                <div class="full-msg">${url}</div>
-            </details>
+                <summary>▽ MSG: ${MSGText}</summary>
+       		<div class="full-msg">---<br>Details:<br>${DetailsText}</div>
+       	    </details>
         `;
-	// Add toggle event listener
-        const details = cell.querySelector('details');
-        const summary = cell.querySelector('summary');
-        const originalText = summary.innerHTML;
-
-        details.addEventListener('toggle', (e) => {
-          if (details.open) {
-            summary.innerHTML = "△";
-          } else {
-            summary.innerHTML = originalText;
-          }
-        });
       }
     });
   }
