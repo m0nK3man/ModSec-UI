@@ -17,7 +17,7 @@ def rules():
 
     save_change=False
     for rule in all_rules:
-        if rule['changed']:
+        if rule['modified']:
             save_change=True
     return render_template('rules.html',
                          all_rules=all_rules,

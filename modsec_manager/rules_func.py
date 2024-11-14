@@ -28,9 +28,9 @@ def list_rules():
                     'filename': rule.rule_path,
                     'last_modified': rule.last_modified,  # Ensure this is passed
                     'content': content, # Use to calculate hash
-                    'modified': rule.is_content_change, # Check content modified by hash
+                    'content_change': rule.is_content_change, # Check content modified by hash
                     'enabled': rule.is_enabled, # Current status
-                    'changed': rule.is_modified # is_modified = is_content_change + rule.is_enabled mismatch
+                    'modified': rule.is_modified # is_modified = is_content_change + rule.is_enabled mismatch
                 }
                 all_rules.append(rule_info)
 
