@@ -23,44 +23,57 @@ def push_changes():
         print(f"Error pushing changes: {e}")
         return False
 
+def get_modified_entries(session):
+    """Retrieve all modified entries from the database."""
+    return session.query(ModsecRule).filter_by(is_modified=True).all()
+
+def commit_to_git(modified_entries):
+    """Create a Git commit with a message based on modified entries."""
+    repo = _get_repo()
+    commit_message = _create_commit_message(modified_entries)
+    repo.index.commit(
+        commit_message,
+        author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
+        committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
+    )
+
+def reset_modification_flags(modified_entries):
+    """Reset modification flags and update content hashes for modified entries."""
+    for entry in modified_entries:
+        # Determine the file path for each entry
+        if entry.rule_code == 'CONFIG_MODSEC':
+            file_path = os.path.join(LOCAL_CONF_PATH, "modsecurity.conf")
+        elif entry.rule_code == 'CONFIG_CRS':
+            file_path = os.path.join(LOCAL_CONF_PATH, "crs/crs-setup.conf")
+        else:
+            file_path = os.path.join(LOCAL_CONF_PATH, "crs/rules", entry.rule_path)
+
+        # Reset the modified flag and update content hash
+        entry.is_modified = False
+        with open(file_path, "rb") as f:
+            entry.content_hash = hashlib.md5(f.read()).hexdigest()
+
 def commit_changes():
-    """Commit all pending changes to Git repository"""
+    """Orchestrate the commit process for all modified entries."""
     session = Session()
     try:
-        # Get all modified rules and configs
-        modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
-
+        # Step 1: Get modified entries
+        modified_entries = get_modified_entries(session)
         if not modified_entries:
-            pass
+            return False
 
-        repo = _get_repo()
         print("Called commit_changes()")
-        # Add changed files to git
-        os.system("git add -A")  # Add the file to the git index
-        
-        # Create commit
-        commit_message = _create_commit_message(modified_entries)
-        repo.index.commit(
-            commit_message,
-            author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
-            committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
-        )
-        
-        # Reset modification flags
-        for entry in modified_entries:
-            # Determine the file path again for each entry
-            if entry.rule_code == 'CONFIG_MODSEC':
-                file_path = os.path.join(LOCAL_CONF_PATH, "modsecurity.conf")
-            elif entry.rule_code == 'CONFIG_CRS':
-                file_path = os.path.join(LOCAL_CONF_PATH, "crs/crs-setup.conf")
-            else:
-                file_path = os.path.join(LOCAL_CONF_PATH, "crs/rules", entry.rule_path)
 
-            # Reset the modified flag and update content hash
-            entry.is_modified = False
-            with open(file_path, "rb") as f:
-                entry.content_hash = hashlib.md5(f.read()).hexdigest()
+        # Step 2: Stage files
+        os.system("git add -A")
 
+        # Step 3: Commit to Git
+        commit_to_git(modified_entries)
+
+        # Step 4: Reset modification flags and update content hashes
+        reset_modification_flags(modified_entries)
+
+        # Step 5: Commit database transaction
         session.commit()
         return True
 
@@ -69,6 +82,7 @@ def commit_changes():
         return False
     finally:
         session.close()
+
 
 def _get_repo():
     """Initialize or get the Git repository"""
