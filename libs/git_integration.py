@@ -81,15 +81,15 @@ def commit_changes():
         if not modified_entries:
             return False
 
-        # Step 2: Stage files
-        os.system("git add -A")
-
-        # Step 3: Commit to Git
-        commit_to_git(modified_entries)
-
-        # Step 4: Handle logic after commit
+        # Step 2: Handle logic before commit
         update_content_hash(modified_entries)
         rename_filepath_with_status(modified_entries)
+
+        # Step 3: Stage files
+        os.system("git add -A")
+
+        # Step 4: Commit to Git
+        commit_to_git(modified_entries)
 
         # Step 5: Commit database transaction
         reset_modification_flags(modified_entries)
