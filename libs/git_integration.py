@@ -34,7 +34,11 @@ def commit_to_git(modified_entries):
     )
 
 def reset_modification_flags(modified_entries):
-    """Reset modification flags and update content hashes for modified entries."""
+    for entry in modified_entries:
+        entry.is_modified = False
+
+def update_content_hash(modified_entries):
+    """Update content hashes for modified entries."""
     for entry in modified_entries:
         # Determine the file path for each entry
         if entry.rule_code == 'CONFIG_MODSEC':
@@ -44,16 +48,13 @@ def reset_modification_flags(modified_entries):
         else:
             file_path = os.path.join(LOCAL_CONF_PATH, "crs/rules", entry.rule_path)
 
-        # Reset the modified flag and update content hash
-        entry.is_modified = False
         with open(file_path, "rb") as f:
             entry.content_hash = hashlib.md5(f.read()).hexdigest()
 
-def reset_modification_flags2(modified_entries):
-    """Reset modification flags and update content hashes for modified entries."""
+def rename_filepath_with_status(modified_entries):
+    """Rename filepath with status for modified entries."""
     for rule in modified_entries:
         # Determine the file path for each entry
-        print('Before:',rule.rule_path,'-',rule.is_enabled)
         origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
 	
 	    # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
@@ -66,7 +67,6 @@ def reset_modification_flags2(modified_entries):
 
         os.rename(origin_file_path, os.path.join(MODSECURITY_RULES_DIR, new_rule_path))
         rule.rule_path = new_rule_path  # Update rule path in database
-        print('After:',rule.rule_path,'-',rule.is_enabled)
 
 def commit_changes():
     """Orchestrate the commit process for all modified entries."""
@@ -86,10 +86,12 @@ def commit_changes():
         # Step 3: Commit to Git
         commit_to_git(modified_entries)
 
-        # Step 4: Reset modification flags and update content hashes
-        reset_modification_flags(modified_entries)
-        reset_modification_flags2(modified_entries)
+        # Step 4: Handle logic after commit
+        update_content_hash(modified_entries)
+        rename_filepath_with_status(modified_entries)
+
         # Step 5: Commit database transaction
+        reset_modification_flags(modified_entries)
         session.commit()
         return True
 
