@@ -36,7 +36,7 @@ def logs():
         }
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('dashboard.dashboard'))
+        return redirect(url_for('logs.logs'))
     
     # Convert UTC time to UTC+7
     utc_zone = pytz.utc
