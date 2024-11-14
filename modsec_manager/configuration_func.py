@@ -19,7 +19,7 @@ def read_modsecurity_conf():
 
         return {
             'content': content,
-            'changed': config.is_modified if config else False
+            'changed': config.is_content_change if config else False
         }
     finally:
         session.close()
@@ -39,7 +39,7 @@ def read_crs_conf():
 
         return {
             'content': content,
-            'changed': config.is_modified if config else False
+            'changed': config.is_content_change if config else False
         }
     finally:
         session.close()

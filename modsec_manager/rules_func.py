@@ -1,6 +1,6 @@
 import os
 from libs.database import Session
-from libs.utils import track_rule_content, update_is_modified_by_status
+from libs.utils import track_rule_content, update_is_modified
 from models import ModsecRule
 from libs.var import MODSECURITY_RULES_DIR
 
@@ -28,9 +28,9 @@ def list_rules():
                     'filename': rule.rule_path,
                     'last_modified': rule.last_modified,  # Ensure this is passed
                     'content': content, # Use to calculate hash
-                    'modified': rule.is_modified, # Check content modified by hash
+                    'modified': rule.is_content_change, # Check content modified by hash
                     'enabled': rule.is_enabled, # Current status
-                    'changed': rule.is_modified #or (rule.is_enabled == rule.rule_path.endswith(".disable")) # Change if content is modified or current status != origin status
+                    'changed': rule.is_modified # is_modified = is_content_change + rule.is_enabled mismatch
                 }
                 all_rules.append(rule_info)
 
@@ -71,7 +71,7 @@ def toggle_rule(filename, enable):
             raise ValueError(f"No rule found with the filename {filename}")
 
         update_status(rule, enable)
-        update_is_modified_by_status(session, rule)
+        update_is_modified(session, rule)
         # Commit the changes to the database
         session.commit()
 

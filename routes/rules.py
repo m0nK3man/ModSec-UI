@@ -19,6 +19,7 @@ def rules():
     for rule in all_rules:
         if rule['changed']:
             save_change=True
+    print(rule['changed'],'-',rule['modified'])
     return render_template('rules.html',
                          all_rules=all_rules,
                          save_change=save_change,

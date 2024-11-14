@@ -15,7 +15,7 @@ def track_rule_content(session, rule_path, content):
     # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    update_is_modified_by_hash(session,rule,current_hash)
+    update_is_content_change(session,rule,current_hash)
     
     return True
 
@@ -33,24 +33,24 @@ def track_config_content(session, config_type, content):
     # Calculate current content hash
     current_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    update_is_modified_by_hash(session,config,current_hash)
+    update_is_content_change(session,config,current_hash)
     
     return True
 
-def update_is_modified_by_hash(session, entry, current_hash):
+def update_is_content_change(session, entry, current_hash):
     if entry:
         # Update modified state based on hash comparison
-        entry.is_modified = entry.is_modified or (entry.content_hash != current_hash)
+        entry.is_content_change = (entry.content_hash != current_hash)
     else:
         # Logic to handle case where rule doesn't exist (optional)
         return False
     session.commit()  # Commit the change to is_modified only
     return True
 
-def update_is_modified_by_status(session, entry):
+def update_is_modified(session, entry):
     if entry:
         # Update modified state based on hash comparison
-        entry.is_modified = entry.is_modified or (entry.is_enabled == entry.rule_path.endswith(".disable"))
+        entry.is_modified = entry.is_content_change or (entry.is_enabled == entry.rule_path.endswith(".disable"))
     else:
         # Logic to handle case where rule doesn't exist (optional)
         return False

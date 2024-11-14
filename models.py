@@ -19,6 +19,7 @@ class ModsecRule(db.Model):
     rule_path = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     content_hash = db.Column(db.String(32))
-    is_modified = db.Column(db.Boolean, default=False)
-    is_enabled = db.Column(db.Boolean, default=True)
+    is_content_change = db.Column(db.Boolean, default=False) # Current status of content hash mismatch
+    is_modified = db.Column(db.Boolean, default=False) # Final status of need change to commit
+    is_enabled = db.Column(db.Boolean, default=True) # Current status of file status
     last_modified = db.Column(db.DateTime, default=datetime.now)

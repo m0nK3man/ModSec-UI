@@ -36,6 +36,7 @@ def commit_to_git(modified_entries):
 def reset_modification_flags(modified_entries):
     for entry in modified_entries:
         entry.is_modified = False
+        entry.is_content_change = False
 
 def update_content_hash(modified_entries):
     """Update content hashes for modified entries."""

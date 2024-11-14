@@ -86,9 +86,10 @@ modsec_ui=# CREATE TABLE modsec_rules (
     rule_path TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content_hash TEXT NOT NULL,
-    is_modified BOOLEAN NOT NULL,
+    is_content_change BOOLEAN NOT NULL DEFAULT FALSE,
+    is_modified BOOLEAN NOT NULL DEFAULT FALSE,
     last_modified TIMESTAMPTZ NOT NULL,
-    is_enabled BOOLEAN NOT NULL
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 CREATE TABLE
 
