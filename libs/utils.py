@@ -40,7 +40,17 @@ def track_config_content(session, config_type, content):
 def update_is_modified(session, entry, current_hash):
     if entry:
         # Update modified state based on hash comparison
-        entry.is_modified = (entry.content_hash != current_hash) or (entry.is_enabled == entry.rule_path.endswith(".disable"))
+        entry.is_modified = entry.is_modified or (entry.content_hash != current_hash)
+    else:
+        # Logic to handle case where rule doesn't exist (optional)
+        return False
+    session.commit()  # Commit the change to is_modified only
+    return True
+
+def update_is_modified(session, entry):
+    if entry:
+        # Update modified state based on hash comparison
+        entry.is_modified = entry.is_modified or (entry.is_enabled == entry.rule_path.endswith(".disable"))
     else:
         # Logic to handle case where rule doesn't exist (optional)
         return False

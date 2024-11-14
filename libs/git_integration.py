@@ -61,10 +61,11 @@ def commit_changes():
     try:
         # Step 1: Get modified entries
         modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
+        
+        print("Called commit_changes()")
+
         if not modified_entries:
             return False
-
-        print("Called commit_changes()")
 
         # Step 2: Stage files
         os.system("git add -A")

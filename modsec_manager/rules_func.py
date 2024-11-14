@@ -1,6 +1,6 @@
 import os
 from libs.database import Session
-from libs.utils import track_rule_content
+from libs.utils import track_rule_content, update_is_modified
 from models import ModsecRule
 from libs.var import MODSECURITY_RULES_DIR
 
@@ -71,7 +71,7 @@ def toggle_rule(filename, enable):
             raise ValueError(f"No rule found with the filename {filename}")
 
         update_status(rule, enable)
-
+        update_is_modified(session, rule)
         # Commit the changes to the database
         session.commit()
 
