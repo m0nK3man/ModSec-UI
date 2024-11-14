@@ -63,7 +63,7 @@ def edit_rule(filename):
 
     return render_template('rule_editor.html', rule=rule)
 
-@bp.route('/commit_changes', methods=['POST'])
+@bp.route('/commit_rules_changes', methods=['POST'])
 @login_required
 def commit_changes_view():
     if commit_changes():
