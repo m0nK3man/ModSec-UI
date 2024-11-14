@@ -28,6 +28,23 @@ def logs():
         logs = es_client.get_logs(time_range=time_range, search_query=search_query)
         stats = es_client.get_stats(time_range=time_range)
 
+        severity_mapping = {
+            '0': 'EMERGENCY',
+            '1': 'ALERT',
+            '2': 'CRITICAL',
+            '3': 'ERROR',
+            '4': 'WARNING',
+            '5': 'NOTICE',
+            '6': 'INFO',
+            '7': 'DEBUG'
+        }
+        
+        # mapping severity
+        for entry in stats['severity_breakdown']:
+            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
+        for log in logs:
+            log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
+
         # Pass configuration to template
         config = {
             'time_ranges': TIME_RANGES,
@@ -63,66 +80,3 @@ def convert_to_utc7(timestamp_str, utc_zone, target_zone):
     # Return the formatted timestamp
     return timestamp_utc7.strftime("%Y-%m-%d %H:%M:%S")
 
-@bp.route('/api/logs', methods=['GET'])
-@login_required
-def get_logs_api():
-    try:
-        time_range = request.args.get('time_range', LOGS_CONFIG['DEFAULT_TIME_RANGE'])
-        search_query = request.args.get('search', None)
-        size = request.args.get('size', LOGS_CONFIG['MAX_RESULTS'])
-
-        logs = get_logs(time_range=time_range, search_query=search_query, size=size)
-        return jsonify({
-            'status': 'success',
-            'data': logs,
-            'meta': {
-                'time_range': time_range,
-                'search_query': search_query,
-                'count': len(logs)
-            }
-        })
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
-@bp.route('/api/stats', methods=['GET'])
-@login_required
-def get_stats_api():
-    try:
-        time_range = request.args.get('time_range', LOGS_CONFIG['DEFAULT_TIME_RANGE'])
-        stats = get_stats(time_range=time_range)
-        return jsonify({
-            'status': 'success',
-            'data': stats,
-            'meta': {
-                'time_range': time_range
-            }
-        })
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
-@bp.route('/api/download_logs', methods=['GET'])
-@login_required
-def download_logs():
-    """Export logs as JSON file"""
-    try:
-        time_range = request.args.get('time_range', LOGS_CONFIG['DEFAULT_TIME_RANGE'])
-        search_query = request.args.get('search', None)
-        logs = get_logs(time_range=time_range, search_query=search_query)
-
-        response = current_app.response_class(
-            json.dumps(logs, indent=2),
-            mimetype='application/json',
-            headers={'Content-Disposition': f'attachment;filename=modsec_logs_{time_range}.json'}
-        )
-        return response
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500

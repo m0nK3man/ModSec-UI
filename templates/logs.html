@@ -21,8 +21,10 @@
         <div class="stat-card">
             <h3>Severity Breakdown</h3>
             <ul>
-                {% for severity in stats.severity_breakdown %}
-                <li>{{ severity.key }}: {{ severity.doc_count }}</li>
+                {% for severity_breakdown in stats.severity_breakdown %}
+                <li>
+		    <span class="severity-text">{{ severity_breakdown.severity }}</span>: {{ severity_breakdown.doc_count }}
+		</li>
                 {% endfor %}
             </ul>
         </div>

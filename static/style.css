@@ -360,11 +360,14 @@ a {
 }
 
 /* Severity-based row colors */
-.severity-critical { background-color: #ffe6e6; }
+.severity-emergency { background-color: #ffe6e6; }
+.severity-alert { background-color: #ffe6e6; }
+.severity-critical { background-color: #fff3e6; }
 .severity-error { background-color: #fff3e6; }
 .severity-warning { background-color: #fff8e6; }
-.severity-notice { background-color: #e6ffe6; }
-.severity-info { background-color: #e6f7ff; }
+.severity-info { background-color: #e6ffe6; }
+.severity-debug { background-color: #e6f7ff; }
+.severity-text { font-weight: bold; }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
