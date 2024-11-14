@@ -73,4 +73,4 @@ def commit_changes_view():
             flash("Changes committed, but push failed!","error") 
     else:
         flash("Error committing changes!", "error")
-    return redirect(url_for('home.home'))
+    return redirect(url_for('rules.rules'))
