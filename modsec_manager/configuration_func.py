@@ -10,10 +10,7 @@ def read_modsecurity_conf():
     try:
         with open(MODSECURITY_CONF_PATH, 'r') as f:
             content = f.read()
-        
-        # Track changes using the config tracking function
-#        track_config_content(session, 'modsecurity', content)
-        
+
         # Get config status from database
         config = session.query(ModsecRule).filter_by(rule_code='CONFIG_MODSEC').first()
 
@@ -30,10 +27,7 @@ def read_crs_conf():
     try:
         with open(CRS_CONF_PATH, 'r') as f:
             content = f.read()
-        
-        # Track changes using the config tracking function
-#        track_config_change(session, 'crs', content)
-        
+
         # Get config status from database
         config = session.query(ModsecRule).filter_by(rule_code='CONFIG_CRS').first()
 
