@@ -51,9 +51,9 @@ def reset_modification_flags(modified_entries):
 
 def reset_modification_flags2(modified_entries):
     """Reset modification flags and update content hashes for modified entries."""
-    for entry in modified_entries:
+    for rule in modified_entries:
         # Determine the file path for each entry
-        print('Before:',entry.rule_path,'-',entry.is_enabled)
+        print('Before:',rule.rule_path,'-',rule.is_enabled)
         origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
 	
 	    # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
@@ -66,7 +66,7 @@ def reset_modification_flags2(modified_entries):
 
         os.rename(origin_file_path, os.path.join(MODSECURITY_RULES_DIR, new_rule_path))
         rule.rule_path = new_rule_path  # Update rule path in database
-        print('After:',entry.rule_path,'-',entry.is_enabled)
+        print('After:',rule.rule_path,'-',rule.is_enabled)
 
 def commit_changes():
     """Orchestrate the commit process for all modified entries."""
