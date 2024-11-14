@@ -39,7 +39,7 @@ def dashboard():
                          current_mode=current_mode,
                          save_change=mode_changed)
 
-@bp.route('/commit_changes', methods=['POST'])
+@bp.route('/commit_dashboard_changes', methods=['POST'])
 @login_required
 def commit_changes_view():
     if commit_changes():
