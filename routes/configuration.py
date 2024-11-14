@@ -13,10 +13,11 @@ def configuration():
     session['view_mode'] = view_mode
     modsecurity_conf = read_modsecurity_conf()
     crs_conf = read_crs_conf()
-    
-    return render_template('configuration.html', 
-                         modsecurity_conf=modsecurity_conf, 
-                         save_change=False,
+    save_change = modsecurity_conf['changed'] or crs_conf['changed']
+
+    return render_template('configuration.html',
+                         modsecurity_conf=modsecurity_conf,
+                         save_change=save_change,
                          crs_conf=crs_conf,
                          view_mode=view_mode)
 
