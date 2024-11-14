@@ -95,8 +95,6 @@
     urlCells.forEach(cell => {
       const url = cell.innerHTML.trim();
       if (url.length > 40) { // Adjust threshold as needed
-	cell.classList.add('url-cell');
-
         // Create truncated version (first 45 chars + ...)
         const truncated = "▽ " + url.substring(0, 40);
 
