@@ -287,7 +287,7 @@ a {
 
 .logs-table {
     width: 100%;
-    border-collapse: collapse;
+    border-bottom: 2px solid #ccc;
     margin-top: 20px;
     background: #ffffff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -317,6 +317,7 @@ a {
 
 .logs-table .timestamp-cell {
     width: 150px; /* Adjust this value based on your needs */
+    min-width: 150px;
 }
 
 .logs-table .ruleid-cell,
@@ -387,6 +388,14 @@ a {
         display: block;
         overflow-x: auto;
     }
+}
+
+.pagination {
+    margin-top: 10px;
+}
+
+.pagination button {
+    margin: 0 5px;
 }
 
 /* # ==================== Configuration ==================== */

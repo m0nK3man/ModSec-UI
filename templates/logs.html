@@ -87,9 +87,14 @@
                 {% endfor %}
             </tbody>
         </table>
+	<div id="pagination" class="pagination">
+            <button class="button" id="prev" disabled>Previous</button>
+            <span id="page-info"></span>
+            <button class="button" id="next">Next</button>
+        </div>
     </div>
 </div>
-
+<script src="{{url_for('static', filename='page-pagination.js')}}"></script>
 <script>
   function wrapUrlsInDetails() {
     const expandCells = document.querySelectorAll('.logs-table td.msg-cell'); // Select expand column cells
