@@ -329,8 +329,8 @@ a {
 }
 
 .logs-table .host-cell {
-    max-width: 220px; /* Adjust this value based on your needs */
-    min-width: 200px;
+    max-width: 250px; /* Adjust this value based on your needs */
+    min-width: 220px;
 }
 
 .logs-table .expand-cell {
