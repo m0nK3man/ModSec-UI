@@ -95,10 +95,10 @@ COPY public.modsec_rules (id, rule_code, rule_name, rule_path, created_at, conte
 3	934	Application Attack Generic	REQUEST-934-APPLICATION-ATTACK-GENERIC.conf	2024-11-07 11:22:00.509864	0de43628698a32bfc4f3f08b5472672c	f	2024-11-07 11:22:00.509864+07	t	f
 9	911	Method Enforcement	REQUEST-911-METHOD-ENFORCEMENT.conf	2024-11-07 11:22:00.505408	51b8fc07a0516e94d581d775dfbec2d9	f	2024-11-07 11:22:00.505408+07	t	f
 22	901	Initialization	REQUEST-901-INITIALIZATION.conf	2024-11-07 11:22:00.504047	d0a50f90a3740174637b2ec0f2619b20	f	2024-11-11 14:48:45.993456+07	t	f
-25	900	Exclusion Rules Before Crs	REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf	2024-11-07 11:22:00.501399	ef54aaf92f8ff5bae5715e745aaad542	f	2024-11-11 14:48:36.212342+07	t	f
 10	913	Scanner Detection	REQUEST-913-SCANNER-DETECTION.conf	2024-11-07 11:22:00.505912	dca99889523543188ac48e68c84c63d8	f	2024-11-07 11:22:00.505912+07	t	f
-29	CONFIG_MODSEC	Modsecurity Configuration	../local-conf/modsecurity.conf	2024-11-07 13:16:24.107794	5e6eb013eb41f66ce00ff040c32043f9	f	2024-11-07 22:56:37.064783+07	t	f
-24	CONFIG_CRS	Crs Configuration	../local-conf/crs/crs-setup.conf	2024-11-07 13:18:41.305888	9131f7ca0fd5fcc04717d186bd7a0970	f	2024-11-07 22:37:26.420076+07	t	f
+31	CONFIG_MODSEC	Modsecurity Configuration	../../modsecurity.conf	2024-11-07 13:16:24.107794	6bb4f91de81e8745d0fc9d5a5340aeb8	f	2024-11-07 22:37:26.420076+07	t	f
+25	900	Exclusion Rules Before Crs	REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf	2024-11-07 11:22:00.501399	bb2f70d1e96a1061b60125a6c20b81df	f	2024-11-11 14:48:36.212342+07	t	f
+30	CONFIG_CRS	Crs Configuration	../crs-setup.conf	2024-11-07 13:18:41.305888	9131f7ca0fd5fcc04717d186bd7a0970	f	2024-11-07 22:37:26.420076+07	t	f
 8	905	Common Exceptions	REQUEST-905-COMMON-EXCEPTIONS.conf	2024-11-07 11:22:00.504895	542dc66877b195664f2bd27cb1cedf00	f	2024-11-07 11:22:00.504895+07	t	f
 2	950	Data Leakages	RESPONSE-950-DATA-LEAKAGES.conf	2024-11-07 11:22:00.512398	da4b3c9a673ca5122863159c577182f0	f	2024-11-07 11:22:00.512398+07	t	f
 23	955	Web Shells	RESPONSE-955-WEB-SHELLS.conf	2024-11-07 11:22:00.514498	d3c96677381b8ca049f1f4ea044b1d12	f	2024-11-07 11:22:00.514498+07	t	f
@@ -110,7 +110,7 @@ COPY public.modsec_rules (id, rule_code, rule_name, rule_path, created_at, conte
 -- Name: modsec_rules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.modsec_rules_id_seq', 29, true);
+SELECT pg_catalog.setval('public.modsec_rules_id_seq', 31, true);
 
 
 --
