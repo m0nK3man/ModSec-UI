@@ -11,7 +11,7 @@ bp = Blueprint('logs', __name__)
 
 es_client = ElasticsearchClient()
 
-@bp.before_app_first_request
+@bp.before_app_request
 def initialize_config():
     """Initialize logs configuration"""
     current_app.config['LOGS_CONFIG'] = LOGS_CONFIG

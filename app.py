@@ -8,7 +8,6 @@ app = Flask(__name__)
 app.secret_key = 'a3f0b8c42fa67a5de4e0b8f21d7b3a76'
 moment = Moment(app)
 
-
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://modsec_admin:bravo123@localhost/modsec_ui'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
