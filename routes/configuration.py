@@ -1,6 +1,7 @@
 # routes/configuration.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from modsec_manager.configuration_func import read_modsecurity_conf, save_modsecurity_conf, read_crs_conf, save_crs_conf
+from modsec_manager.dashboard_func import get_current_mode
 from libs.git_integration import commit_changes, push_changes
 from flask_login import login_required
 
@@ -54,6 +55,8 @@ def crs_conf():
 def commit_changes_view():
     if commit_changes():
         if push_changes():
+            current_mode = get_current_mode()
+            session['original_mode'] = current_mode
             flash("Changes pushed successfully!", "success")
         else:
             flash("Changes committed, but push failed!", "error") 
