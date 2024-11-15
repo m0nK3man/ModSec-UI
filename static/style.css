@@ -321,21 +321,21 @@ a {
 }
 
 .logs-table .ruleid-cell,
-.logs-table .severity-cell{
+.logs-table .severity-cell,
+.logs-table .http-code-cell,
+{
     width: 80px; /* Adjust this value based on your needs */
     text-align: center;
 }
 
 .logs-table .host-cell {
-    width: 220px; /* Adjust this value based on your needs */
+    max-width: 220px; /* Adjust this value based on your needs */
+    min-width: 200px;
 }
 
-.logs-table .ip-cell {
-    width: 130px; /* Adjust this value based on your needs */
-}
-
-.logs-table .msg-cell {
+.logs-table .expand-cell {
     max-width: 280px; /* Adjust this value based on your needs */
+    min-width: 280px;
 }
 
 .logs-table details {

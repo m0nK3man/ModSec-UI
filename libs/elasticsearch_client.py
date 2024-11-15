@@ -17,7 +17,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=None, search_query=None):
+    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=10000, search_query=None):
         """
         Query Elasticsearch for ModSecurity logs
         """
@@ -76,14 +76,18 @@ class ElasticsearchClient:
                 # Extracting details from the log structure
                 messages = source.get('transaction', {}).get('messages', [])
                 for msg in messages:
+                    request_host = source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', source.get('transaction', {}).get('request', {}).get('headers', {}).get('host', 'N/A'))
+                    client_info = source.get('transaction', {}).get('request', {}).get('headers', {}).get('Clientinfo', source.get('transaction', {}).get('request', {}).get('headers', {}).get('clientinfo', 'N/A'))
+                    user_agent = source.get('transaction', {}).get('request', {}).get('headers', {}).get('User-Agent', source.get('transaction', {}).get('request', {}).get('headers', {}).get('user-agent', 'N/A'))
                     log_entry = {
                         'timestamp': source.get('@timestamp'),
                         'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
-                        'client_ip': source.get('transaction', {}).get('client_ip', 'N/A'),
-                        'request_host': source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', 'N/A'),
-                        #'detail': msg.get('details', {}).get('data', 'N/A'),
-                        #'message': msg.get('message', 'N/A')  # Message from the transaction
+                        # Merge 'client_ip' and 'client_info' fields
+                        'client_ip': f"{source.get('transaction', {}).get('client_ip', 'N/A')}---{client_info}",
+                        'request_host': request_host,
+                        'http_code': source.get('transaction', {}).get('response', {}).get('http_code', 'N/A'),
+                        'user_agent': user_agent,
                         # Merging 'detail' and 'message' fields
                         'message': f"{msg.get('message', 'N/A')}---{msg.get('details', {}).get('data', 'N/A')}"
                     }

@@ -55,7 +55,8 @@
                     <th>Severity</th>
                     <th>Client IP</th>
                     <th>Host</th>
-                    <th>Detail</th>
+                    <th>Status</th>
+                    <th>User Agent</th>
                     <th>Message</th>
                 </tr>
             </thead>
@@ -71,52 +72,35 @@
                     <td class="severity-cell">
 			{{ log.severity }}
 		    </td>
-                    <td class="ip-cell">
+                    <td class="expand-cell" style="min-width: 170px;">
 			{{ log.client_ip }}
 		    </td>
                     <td class="host-cell">
 			{{ log.request_host }}
 		    </td>
-                    <td class="msg-cell">
-			{{ log.detail }}
+                    <td class="http-code-cell">
+			{{ log.http_code }}
 		    </td>
-                    <td class="msg-cell">
+                    <td class="expand-cell">
+			{{ log.user_agent }}
+		    </td>
+                    <td class="expand-cell">
 			{{ log.message }}
 		    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-	<div id="pagination" class="pagination">
+	<div class="pagination">
             <button class="button" id="prev" disabled>Previous</button>
             <span id="page-info"></span>
             <button class="button" id="next">Next</button>
         </div>
     </div>
 </div>
-<script src="{{url_for('static', filename='page-pagination.js')}}"></script>
-<script>
-  function wrapUrlsInDetails() {
-    const expandCells = document.querySelectorAll('.logs-table td.msg-cell'); // Select expand column cells
 
-    expandCells.forEach(cell => {
-      const fullText = cell.innerText.trim();
-      const separatorIndex = fullText.indexOf('---');
-      if (separatorIndex !== -1) {
-	const MSGText = fullText.substring(0, separatorIndex).trim();
-	const DetailsText = fullText.substring(separatorIndex + 3).trim();
-        // Create details structure
-        cell.innerHTML = `
-            <details>
-                <summary>▽ MSG: ${MSGText}</summary>
-       		<div class="full-msg">---<br>Details:<br>${DetailsText}</div>
-       	    </details>
-        `;
-      }
-    });
-  }
-  // Run when page loads
-  document.addEventListener('DOMContentLoaded', wrapUrlsInDetails);
-</script>
+<script type="text/javascript" src="static/purify.min.js"></script>
+<script src="{{url_for('static', filename='page-pagination.js')}}"></script>
+<script src="{{url_for('static', filename='expand-msg-cell.js')}}"></script>
 
 {% endblock %}
