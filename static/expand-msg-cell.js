@@ -43,7 +43,7 @@ function wrapUrlsInDetails() {
                 ALLOWED_ATTR: ['class']
             });
         } else {
-	    if (fullText.length > 20) {
+	    if (fullText.length > 40) {
 		const truncated = "▽ " + fullText.substring(0, 40);
 		// Create details structure
                 cell.innerHTML = `

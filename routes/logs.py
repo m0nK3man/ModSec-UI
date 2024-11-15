@@ -29,14 +29,14 @@ def logs():
         stats = es_client.get_stats(time_range=time_range)
 
         severity_mapping = {
-            '0': 'EMERGENCY',
-            '1': 'ALERT',
-            '2': 'CRITICAL',
-            '3': 'ERROR',
-            '4': 'WARNING',
-            '5': 'NOTICE',
-            '6': 'INFO',
-            '7': 'DEBUG'
+            '0': 'Emergency',
+            '1': 'Alert',
+            '2': 'Critical',
+            '3': 'Error',
+            '4': 'Warning',
+            '5': 'Notice',
+            '6': 'Info',
+            '7': 'Debug'
         }
         
         # mapping severity

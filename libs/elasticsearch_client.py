@@ -17,7 +17,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=10000, search_query=None):
+    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=5000, search_query=None):
         """
         Query Elasticsearch for ModSecurity logs
         """
