@@ -44,7 +44,10 @@ def dashboard():
 def commit_changes_view():
     if commit_changes():
         if push_changes():
-            flash("Changes pushed successfully!","success")
+            # Update the original_mode in session after successful commit and push
+            current_mode = get_current_mode()
+            session['original_mode'] = current_mode
+            flash("Changes pushed successfully!", "success")
         else:
             flash("Changes committed, but push failed!","error")
     else:
