@@ -29,7 +29,7 @@ def logs():
         end_time = request.args.get('end_time', None)
 
         logs = es_client.get_logs(time_range=time_range, search_query=search_query, start_time=start_time, end_time=end_time)
-        stats = es_client.get_stats(time_range=time_range, start_time=start_time, end_time=end_time)
+        stats = es_client.get_stats(time_range=time_range)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -55,6 +55,7 @@ def logs():
             'logs_config': LOGS_CONFIG
         }
     except Exception as e:
+        print(e)
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('logs.logs'))
 
