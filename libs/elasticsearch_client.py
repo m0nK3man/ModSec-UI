@@ -105,7 +105,7 @@ class ElasticsearchClient:
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
                         # Merge 'client_ip' and 'client_info' fields
                         'client_ip': f"{source.get('transaction', {}).get('client_ip', 'N/A')}---{client_info}",
-                        'request_host': request_host,
+                        'request_host': f"{request_host}---{source.get('transaction', {}).get('request', {}).get('uri', 'N/A')}",
                         'http_code': source.get('transaction', {}).get('response', {}).get('http_code', 'N/A'),
                         'user_agent': user_agent,
                         # Merging 'detail' and 'message' fields

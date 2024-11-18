@@ -328,14 +328,9 @@ a {
     text-align: center;
 }
 
-.logs-table .host-cell {
-    max-width: 250px; /* Adjust this value based on your needs */
-    min-width: 220px;
-}
-
 .logs-table .expand-cell {
-    max-width: 280px; /* Adjust this value based on your needs */
-    min-width: 280px;
+    max-width: 250px; /* Adjust this value based on your needs */
+    min-width: 250px;
 }
 
 .logs-table details {

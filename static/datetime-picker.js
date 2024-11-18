@@ -39,11 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             startTimeInput.value = formatDateTimeLocal(startTime);
             endTimeInput.value = formatDateTimeLocal(now);
-        }
-    });
+            }});
 
-    // Remove `time_range` from form submission
-    const form = document.querySelector('.filter-form');
 
     // Initialize time range if it's not custom
     if (timeRange.value !== 'custom') {
