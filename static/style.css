@@ -385,6 +385,25 @@ a {
     }
 }
 
+details > div {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+details:not([open]) > div {
+    height: 0;
+    opacity: 0;
+}
+
+details[open] > div {
+    height: auto;
+    opacity: 1;
+}
+
+summary {
+    cursor: pointer;
+}
+
 .pagination {
     margin-top: 10px;
 }
