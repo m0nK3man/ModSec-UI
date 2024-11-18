@@ -1,6 +1,6 @@
 from datetime import datetime
 from libs.var import MODSECURITY_CONF_PATH
-from libs.database import Session
+from libs.database import db  # Import db instead of Session
 from libs.utils import track_config_content
 
 def get_current_mode():
@@ -31,15 +31,12 @@ def set_mode(mode):
             f.writelines(lines)
 
         # Track the configuration change in the database
-        session = Session()
         content = ''.join(lines)  # Join the lines back into a single string for tracking
-        track_config_content(session, 'modsecurity', content)  # Track the updated content
-        session.commit()  # Commit the session to save changes to the database
-        session.close()
-        
+        track_config_content(db.session, 'modsecurity', content)  # Track the updated content
+        db.session.commit()  # Commit the session to save changes to the database
+
         return True
     except Exception as e:
         print(f"Error updating mode: {e}")
-        if session:
-            session.rollback()  # Rollback the session in case of error
+        db.session.rollback()  # Rollback the session in case of error
         return False

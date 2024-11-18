@@ -2,7 +2,7 @@ import os
 import git
 import hashlib
 from datetime import datetime
-from libs.database import Session
+from libs.database import db  # Import db instead of Session
 from models import ModsecRule
 from libs.var import *
 
@@ -57,25 +57,24 @@ def rename_filepath_with_status(modified_entries):
     for rule in modified_entries:
         # Determine the file path for each entry
         origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
-        new_rule_path=rule.rule_path	
-	    # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
+        new_rule_path = rule.rule_path
+        # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
         if rule.is_enabled and rule.rule_path.endswith(".disable"):
-            new_rule_path = rule.rule_path[:-8] # Remove the '.disable' suffix
-		
-    	# mismatch: if rule is disabled and rulepath is enable -> rulepath rename to disabled
+            new_rule_path = rule.rule_path[:-8]  # Remove the '.disable' suffix
+
+        # mismatch: if rule is disabled and rulepath is enable -> rulepath rename to disabled
         if (not rule.is_enabled) and rule.rule_path.endswith(".conf"):
-            new_rule_path = f"{rule.rule_path}.disable" # Add the '.disable' suffix
+            new_rule_path = f"{rule.rule_path}.disable"  # Add the '.disable' suffix
 
         os.rename(origin_file_path, os.path.join(MODSECURITY_RULES_DIR, new_rule_path))
         rule.rule_path = new_rule_path  # Update rule path in database
 
 def commit_changes():
     """Orchestrate the commit process for all modified entries."""
-    session = Session()
     try:
         # Step 1: Get modified entries
-        modified_entries = session.query(ModsecRule).filter_by(is_modified=True).all()
-        
+        modified_entries = db.session.query(ModsecRule).filter_by(is_modified=True).all()
+
         print("Called commit_changes()")
 
         if not modified_entries:
@@ -93,15 +92,13 @@ def commit_changes():
 
         # Step 5: Commit database transaction
         reset_modification_flags(modified_entries)
-        session.commit()
+        db.session.commit()
         return True
 
     except Exception as e:
+        db.session.rollback()
         print(f"Error committing changes: {e}")
         return False
-    finally:
-        session.close()
-
 
 def _get_repo():
     """Initialize or get the Git repository"""
@@ -119,7 +116,7 @@ def _create_commit_message(modified_entries):
     configs = [e for e in modified_entries if e.rule_code in ['CONFIG_MODSEC', 'CONFIG_CRS']]
 
     if rules:
-        message.append("\nModified Rules:")
+        message.append("\nModified Rules :")
         for rule in rules:
             message.append(f"- {rule.rule_path}")
 
@@ -132,4 +129,3 @@ def _create_commit_message(modified_entries):
                 message.append("- CRS configuration")
 
     return "\n".join(message)
-
