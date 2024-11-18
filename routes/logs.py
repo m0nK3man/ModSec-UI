@@ -29,7 +29,7 @@ def logs():
         end_time = request.args.get('end_time', None)
 
         logs = es_client.get_logs(time_range=time_range, search_query=search_query, start_time=start_time, end_time=end_time)
-        stats = es_client.get_stats(time_range=time_range)
+#        stats = es_client.get_stats(time_range=time_range)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -43,8 +43,8 @@ def logs():
         }
 
         # mapping severity
-        for entry in stats['severity_breakdown']:
-            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
+#        for entry in stats['severity_breakdown']:
+#            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
         for log in logs:
             log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
 
@@ -68,7 +68,7 @@ def logs():
 
     return render_template('logs.html',
                            logs=logs,
-                           stats=stats,
+#                           stats=stats,
                            time_range=time_range,
                            search_query=search_query,
                            config=config)

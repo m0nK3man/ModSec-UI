@@ -31,35 +31,6 @@
         </form>
     </div>
 
-    <!-- Statistics Section -->
-    <div class="stats-section">
-        <div class="stat-card">
-            <h3>Severity Breakdown</h3>
-            <ul>
-                {% for severity_breakdown in stats.severity_breakdown %}
-                <li>
-		    <span class="severity-text">{{ severity_breakdown.severity }}</span>: {{ severity_breakdown.doc_count }}
-		</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="stat-card">
-            <h3>Top Rules Triggered</h3>
-            <ul>
-                {% for rule in stats.top_rules %}
-                <li>Rule {{ rule.key }}: {{ rule.doc_count }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="stat-card">
-            <h3>Top Client IPs</h3>
-            <ul>
-                {% for ip in stats.top_ips %}
-                <li>{{ ip.key }}: {{ ip.doc_count }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
     <!-- Logs Table -->
     <div class="logs-section">
         <table class="logs-table">
