@@ -28,8 +28,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Format datetime-local inputs
-            const formatDateTimeLocal = (date) => date.toISOString().slice(0, 16);
+            const formatDateTimeLocal = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
 
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            };
             startTimeInput.value = formatDateTimeLocal(startTime);
             endTimeInput.value = formatDateTimeLocal(now);
         }

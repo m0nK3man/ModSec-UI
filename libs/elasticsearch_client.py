@@ -2,6 +2,7 @@
 from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
 from libs.var import ELASTICSEARCH_CONFIG, TIME_RANGES, LOGS_CONFIG
+import pytz
 
 class ElasticsearchClient:
     def __init__(self):
@@ -18,21 +19,30 @@ class ElasticsearchClient:
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
     def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=5000, search_query=None, start_time=None, end_time=None):
-        """
-        Query Elasticsearch for ModSecurity logs
-        """
         try:
             # Use provided size or default from config
             size = size or self.max_results
-    
+
+            # Set up timezone
+            tz_utc = pytz.UTC
+            tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
+
             # Calculate time range
-            now = datetime.utcnow()
+            now = datetime.now(tz_utc7)  # Get current time in UTC+7
 
             if start_time and end_time:
+                # Convert ISO format strings to timezone-aware datetimes
                 from_time = datetime.fromisoformat(start_time)
                 to_time = datetime.fromisoformat(end_time)
 
+                # If the input times are naive (no timezone info), assume they're in UTC+7
+                if from_time.tzinfo is None:
+                    from_time = tz_utc7.localize(from_time)
+                if to_time.tzinfo is None:
+                    to_time = tz_utc7.localize(to_time)
+
             else:
+                # Calculate relative time range in UTC+7
                 if time_range.endswith('m'):
                     from_time = now - timedelta(minutes=int(time_range[:-1]))
                 elif time_range.endswith('h'):
@@ -41,6 +51,10 @@ class ElasticsearchClient:
                     from_time = now - timedelta(days=int(time_range[:-1]))
                 to_time = now
 
+            # Convert times to UTC for Elasticsearch query
+            from_time_utc = from_time.astimezone(tz_utc)
+            to_time_utc = to_time.astimezone(tz_utc)
+
             # Base query
             query = {
                 "bool": {
@@ -48,15 +62,14 @@ class ElasticsearchClient:
                         {
                             "range": {
                                 "@timestamp": {
-                                    "gte": from_time.isoformat(),
-                                    "lte": to_time.isoformat()
+                                    "gte": from_time_utc.isoformat(),
+                                    "lte": to_time_utc.isoformat()
                                 }
                             }
                         }
                     ]
                 }
             }
-    
             # Add search query if provided
             if search_query:
                 query["bool"]["must"].append({
@@ -87,7 +100,7 @@ class ElasticsearchClient:
                     client_info = source.get('transaction', {}).get('request', {}).get('headers', {}).get('Clientinfo', source.get('transaction', {}).get('request', {}).get('headers', {}).get('clientinfo', 'N/A'))
                     user_agent = source.get('transaction', {}).get('request', {}).get('headers', {}).get('User-Agent', source.get('transaction', {}).get('request', {}).get('headers', {}).get('user-agent', 'N/A'))
                     log_entry = {
-                        'timestamp': source.get('@timestamp'),
+                        'timestamp': source.get('transaction', {}).get('time_stamp'),
                         'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
                         # Merge 'client_ip' and 'client_info' fields

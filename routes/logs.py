@@ -60,11 +60,11 @@ def logs():
         return redirect(url_for('logs.logs'))
 
     # Convert UTC time to UTC+7
-    utc_zone = pytz.utc
-    tz_utc7 = pytz.timezone('Asia/Bangkok')
-    for log in logs:
+    #utc_zone = pytz.utc
+    #tz_utc7 = pytz.timezone('Asia/Bangkok')
+    #for log in logs:
         # Assuming the timestamp is in ISO format, you need to parse it and convert
-        log['timestamp'] = convert_to_utc7(log['timestamp'], utc_zone, tz_utc7)
+    #    log['timestamp'] = convert_to_utc7(log['timestamp'], utc_zone, tz_utc7)
 
     return render_template('logs.html',
                            logs=logs,
