@@ -1,5 +1,10 @@
 <!-- templates/logs.html -->
 {% extends "base.html" %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 {% block content %}
 <div id="logs">
     <!-- Logs Filter Section -->
@@ -12,6 +17,7 @@
                 <option value="1d" {% if time_range == '1d' %}selected{% endif %}>Last 24 hours</option>
             </select>
             <input type="text" name="search" placeholder="Search logs..." value="{{ search_query or '' }}">
+            <input type="text" name="datetimes" class="time-range-picker" />
             <button type="submit" class="button">Filter</button>
         </form>
     </div>
@@ -102,5 +108,17 @@
 <script type="text/javascript" src="static/purify.min.js"></script>
 <script src="{{url_for('static', filename='page-pagination.js')}}"></script>
 <script src="{{url_for('static', filename='expand-msg-cell.js')}}"></script>
+<script>
+$(function() {
+  $('input[class="time-range-picker"]').daterangepicker({
+    timePicker: true,
+    startDate: moment().startOf('hour'),
+    endDate: moment().startOf('hour').add(32, 'hour'),
+    locale: {
+      format: 'M/DD hh:mm A'
+    }
+  });
+});
+</script>
 
 {% endblock %}

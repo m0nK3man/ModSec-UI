@@ -25,8 +25,11 @@ def logs():
         # Get logs and statistics
         time_range = request.args.get('time_range', LOGS_CONFIG['DEFAULT_TIME_RANGE'])
         search_query = request.args.get('search', None)
-        logs = es_client.get_logs(time_range=time_range, search_query=search_query)
-        stats = es_client.get_stats(time_range=time_range)
+        start_time = request.args.get('start_time', None)
+        end_time = request.args.get('end_time', None)
+
+        logs = es_client.get_logs(time_range=time_range, search_query=search_query, start_time=start_time, end_time=end_time)
+        stats = es_client.get_stats(time_range=time_range, start_time=start_time, end_time=end_time)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -38,7 +41,7 @@ def logs():
             '6': 'Info',
             '7': 'Debug'
         }
-        
+
         # mapping severity
         for entry in stats['severity_breakdown']:
             entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
@@ -54,20 +57,20 @@ def logs():
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('logs.logs'))
-    
+
     # Convert UTC time to UTC+7
     utc_zone = pytz.utc
     tz_utc7 = pytz.timezone('Asia/Bangkok')
     for log in logs:
         # Assuming the timestamp is in ISO format, you need to parse it and convert
         log['timestamp'] = convert_to_utc7(log['timestamp'], utc_zone, tz_utc7)
-    
+
     return render_template('logs.html',
-                     logs=logs,
-                     stats=stats,
-                     time_range=time_range,
-                     search_query=search_query,
-                     config=config)
+                           logs=logs,
+                           stats=stats,
+                           time_range=time_range,
+                           search_query=search_query,
+                           config=config)
 
 def convert_to_utc7(timestamp_str, utc_zone, target_zone):
     # Parse the timestamp string to datetime object with milliseconds

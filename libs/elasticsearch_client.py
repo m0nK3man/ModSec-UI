@@ -17,7 +17,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=5000, search_query=None):
+    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=5000, search_query=None, start_time=None, end_time=None):
         """
         Query Elasticsearch for ModSecurity logs
         """
@@ -27,13 +27,20 @@ class ElasticsearchClient:
     
             # Calculate time range
             now = datetime.utcnow()
-            if time_range.endswith('m'):
-                from_time = now - timedelta(minutes=int(time_range[:-1]))
-            elif time_range.endswith('h'):
-                from_time = now - timedelta(hours=int(time_range[:-1]))
-            elif time_range.endswith('d'):
-                from_time = now - timedelta(days=int(time_range[:-1]))
-    
+
+            if start_time and end_time:
+                from_time = datetime.fromisoformat(start_time)
+                to_time = datetime.fromisoformat(end_time)
+
+            else:
+                if time_range.endswith('m'):
+                    from_time = now - timedelta(minutes=int(time_range[:-1]))
+                elif time_range.endswith('h'):
+                    from_time = now - timedelta(hours=int(time_range[:-1]))
+                elif time_range.endswith('d'):
+                    from_time = now - timedelta(days=int(time_range[:-1]))
+                to_time = now
+
             # Base query
             query = {
                 "bool": {
@@ -42,7 +49,7 @@ class ElasticsearchClient:
                             "range": {
                                 "@timestamp": {
                                     "gte": from_time.isoformat(),
-                                    "lte": now.isoformat()
+                                    "lte": to_time.isoformat()
                                 }
                             }
                         }
