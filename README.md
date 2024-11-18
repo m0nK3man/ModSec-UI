@@ -12,7 +12,7 @@
 + check l?i css ghi dè
 + check l?i hàm search logs elastic
 + s?a l?i track config change gi?ng rules
-
++ log time range picker
 
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab

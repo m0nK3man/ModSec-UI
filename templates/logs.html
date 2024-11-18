@@ -5,19 +5,27 @@
     <!-- Logs Filter Section -->
     <div class="filter-section">
         <form method="GET" action="{{ url_for('logs.logs') }}" class="filter-form">
-            <select name="time_range" class="time-range">
-                <option value="15m" {% if time_range == '15m' %}selected{% endif %}>Last 15 minutes</option>
-                <option value="1h" {% if time_range == '1h' %}selected{% endif %}>Last hour</option>
-                <option value="6h" {% if time_range == '6h' %}selected{% endif %}>Last 6 hours</option>
-                <option value="1d" {% if time_range == '1d' %}selected{% endif %}>Last 24 hours</option>
-            </select>
+	    <!-- Search Input -->
             <input type="text" name="search" placeholder="Search logs..." value="{{ search_query or '' }}">
-	    <!-- Time Range Picker -->
+	    <!-- Time Range Dropdown -->
+            <select id="time_range" class="time-range">
+		<option selected>📅 Timestamp:</option>
+                <option value="15m">Last 15 minutes</option>
+                <option value="1h">Last hour</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="1d">Last 24 hours</option>
+                <option value="custom">Custom</option>
+	    </select>
+	    <!-- Date-Time Range Inputs -->
 	    <div class="date-range">
-                <label for="start_time">Start Time:</label>
-                <input type="datetime-local" id="start_time" name="start_time" value="{{ request.args.get('start_time', '') }}">
-                <label for="end_time">End Time:</label>
-                <input type="datetime-local" id="end_time" name="end_time" value="{{ request.args.get('end_time', '') }}">
+		<div>
+                    <label for="start_time">Start Time:</label>
+                    <input type="datetime-local" id="start_time" name="start_time" value="{{ request.args.get('start_time', '') }}">
+		</div>
+		<div>
+                    <label for="end_time">End Time:</label>
+                    <input type="datetime-local" id="end_time" name="end_time" value="{{ request.args.get('end_time', '') }}">
+		</div>
             </div>
 	    <button type="submit" class="button">Filter</button>
         </form>
@@ -106,7 +114,9 @@
     </div>
 </div>
 
+<script type="text/javascript" src="static/datetime-picker.js"></script>
 <script type="text/javascript" src="static/purify.min.js"></script>
 <script src="{{url_for('static', filename='page-pagination.js')}}"></script>
 <script src="{{url_for('static', filename='expand-msg-cell.js')}}"></script>
+
 {% endblock %}
