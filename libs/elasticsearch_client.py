@@ -66,7 +66,7 @@ class ElasticsearchClient:
                     "query_string": {
                         "query": search_query,
                         "fields": [
-                            "transaction.timestamp",
+                            "transaction.time_stamp",
                             "transaction.messages.message",
                             "transaction.messages.details.ruleId",
                             "transaction.messages.details.severity",
@@ -89,7 +89,7 @@ class ElasticsearchClient:
                     "sort": [{"@timestamp": {"order": "desc"}}],
                     "size": size,
                     "_source": [
-                        "transaction.timestamp",
+                        "transaction.time_stamp",
                         "transaction.messages.message",
                         "transaction.messages.details.ruleId",
                         "transaction.messages.details.severity",
@@ -201,7 +201,7 @@ class ElasticsearchClient:
                     "query_string": {
                         "query": search_query,
                         "fields": [
-                            "transaction.timestamp",
+                            "transaction.time_stamp",
                             "transaction.messages.message",
                             "transaction.messages.details.ruleId",
                             "transaction.messages.details.severity",
