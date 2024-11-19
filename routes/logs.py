@@ -18,8 +18,24 @@ def logs():
         search_query = request.args.get('search', None)
         start_time = request.args.get('start_time', None)
         end_time = request.args.get('end_time', None)
-
-        logs_response = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
+        
+        # Determine size based on time range
+        time_diff = count_time_range(start_time, end_time)
+        # Default size
+        max_size = 500
+        if time_diff <= 1:
+            max_size = 300
+        elif time_diff <= 3:
+            max_size = 500
+        elif time_diff <= 6:
+            max_size = 800
+        elif time_diff <= 12:
+            max_size = 1000
+        else:
+            max_size = 1000
+        
+        # Get logs và query info
+        logs_response = es_client.get_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
         logs = logs_response.get('logs', [])
         current_length = logs_response.get('current_length', 0)
         total_hits = logs_response.get('total_hits', 0)
@@ -49,14 +65,28 @@ def logs():
                            current_length=current_length,
                            total_hits=total_hits)
 
-def convert_to_utc7(timestamp_str, utc_zone, target_zone):
-    # Parse the timestamp string to datetime object with milliseconds
-    timestamp = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+def count_time_range(start_time, end_time):
+    if start_time and end_time:
+        # Convert to datetime objects
+        tz_utc = pytz.UTC
+        tz_utc7 = pytz.timezone('Asia/Bangkok')  # Adjust for your timezone
 
-    # Localize to UTC and then convert to target timezone (UTC+7)
-    timestamp = utc_zone.localize(timestamp)  # Localize to UTC
-    timestamp_utc7 = timestamp.astimezone(target_zone)  # Convert to UTC+7
+        start_dt = datetime.fromisoformat(start_time)
+        end_dt = datetime.fromisoformat(end_time)
 
-    # Return the formatted timestamp
-    return timestamp_utc7.strftime("%Y-%m-%d %H:%M:%S")
+        # If naive datetime (no timezone), assume UTC+7
+        if start_dt.tzinfo is None:
+            start_dt = tz_utc7.localize(start_dt)
+        if end_dt.tzinfo is None:
+            end_dt = tz_utc7.localize(end_dt)
+
+        # Convert to UTC for comparison
+        start_dt_utc = start_dt.astimezone(tz_utc)
+        end_dt_utc = end_dt.astimezone(tz_utc)
+
+        # Calculate the difference in hours
+        delta = (end_dt_utc - start_dt_utc).total_seconds() / 3600
+        return delta
+    else:
+        return 0
 
