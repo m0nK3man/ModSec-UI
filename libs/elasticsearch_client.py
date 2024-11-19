@@ -18,7 +18,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE'], size=5000, search_query=None, start_time=None, end_time=None):
+    def get_logs(self, size=5000, search_query=None, start_time=None, end_time=None):
         try:
             # Use provided size or default from config
             size = size or self.max_results
@@ -40,16 +40,6 @@ class ElasticsearchClient:
                     from_time = tz_utc7.localize(from_time)
                 if to_time.tzinfo is None:
                     to_time = tz_utc7.localize(to_time)
-
-            else:
-                # Calculate relative time range in UTC+7
-                if time_range.endswith('m'):
-                    from_time = now - timedelta(minutes=int(time_range[:-1]))
-                elif time_range.endswith('h'):
-                    from_time = now - timedelta(hours=int(time_range[:-1]))
-                elif time_range.endswith('d'):
-                    from_time = now - timedelta(days=int(time_range[:-1]))
-                to_time = now
 
             # Convert times to UTC for Elasticsearch query
             from_time_utc = from_time.astimezone(tz_utc)

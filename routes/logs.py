@@ -23,12 +23,11 @@ def initialize_config():
 def logs():
     try:
         # Get logs and statistics
-        time_range = request.args.get('time_range', LOGS_CONFIG['DEFAULT_TIME_RANGE'])
         search_query = request.args.get('search', None)
         start_time = request.args.get('start_time', None)
         end_time = request.args.get('end_time', None)
 
-        logs = es_client.get_logs(time_range=time_range, search_query=search_query, start_time=start_time, end_time=end_time)
+        logs = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
 #        stats = es_client.get_stats(time_range=time_range)
 
         severity_mapping = {
@@ -69,7 +68,6 @@ def logs():
     return render_template('logs.html',
                            logs=logs,
 #                           stats=stats,
-                           time_range=time_range,
                            search_query=search_query,
                            config=config)
 

@@ -20,27 +20,6 @@ ELASTICSEARCH_CONFIG = {
     'MAX_RESULTS': int(os.getenv('ELASTICSEARCH_MAX_RESULTS', 100)),
 }
 
-# Time range options for logs
-TIME_RANGES = {
-    '15m': '15 minutes',
-    '30m': '30 minutes',
-    '1h': '1 hour',
-    '3h': '3 hours',
-    '6h': '6 hours',
-    '12h': '12 hours',
-    '1d': '1 day',
-    '7d': '7 days'
-}
-
-# Severity levels and their corresponding colors
-SEVERITY_LEVELS = {
-    'CRITICAL': '#ff4444',
-    'ERROR': '#ff8800',
-    'WARNING': '#ffbb33',
-    'NOTICE': '#00C851',
-    'INFO': '#33b5e5'
-}
-
 # Logs configuration
 LOGS_CONFIG = {
     'REFRESH_INTERVAL': int(os.getenv('LOGS_REFRESH_INTERVAL', 30)),  # in seconds
