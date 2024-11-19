@@ -139,11 +139,8 @@ class ElasticsearchClient:
                 "total_hits": total_hits
             }
     
-        except elasticsearch.exceptions.ConnectionError as e:
-            print(f"Elasticsearch connection error: {e}")
-            return {"logs": [], "current_length": 0, "total_hits": 0}
-        except elasticsearch.exceptions.RequestError as e:
-            print(f"Invalid query to Elasticsearch: {e}")
+        except Exceptions as e:
+            print(f"Elasticsearch query error: {e}")
             return {"logs": [], "current_length": 0, "total_hits": 0}
 
     def get_stats(self, size=500, search_query=None, start_time=None, end_time=None):
