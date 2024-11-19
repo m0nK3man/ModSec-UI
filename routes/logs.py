@@ -1,7 +1,6 @@
 # routes/rules.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, current_app
 from libs.elasticsearch_client import ElasticsearchClient
-from libs.var import LOGS_CONFIG
 from flask_login import login_required
 import json
 from datetime import datetime
@@ -10,11 +9,6 @@ import pytz
 bp = Blueprint('logs', __name__)
 
 es_client = ElasticsearchClient()
-
-@bp.before_app_request
-def initialize_config():
-    """Initialize logs configuration"""
-    current_app.config['LOGS_CONFIG'] = LOGS_CONFIG
 
 @bp.route('/logs', methods=['GET', 'POST'])
 @login_required
@@ -25,8 +19,10 @@ def logs():
         start_time = request.args.get('start_time', None)
         end_time = request.args.get('end_time', None)
 
-        logs = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
-#        stats = es_client.get_stats(search_query=search_query, start_time=start_time, end_time=end_time)
+        logs_response = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
+        logs = logs_response.get('logs', [])
+        current_length = logs_response.get('current_length', 0)
+        total_hits = logs_response.get('total_hits', 0)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -40,15 +36,9 @@ def logs():
         }
 
         # mapping severity
-#        for entry in stats['severity_breakdown']:
-#            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
         for log in logs:
             log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
-#        print(stats)
-        # Pass configuration to template
-        config = {
-            'logs_config': LOGS_CONFIG
-        }
+    
     except Exception as e:
         print(f"Error: {e}")
         flash(f"An error occurred: {str(e)}", "error")
@@ -56,9 +46,9 @@ def logs():
 
     return render_template('logs.html',
                            logs=logs,
-#                           stats=stats,
-                           search_query=search_query,
-                           )
+                           current_length=current_length,
+                           total_hits=total_hits,
+                           search_query=search_query)
 
 def convert_to_utc7(timestamp_str, utc_zone, target_zone):
     # Parse the timestamp string to datetime object with milliseconds

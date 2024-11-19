@@ -29,7 +29,7 @@ class ElasticsearchClient:
             
             # Convert and validate times
             if not start_time or not end_time:
-                return []
+                return {"logs": [], "current_length": 0, "total_hits": 0}
             
             # Convert ISO format strings to timezone-aware datetimes
             from_time = datetime.fromisoformat(start_time)
@@ -101,7 +101,12 @@ class ElasticsearchClient:
                     ]
                 }
             )
-    
+            
+            # Get current length
+            current_length = len(response['hits']['hits'])  # Số lượng kết quả trả về
+            # Get total matched documents
+            total_hits = response['hits']['total']['value']  # Tổng số kết quả phù hợp
+
             # Process and format results
             logs = []
             for hit in response['hits']['hits']:
@@ -125,15 +130,19 @@ class ElasticsearchClient:
                         'message': f"{msg.get('message', 'N/A')}---{msg.get('details', {}).get('data', 'N/A')}"
                     }
                     logs.append(log_entry)
-    
-            return logs
+            
+            return {
+                "logs": logs,
+                "current_length": current_length,
+                "total_hits": total_hits
+            }
     
         except elasticsearch.exceptions.ConnectionError as e:
             print(f"Elasticsearch connection error: {e}")
-            return []
+            return {"logs": [], "current_length": 0, "total_hits": 0}
         except elasticsearch.exceptions.RequestError as e:
             print(f"Invalid query to Elasticsearch: {e}")
-            return []
+            return {"logs": [], "current_length": 0, "total_hits": 0}
 
     def get_stats(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
@@ -235,7 +244,7 @@ class ElasticsearchClient:
                     "size": size
                 }
             )
-
+            
             return {
                 'severity_breakdown': response['aggregations']['severity_breakdown']['buckets'],
                 'top_rules': response['aggregations']['top_rules']['buckets'],
