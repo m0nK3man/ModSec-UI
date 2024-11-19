@@ -9,11 +9,11 @@
 + Check các bộ rules bắt buộc !!!!!!! ko được disable
 + commit file .disabled/enabled
 + limit max log query by time
-+ check l?i css ghi dè
-+ check l?i hàm search logs elastic
-+ s?a l?i track config change gi?ng rules
++ check lại css ghi dè
++ check lại hàm search logs elastic
++ sửa lại track config change gi?ng rules
 + log time range picker
-
++ xử lý limit log lazy load
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab
 
