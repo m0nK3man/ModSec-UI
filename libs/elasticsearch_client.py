@@ -18,7 +18,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, size=500, search_query=None, start_time=None, end_time=None):
+    def get_logs(self, size=1000, search_query=None, start_time=None, end_time=None):
         try:
             # Use provided size or default from config
             size = size or self.max_results
@@ -26,19 +26,20 @@ class ElasticsearchClient:
             # Set up timezone
             tz_utc = pytz.UTC
             tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
+            
+            # Convert and validate times
+            if not start_time or not end_time:
+                return []
+            
+            # Convert ISO format strings to timezone-aware datetimes
+            from_time = datetime.fromisoformat(start_time)
+            to_time = datetime.fromisoformat(end_time)
 
-            if start_time and end_time:
-                # Convert ISO format strings to timezone-aware datetimes
-                from_time = datetime.fromisoformat(start_time)
-                to_time = datetime.fromisoformat(end_time)
-
-                # If the input times are naive (no timezone info), assume they're in UTC+7
-                if from_time.tzinfo is None:
-                    from_time = tz_utc7.localize(from_time)
-                if to_time.tzinfo is None:
-                    to_time = tz_utc7.localize(to_time)
-            else:
-                 return []
+            # If the input times are naive (no timezone info), assume they're in UTC+7
+            if from_time.tzinfo is None:
+                from_time = tz_utc7.localize(from_time)
+            if to_time.tzinfo is None:
+                to_time = tz_utc7.localize(to_time)
 
             # Convert times to UTC for Elasticsearch query
             from_time_utc = from_time.astimezone(tz_utc)
@@ -79,13 +80,25 @@ class ElasticsearchClient:
                     }
                 })
     
-            # Execute search
+            # Execute search (limit return source for quick query)
             response = self.es.search(
                 index=self.index_pattern,
                 body={
                     "query": query,
                     "sort": [{"@timestamp": {"order": "desc"}}],
-                    "size": size
+                    "size": size,
+                    "_source": [
+                        "transaction.messages.message",
+                        "transaction.messages.details.ruleId",
+                        "transaction.messages.details.severity",
+                        "transaction.client_ip",
+                        "transaction.request.headers.Host",
+                        "transaction.request.headers.host",
+                        "transaction.request.uri",
+                        "transaction.response.http_code",
+                        "transaction.request.headers.User-Agent",
+                        "transaction.request.headers.user-agent"
+                    ]
                 }
             )
     
@@ -115,8 +128,11 @@ class ElasticsearchClient:
     
             return logs
     
-        except Exception as e:
-            print(f"Error querying Elasticsearch: {e}")
+        except elasticsearch.exceptions.ConnectionError as e:
+            print(f"Elasticsearch connection error: {e}")
+            return []
+        except elasticsearch.exceptions.RequestError as e:
+            print(f"Invalid query to Elasticsearch: {e}")
             return []
 
     def get_stats(self, size=500, search_query=None, start_time=None, end_time=None):
