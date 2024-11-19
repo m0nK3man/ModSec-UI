@@ -26,7 +26,7 @@ def logs():
         end_time = request.args.get('end_time', None)
 
         logs = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
-        stats = es_client.get_stats(search_query=search_query, start_time=start_time, end_time=end_time)
+#        stats = es_client.get_stats(search_query=search_query, start_time=start_time, end_time=end_time)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -40,11 +40,11 @@ def logs():
         }
 
         # mapping severity
-        for entry in stats['severity_breakdown']:
-            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
+#        for entry in stats['severity_breakdown']:
+#            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
         for log in logs:
             log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
-        print(stats)
+#        print(stats)
         # Pass configuration to template
         config = {
             'logs_config': LOGS_CONFIG
@@ -56,9 +56,9 @@ def logs():
 
     return render_template('logs.html',
                            logs=logs,
-                           stats=stats,
+#                           stats=stats,
                            search_query=search_query,
-                           config=config)
+                           )
 
 def convert_to_utc7(timestamp_str, utc_zone, target_zone):
     # Parse the timestamp string to datetime object with milliseconds
