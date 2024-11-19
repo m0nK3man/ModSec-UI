@@ -1,7 +1,7 @@
 # routes/rules.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify, current_app
 from libs.elasticsearch_client import ElasticsearchClient
-from libs.var import TIME_RANGES, LOGS_CONFIG, SEVERITY_LEVELS
+from libs.var import LOGS_CONFIG
 from flask_login import login_required
 import json
 from datetime import datetime
@@ -15,8 +15,6 @@ es_client = ElasticsearchClient()
 def initialize_config():
     """Initialize logs configuration"""
     current_app.config['LOGS_CONFIG'] = LOGS_CONFIG
-    current_app.config['TIME_RANGES'] = TIME_RANGES
-    current_app.config['SEVERITY_LEVELS'] = SEVERITY_LEVELS
 
 @bp.route('/logs', methods=['GET', 'POST'])
 @login_required
@@ -49,8 +47,6 @@ def logs():
 
         # Pass configuration to template
         config = {
-            'time_ranges': TIME_RANGES,
-            'severity_levels': SEVERITY_LEVELS,
             'logs_config': LOGS_CONFIG
         }
     except Exception as e:

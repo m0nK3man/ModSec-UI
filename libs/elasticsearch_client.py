@@ -1,7 +1,7 @@
 # libs/elasticsearch_client.py
 from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
-from libs.var import ELASTICSEARCH_CONFIG, TIME_RANGES, LOGS_CONFIG
+from libs.var import ELASTICSEARCH_CONFIG, LOGS_CONFIG
 import pytz
 
 class ElasticsearchClient:
@@ -40,6 +40,9 @@ class ElasticsearchClient:
                     from_time = tz_utc7.localize(from_time)
                 if to_time.tzinfo is None:
                     to_time = tz_utc7.localize(to_time)
+            else:
+                 print(f"Start and end time NULL")
+                 return []
 
             # Convert times to UTC for Elasticsearch query
             from_time_utc = from_time.astimezone(tz_utc)
