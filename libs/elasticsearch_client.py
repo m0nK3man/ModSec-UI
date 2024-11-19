@@ -18,7 +18,7 @@ class ElasticsearchClient:
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, size=1000, search_query=None, start_time=None, end_time=None):
+    def get_logs(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
             # Use provided size or default from config
             size = size or self.max_results

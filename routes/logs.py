@@ -47,8 +47,7 @@ def logs():
     return render_template('logs.html',
                            logs=logs,
                            current_length=current_length,
-                           total_hits=total_hits,
-                           search_query=search_query)
+                           total_hits=total_hits)
 
 def convert_to_utc7(timestamp_str, utc_zone, target_zone):
     # Parse the timestamp string to datetime object with milliseconds

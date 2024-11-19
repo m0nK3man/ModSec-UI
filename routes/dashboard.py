@@ -64,8 +64,7 @@ def dashboard():
     return render_template('dashboard.html', 
                         current_mode=current_mode,
                         save_change=mode_changed,
-			stats=stats,
-                        search_query=search_query,)
+			            stats=stats)
 
 @bp.route('/commit_dashboard_changes', methods=['POST'])
 @login_required

@@ -6,7 +6,7 @@
     <div class="filter-section">
         <form method="GET" action="{{ url_for('logs.logs') }}" class="filter-form">
 	    <!-- Search Input -->
-            <input type="text" name="search" placeholder="Search logs..." value="{{ search_query or '' }}">
+            <input type="text" name="search" placeholder="Search logs..." value="{{ request.args.get('search', '') }}">
 	    <!-- Time Range Dropdown -->
             <select id="time_range" class="time-range">
 		<option selected>📅Timestamp</option>
