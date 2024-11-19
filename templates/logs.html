@@ -30,6 +30,35 @@
 	    <button type="submit" class="button">Filter</button>
         </form>
     </div>
+
+    <!-- Statistics Section -->
+    <div class="stats-section">
+        <div class="stat-card">
+            <h3>Severity Breakdown</h3>
+            <ul>
+                {% for severity in stats.severity_breakdown %}
+                <li>{{ severity.severity }}: {{ severity.doc_count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="stat-card">
+            <h3>Top Rules Triggered</h3>
+            <ul>
+                {% for rule in stats.top_rules %}
+                <li>Rule {{ rule.key }}: {{ rule.doc_count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="stat-card">
+            <h3>Top Client IPs</h3>
+            <ul>
+                {% for ip in stats.top_ips %}
+                <li>{{ ip.key }}: {{ ip.doc_count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
     <!-- Logs Table -->
         <table class="logs-table">
             <thead>

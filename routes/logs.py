@@ -26,7 +26,7 @@ def logs():
         end_time = request.args.get('end_time', None)
 
         logs = es_client.get_logs(search_query=search_query, start_time=start_time, end_time=end_time)
-#        stats = es_client.get_stats(time_range=time_range)
+        stats = es_client.get_stats(search_query=search_query, start_time=start_time, end_time=end_time)
 
         severity_mapping = {
             '0': 'Emergency',
@@ -40,30 +40,23 @@ def logs():
         }
 
         # mapping severity
-#        for entry in stats['severity_breakdown']:
-#            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
+        for entry in stats['severity_breakdown']:
+            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
         for log in logs:
             log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
-
+        print(stats)
         # Pass configuration to template
         config = {
             'logs_config': LOGS_CONFIG
         }
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
         flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for('logs.logs'))
 
-    # Convert UTC time to UTC+7
-    #utc_zone = pytz.utc
-    #tz_utc7 = pytz.timezone('Asia/Bangkok')
-    #for log in logs:
-        # Assuming the timestamp is in ISO format, you need to parse it and convert
-    #    log['timestamp'] = convert_to_utc7(log['timestamp'], utc_zone, tz_utc7)
-
     return render_template('logs.html',
                            logs=logs,
-#                           stats=stats,
+                           stats=stats,
                            search_query=search_query,
                            config=config)
 

@@ -13,12 +13,12 @@ class ElasticsearchClient:
                 ELASTICSEARCH_CONFIG['PASSWORD']
             ),
             verify_certs=False,
-            ssl_show_warn=False
+            ssl_show_warn=False 
         )
         self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, size=5000, search_query=None, start_time=None, end_time=None):
+    def get_logs(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
             # Use provided size or default from config
             size = size or self.max_results
@@ -26,9 +26,6 @@ class ElasticsearchClient:
             # Set up timezone
             tz_utc = pytz.UTC
             tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
-
-            # Calculate time range
-            now = datetime.now(tz_utc7)  # Get current time in UTC+7
 
             if start_time and end_time:
                 # Convert ISO format strings to timezone-aware datetimes
@@ -41,7 +38,6 @@ class ElasticsearchClient:
                 if to_time.tzinfo is None:
                     to_time = tz_utc7.localize(to_time)
             else:
-                 print(f"Start and end time NULL")
                  return []
 
             # Convert times to UTC for Elasticsearch query
@@ -68,7 +64,18 @@ class ElasticsearchClient:
                 query["bool"]["must"].append({
                     "query_string": {
                         "query": search_query,
-                        "fields": ["message", "rule_id", "request.headers.host", "client_ip", "request.uri"]
+                        "fields": [
+                            "transaction.messages.message",
+                            "transaction.messages.details.ruleId",
+                            "transaction.messages.details.severity",
+                            "transaction.client_ip",
+                            "transaction.request.headers.Host",
+                            "transaction.request.headers.host",
+                            "transaction.request.uri",
+                            "transaction.response.http_code",
+                            "transaction.request.headers.User-Agent",
+                            "transaction.request.headers.user-agent"
+                        ]
                     }
                 })
     
@@ -112,51 +119,104 @@ class ElasticsearchClient:
             print(f"Error querying Elasticsearch: {e}")
             return []
 
-    def get_stats(self, time_range=LOGS_CONFIG['DEFAULT_TIME_RANGE']):
-        """
-        Get statistics about ModSecurity events
-        """
+    def get_stats(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
-            now = datetime.utcnow()
-            if time_range.endswith('m'):
-                from_time = now - timedelta(minutes=int(time_range[:-1]))
-            elif time_range.endswith('h'):
-                from_time = now - timedelta(hours=int(time_range[:-1]))
-            elif time_range.endswith('d'):
-                from_time = now - timedelta(days=int(time_range[:-1]))
+            # Use provided size or default from config
+            size = size or self.max_results
 
+            # Set up timezone
+            tz_utc = pytz.UTC
+            tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
+
+            if start_time and end_time:
+                # Convert ISO format strings to timezone-aware datetimes
+                from_time = datetime.fromisoformat(start_time)
+                to_time = datetime.fromisoformat(end_time)
+
+                # If the input times are naive (no timezone info), assume they're in UTC+7
+                if from_time.tzinfo is None:
+                    from_time = tz_utc7.localize(from_time)
+                if to_time.tzinfo is None:
+                    to_time = tz_utc7.localize(to_time)
+            else:
+                from_time = datetime.utcnow()
+                to_time = datetime.utcnow()
+
+                if from_time.tzinfo is None:
+                    from_time = tz_utc7.localize(from_time)
+                if to_time.tzinfo is None:
+                    to_time = tz_utc7.localize(to_time)
+                #return {}
+
+            # Convert times to UTC for Elasticsearch query
+            from_time_utc = from_time.astimezone(tz_utc)
+            to_time_utc = to_time.astimezone(tz_utc)
+
+            # Base query
+            query = {
+                "bool": {
+                    "must": [
+                        {
+                            "range": {
+                                "@timestamp": {
+                                    "gte": from_time_utc.isoformat(),
+                                    "lte": to_time_utc.isoformat()
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+            
+            # Add search query if provided
+            if search_query:
+                query["bool"]["must"].append({
+                    "query_string": {
+                        "query": search_query,
+                        "fields": [
+                            "transaction.messages.message",
+                            "transaction.messages.details.ruleId",
+                            "transaction.messages.details.severity",
+                            "transaction.client_ip",
+                            "transaction.request.headers.Host",
+                            "transaction.request.headers.host",
+                            "transaction.request.uri",
+                            "transaction.response.http_code",
+                            "transaction.request.headers.User-Agent",
+                            "transaction.request.headers.user-agent"
+                        ]
+                    }
+                })
+            
+            # Base arguments
+            aggs = {
+                "severity_breakdown": {
+                    "terms": {
+                        "field": "transaction.messages.details.severity.keyword",
+                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                    }
+                },
+                "top_rules": {
+                    "terms": {
+                        "field": "transaction.messages.details.ruleId.keyword",
+                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                    }
+                },
+                "top_ips": {
+                    "terms": {
+                        "field": "transaction.client_ip.keyword",
+                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                    }
+                }
+            }
+
+            # Execute search
             response = self.es.search(
                 index=self.index_pattern,
                 body={
-                    "query": {
-                        "range": {
-                            "@timestamp": {
-                                "gte": from_time.isoformat(),
-                                "lte": now.isoformat()
-                            }
-                        }
-                    },
-                    "aggs": {
-                        "severity_breakdown": {
-                            "terms": {
-                                "field": "transaction.messages.details.severity.keyword",
-                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
-                            }
-                        },
-                        "top_rules": {
-                            "terms": {
-                                "field": "transaction.messages.details.ruleId.keyword",
-                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
-                            }
-                        },
-                        "top_ips": {
-                            "terms": {
-                                "field": "transaction.client_ip.keyword",
-                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
-                            }
-                        }
-                    },
-                    "size": 0
+                    "query": query,
+                    "aggs": aggs,
+                    "size": size
                 }
             )
 
