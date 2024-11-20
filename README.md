@@ -1,37 +1,36 @@
 # Simple-ModSecurity-nginx-UI
 
 ## TODO
-+ LOGIN (Authen)
-+ Sửa config file và push lên git
-  - Quản lý CD qua runner
-  - Runner xử lý config (Sync config cho nginx)
++ [ ] LOGIN (Authen)
++ [ ] Sửa config file và push lên git
+  - [ ] Quản lý CD qua runner
+  - [ ] Runner xử lý config (Sync config cho nginx)
++ [ ]  Check các bộ rules bắt buộc !!!!!!! ko được disable
++ [ ]  commit file .disabled/enabled
++ [ ]  limit max log query by time
++ [ ]  check lại css ghi dè
++ [ ]  check lại hàm search logs elastic
++ [ ]  sửa lại track config change gi?ng rules
++ [ ]  log time range picker
++ [ ]  xử lý limit log lazy load
++ [ ]  Rules exclusion tools
++ [ ]  Integrate exclusion tools to logs tab
++ [ ]  Sửa lại log query tránh bị xss
++ [ ]  sửa time range picker dynamic
 
-+ Check các bộ rules bắt buộc !!!!!!! ko được disable
-+ commit file .disabled/enabled
-+ limit max log query by time
-+ check lại css ghi dè
-+ check lại hàm search logs elastic
-+ sửa lại track config change gi?ng rules
-+ log time range picker
-+ xử lý limit log lazy load
-+ Rules exclusion tools
-+ Integrate exclusion tools to logs tab
-+ Sửa lại log query tránh bị xss
-+ sửa time range picker dynamic
++ [ ]  Report summary (dashboard tab)
 
-+ Report summary (dashboard tab)
++ [ ]  Logs nav (access,error,audit,..)
++ [ ]  Get rules from db
+  - [ ]  Lấy thông tin info,status từ db parse ra fe
+  - [ ]  Bắt sự kiện change file/rename push to db
+  - [ ]  Nếu rule disable rename to .disable
+  - [ ]  Sort by rulecode
+  - [ ]  Nếu status file là editing thì user khác lock edit
+  - [ ]  Xử lý push realtime status to existing user
+  - [ ]  Sửa lỗi absolute config path
 
-+ Logs nav (access,error,audit,..)
-+ Get rules from db
-  - Lấy thông tin info,status từ db parse ra fe
-  - Bắt sự kiện change file/rename push to db
-  - Nếu rule disable rename to .disable
-  - Sort by rulecode
-  - Nếu status file là editing thì user khác lock edit
-  - Xử lý push realtime status to existing user
-  - S?a l?i absolute config path
-
-+ setup guide
++ [ ]  setup guide
 
 ## Setup
 
