@@ -121,6 +121,7 @@ class ElasticsearchClient:
                     user_agent = source.get('transaction', {}).get('request', {}).get('headers', {}).get('User-Agent', source.get('transaction', {}).get('request', {}).get('headers', {}).get('user-agent', 'N/A'))
                     log_entry = {
                         'timestamp': source.get('transaction', {}).get('time_stamp'),
+#                        'rule_id': f"{msg.get('details', {}).get('ruleId', 'N/A')}---{msg.get('details', {}).get('file', 'N/A')}",
                         'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
                         'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
                         # Merge 'client_ip' and 'client_info' fields
