@@ -16,6 +16,8 @@
 + xử lý limit log lazy load
 + Rules exclusion tools
 + Integrate exclusion tools to logs tab
++ Sửa lại log query tránh bị xss
++ sửa time range picker dynamic
 
 + Report summary (dashboard tab)
 
