@@ -1,36 +1,34 @@
 # Simple-ModSecurity-nginx-UI
 
 ## TODO
-+ [ ] LOGIN (Authen)
-+ [ ] Sửa config file và push lên git
-  - [ ] Quản lý CD qua runner
-  - [ ] Runner xử lý config (Sync config cho nginx)
++ [x] LOGIN (Authen)
++ [x] Sửa config file và push lên git
+  - [x] Quản lý CD qua runner
+  - [x] Runner xử lý config (Sync config cho nginx)
+  - [ ] Runner xử lý config (Sync config cho haproxy)
 + [ ]  Check các bộ rules bắt buộc !!!!!!! ko được disable
-+ [ ]  commit file .disabled/enabled
-+ [ ]  limit max log query by time
-+ [ ]  check lại css ghi dè
-+ [ ]  check lại hàm search logs elastic
-+ [ ]  sửa lại track config change gi?ng rules
-+ [ ]  log time range picker
-+ [ ]  xử lý limit log lazy load
++ [x]  commit file .disabled/enabled
++ [x]  limit max log query by time
++ [x]  check lại css ghi dè
++ [x]  check lại hàm search logs elastic
++ [x]  sửa lại track config change giống rules
++ [x]  log time range picker
++ [x]  xử lý limit log/lazy load
 + [ ]  Rules exclusion tools
 + [ ]  Integrate exclusion tools to logs tab
 + [ ]  Sửa lại log query tránh bị xss
-+ [ ]  sửa time range picker dynamic
-
++ [x]  sửa time range picker dynamic
 + [ ]  Report summary (dashboard tab)
-
 + [ ]  Logs nav (access,error,audit,..)
-+ [ ]  Get rules from db
-  - [ ]  Lấy thông tin info,status từ db parse ra fe
-  - [ ]  Bắt sự kiện change file/rename push to db
-  - [ ]  Nếu rule disable rename to .disable
-  - [ ]  Sort by rulecode
-  - [ ]  Nếu status file là editing thì user khác lock edit
++ [x]  Get rules from db
+  - [x]  Lấy thông tin info,status từ db parse ra fe
+  - [x]  Bắt sự kiện change file/rename push to db
+  - [x]  Nếu rule disable rename to .disable
+  - [x]  Sort by rulecode
+  - [x]  Nếu status file là editing thì user khác lock edit
   - [ ]  Xử lý push realtime status to existing user
   - [ ]  Sửa lỗi absolute config path
-
-+ [ ]  setup guide
++ [x]  setup guide
 
 ## Setup
 
