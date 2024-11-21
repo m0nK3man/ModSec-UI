@@ -29,6 +29,8 @@
   - [ ]  Xử lý push realtime status to existing user
   - [ ]  Sửa lỗi absolute config path
 + [x]  setup guide
++ [ ]  setting config (IP, variables,...)
++ [ ]  
 
 ## Setup
 
