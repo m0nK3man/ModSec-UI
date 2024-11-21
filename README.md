@@ -7,6 +7,7 @@
   - [x] Runner xử lý config (Sync config cho nginx)
   - [ ] Runner xử lý config (Sync config cho haproxy)
 + [ ]  Check các bộ rules bắt buộc !!!!!!! ko được disable
++ [ ]  button pull rule default from source
 + [x]  commit file .disabled/enabled
 + [x]  limit max log query by time
 + [x]  check lại css ghi dè
