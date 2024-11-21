@@ -32,6 +32,7 @@
 + [x]  setup guide
 + [ ]  setting config (IP, variables,...)
 + [ ]  build docker
++ [ ]  hint (search bar)
 
 ## Setup
 
