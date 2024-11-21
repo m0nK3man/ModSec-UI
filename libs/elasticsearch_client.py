@@ -71,6 +71,7 @@ class ElasticsearchClient:
                             "transaction.messages.message",
                             "transaction.messages.details.ruleId",
                             "transaction.messages.details.severity",
+                            "transaction.messages.details.data",
                             "transaction.client_ip",
                             "transaction.request.headers.Host",
                             "transaction.request.headers.host",
@@ -94,6 +95,7 @@ class ElasticsearchClient:
                         "transaction.messages.message",
                         "transaction.messages.details.ruleId",
                         "transaction.messages.details.severity",
+                        "transaction.messages.details.data",
                         "transaction.client_ip",
                         "transaction.request.headers.Host",
                         "transaction.request.headers.host",
@@ -104,7 +106,7 @@ class ElasticsearchClient:
                     ]
                 }
             )
-            
+
             # Get current length
             current_length = len(response['hits']['hits'])  # Số lượng kết quả trả về
             # Get total matched documents
@@ -125,29 +127,34 @@ class ElasticsearchClient:
 
                     uri = escape(source.get('transaction', {}).get('request', {}).get('uri', 'N/A'))
                     rule_id = msg.get('details', {}).get('ruleId', 'N/A')
+                    client_ip = source.get('transaction', {}).get('client_ip', 'N/A')
                     severity = msg.get('details', {}).get('severity', 'N/A')
                     http_code = source.get('transaction', {}).get('response', {}).get('http_code', 'N/A')
-                    
+                    messages_message = msg.get('message', 'N/A')
+                    messages_details = msg.get('details', {}).get('data', 'N/A')
+
+                    print(msg)
+
                     log_entry = {
                         'timestamp': source.get('@timestamp'),
 #                        'rule_id': f"{msg.get('details', {}).get('ruleId', 'N/A')}---{msg.get('details', {}).get('file', 'N/A')}",
                         'rule_id': rule_id,
                         'severity': severity,
-                        'client_ip': f"{source.get('transaction', {}).get('client_ip', 'N/A')}---{client_info}",
+                        'client_ip': f"{client_ip}---{client_info}",
                         'request_host': f"{request_host}---{uri}",
                         'http_code': http_code,
                         'user_agent': user_agent,
-                        'message': f"{msg.get('message', 'N/A')}---{msg.get('details', {}).get('data', 'N/A')}"
+                        'message': f"{messages_message}---{messages_details}"
                     }
                     logs.append(log_entry)
-            
+
             return {
                 "logs": logs,
                 "current_length": current_length,
                 "total_hits": total_hits
             }
     
-        except Exceptions as e:
+        except Exception as e:
             print(f"Elasticsearch query error: {e}")
             return {"logs": [], "current_length": 0, "total_hits": 0}
 
