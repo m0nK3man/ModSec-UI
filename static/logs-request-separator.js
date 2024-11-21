@@ -4,25 +4,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let previousTime = null;
   let group = [];
+  
+  // Function to parse the custom date format into a JavaScript Date object
+  function parseCustomDate(dateStr) {
+    const [datePart, timePart] = dateStr.split(", "); // Split into date and time
+    const [day, month, year] = datePart.split("/").map(Number);
+    const [hours, minutes, seconds] = timePart.split(":").map(Number);
+    return new Date(year, month - 1, day, hours, minutes, seconds); // Create the Date object
+  }
 
   rows.forEach((row, index) => {
-    const currentTime = row.cells[0].textContent.trim(); // Assumes timestamp is in the first cell
-    const currentDate = new Date(currentTime);
+    const timestampCell = row.getElementsByClassName('timestamp-cell')[0];
+    if (!timestampCell) return; // Skip rows without the timestamp-cell
+    
+    const currentTime = timestampCell.textContent.trim();
+    const currentDate = parseCustomDate(currentTime);
 
     if (previousTime) {
-      const previousDate = new Date(previousTime);
-      const timeDifference = Math.abs(currentDate - previousDate) / 1000; // Time difference in seconds
+      const timeDifference = Math.abs(currentDate - previousTime) / 1000; // Time difference in seconds
       if (timeDifference > 0) { // New group if the difference exceeds 60 seconds
-        group[group.length - 1].style.borderBottom = "2px solid #999"; // Apply style to last row of the group
-        group = [];
+        console.log('cut')
+	group[group.length - 1].style.borderBottom = "2px solid #999"; // Style last row of the group
+        group = []; // Reset the group
       }
     }
+    
+    group.push(row); // Add current row to the group
+    previousTime = currentDate; // Update the previous time
 
-    group.push(row);
-    previousTime = currentTime;
-
-    // Apply to the last group after looping
-    if (index === rows.length - 1) {
+    // Apply the border to the last group after looping
+    if (index === rows.length - 1 && group.length > 0) {
       group[group.length - 1].style.borderBottom = "2px solid #999";
     }
   });

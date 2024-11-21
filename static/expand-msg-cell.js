@@ -5,7 +5,7 @@ function wrapUrlsInDetails() {
     expandCells.forEach(cell => {
         const fullText = cell.innerText.trim();
         const separatorIndex = fullText.indexOf('---');
-        
+        // work with summary and details field split by "---"
 	if (separatorIndex !== -1) {
             var MSGText = fullText.substring(0, separatorIndex).trim();
             var DetailsText = fullText.substring(separatorIndex + 3).trim();
@@ -17,33 +17,47 @@ function wrapUrlsInDetails() {
                 DetailsText = 'N/A';
             }
 
-            // Create the HTML structure with sanitized content
+            // Create the HTML structure
             cell.innerHTML = `
                 <details>
-                    <summary>▽ ${MSGText}</summary>
-                    <div class="full-msg">---<br>Details:<br>${DetailsText}</div>
+                    <summary></summary>
+		    <div>
+		        ---
+                        <br>
+                        Details:
+                        <br>
+		    </div>
+                    <div class="full-msg"></div>
                 </details>
             `;
-        } else {
+	    // use innerText to avoid XSS
+	    cell.querySelector('summary').innerText = `▽ ${MSGText}`
+	    cell.getElementsByClassName('full-msg')[0].innerText = `${DetailsText}`
+        } // work with a long field full text
+	else {
 	    if (fullText.length > 40) {
-		const truncated = "▽ " + fullText.substring(0, 40);
-		// Create details structure
+		const truncated = fullText.substring(0, 40);
+		// Create the HTML structure
                 cell.innerHTML = `
                     <details>
-                        <summary>${truncated}</summary>
-                        <div class="full-url">${fullText}</div>
+                        <summary></summary>
+                        <div class="full-msg"></div>
                     </details>
                 `;
-	        // Add toggle event listener
+		// use innerText to avoid XSS
+		cell.querySelector('summary').innerText = `▽ ${truncated}`
+		cell.getElementsByClassName('full-msg')[0].innerText = `${fullText}`
+	        
+		// Add toggle event listener
                 const details = cell.querySelector('details');
                 const summary = cell.querySelector('summary');
-                const originalText = summary.innerHTML;
+                const originalText = `▽ ${truncated}`;
 
                 details.addEventListener('toggle', (e) => {
                     if (details.open) {
-                        summary.innerHTML = "△";
+                        summary.innerText = "△";
                     } else {
-                        summary.innerHTML = originalText;
+                        summary.innerText = originalText;
                     }
                 }); 
 	    }
