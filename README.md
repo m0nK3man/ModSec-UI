@@ -33,6 +33,7 @@
 + [ ]  setting config (IP, variables,...)
 + [ ]  build docker
 + [ ]  hint (search bar)
++ [ ]  Quick script backupdb, viewdb, restoredb
 
 ## Setup
 
