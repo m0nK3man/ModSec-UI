@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const timeRange = document.getElementById('time_range');
     const startTimeInput = document.getElementById('start_time');
     const endTimeInput = document.getElementById('end_time');
-    const timestampCell = document.querySelector('.timestamp-cell')
 
     timeRange.addEventListener('change', function () {
         const now = new Date();
@@ -41,9 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         startTimeInput.value = formatDateTimeLocal(startTime);
         endTimeInput.value = formatDateTimeLocal(now);
-	timestampCell.value = formatDateTimeLocal(timestampCell.value)
     });
-
 
     timeRange.dispatchEvent(new Event('change'));
 });

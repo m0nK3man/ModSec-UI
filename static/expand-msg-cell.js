@@ -5,8 +5,8 @@ function wrapUrlsInDetails() {
     expandCells.forEach(cell => {
         const fullText = cell.innerText.trim();
         const separatorIndex = fullText.indexOf('---');
-        console.log(fullText)
-        if (separatorIndex !== -1) {
+        
+	if (separatorIndex !== -1) {
             var MSGText = fullText.substring(0, separatorIndex).trim();
             var DetailsText = fullText.substring(separatorIndex + 3).trim();
 	    if (!MSGText) {
