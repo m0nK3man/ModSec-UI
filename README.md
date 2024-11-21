@@ -27,7 +27,7 @@
   - [x]  Nếu rule disable rename to .disable
   - [x]  Sort by rulecode
   - [x]  Nếu status file là editing thì user khác lock edit
-  - [ ]  Xử lý push realtime status to existing user
+  - [ ]  Xử lý push realtime status to existing user (user editing)
   - [ ]  Sửa lỗi absolute config path
 + [x]  setup guide
 + [ ]  setting config (IP, variables,...)
