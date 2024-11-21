@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
 from libs.var import ELASTICSEARCH_CONFIG, LOGS_CONFIG
 import pytz
+from html import escape
 
 class ElasticsearchClient:
     def __init__(self):
@@ -66,7 +67,7 @@ class ElasticsearchClient:
                     "query_string": {
                         "query": search_query,
                         "fields": [
-                            "transaction.time_stamp",
+                            "@timestamp",
                             "transaction.messages.message",
                             "transaction.messages.details.ruleId",
                             "transaction.messages.details.severity",
@@ -89,7 +90,7 @@ class ElasticsearchClient:
                     "sort": [{"@timestamp": {"order": "desc"}}],
                     "size": size,
                     "_source": [
-                        "transaction.time_stamp",
+                        "@timestamp",
                         "transaction.messages.message",
                         "transaction.messages.details.ruleId",
                         "transaction.messages.details.severity",
@@ -116,20 +117,26 @@ class ElasticsearchClient:
                 # Extracting details from the log structure
                 messages = source.get('transaction', {}).get('messages', [])
                 for msg in messages:
+
                     request_host = source.get('transaction', {}).get('request', {}).get('headers', {}).get('Host', source.get('transaction', {}).get('request', {}).get('headers', {}).get('host', 'N/A'))
                     client_info = source.get('transaction', {}).get('request', {}).get('headers', {}).get('Clientinfo', source.get('transaction', {}).get('request', {}).get('headers', {}).get('clientinfo', 'N/A'))
-                    user_agent = source.get('transaction', {}).get('request', {}).get('headers', {}).get('User-Agent', source.get('transaction', {}).get('request', {}).get('headers', {}).get('user-agent', 'N/A'))
+                    raw_user_agent = source.get('transaction', {}).get('request', {}).get('headers', {}).get('User-Agent', source.get('transaction', {}).get('request', {}).get('headers', {}).get('user-agent', 'N/A'))
+                    user_agent = escape(raw_user_agent)
+
+                    uri = escape(source.get('transaction', {}).get('request', {}).get('uri', 'N/A'))
+                    rule_id = msg.get('details', {}).get('ruleId', 'N/A')
+                    severity = msg.get('details', {}).get('severity', 'N/A')
+                    http_code = source.get('transaction', {}).get('response', {}).get('http_code', 'N/A')
+                    
                     log_entry = {
-                        'timestamp': source.get('transaction', {}).get('time_stamp'),
+                        'timestamp': source.get('@timestamp'),
 #                        'rule_id': f"{msg.get('details', {}).get('ruleId', 'N/A')}---{msg.get('details', {}).get('file', 'N/A')}",
-                        'rule_id': msg.get('details', {}).get('ruleId', 'N/A'),  # Rule ID from message details
-                        'severity': msg.get('details', {}).get('severity', 'N/A'),  # Severity from message details
-                        # Merge 'client_ip' and 'client_info' fields
+                        'rule_id': rule_id,
+                        'severity': severity,
                         'client_ip': f"{source.get('transaction', {}).get('client_ip', 'N/A')}---{client_info}",
-                        'request_host': f"{request_host}---{source.get('transaction', {}).get('request', {}).get('uri', 'N/A')}",
-                        'http_code': source.get('transaction', {}).get('response', {}).get('http_code', 'N/A'),
+                        'request_host': f"{request_host}---{uri}",
+                        'http_code': http_code,
                         'user_agent': user_agent,
-                        # Merging 'detail' and 'message' fields
                         'message': f"{msg.get('message', 'N/A')}---{msg.get('details', {}).get('data', 'N/A')}"
                     }
                     logs.append(log_entry)
