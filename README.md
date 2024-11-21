@@ -30,7 +30,7 @@
   - [ ]  Sửa lỗi absolute config path
 + [x]  setup guide
 + [ ]  setting config (IP, variables,...)
-+ [ ]  
++ [ ]  build docker
 
 ## Setup
 
