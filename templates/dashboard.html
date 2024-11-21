@@ -13,13 +13,12 @@
             </select>
             <button class="button" type="submit">Save</button>
         </form>
-
-        {% if save_change %}
+    </div>
+    {% if save_change %}
         <form action="{{ url_for('dashboard.commit_changes_view') }}" method="post" class="commit-form">
             <button type="submit" class="button commit">Save Changes</button>
         </form>
-        {% endif %}
-    </div>
+    {% endif %}
     <!-- Logs Filter Section -->
     <div class="filter-section">
         <form method="GET" action="{{ url_for('dashboard.dashboard') }}" class="filter-form">
