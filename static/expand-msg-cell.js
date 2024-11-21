@@ -5,11 +5,10 @@ function wrapUrlsInDetails() {
     expandCells.forEach(cell => {
         const fullText = cell.innerText.trim();
         const separatorIndex = fullText.indexOf('---');
-        
+        console.log(fullText)
         if (separatorIndex !== -1) {
             var MSGText = fullText.substring(0, separatorIndex).trim();
             var DetailsText = fullText.substring(separatorIndex + 3).trim();
-            
 	    if (!MSGText) {
                 MSGText = 'N/A';
             }
@@ -18,30 +17,13 @@ function wrapUrlsInDetails() {
                 DetailsText = 'N/A';
             }
 
-	    // Sanitize both MSG and Details text using DOMPurify
-            const sanitizedMSG = DOMPurify.sanitize(MSGText, {
-                ALLOWED_TAGS: [], // Only allow text content for MSG
-                ALLOWED_ATTR: []
-            });
-            
-            const sanitizedDetails = DOMPurify.sanitize(DetailsText, {
-                ALLOWED_TAGS: ['br', 'p', 'span', 'div'], // Allow basic formatting for details
-                ALLOWED_ATTR: ['class']
-            });
-
             // Create the HTML structure with sanitized content
-            const sanitizedHTML = `
+            cell.innerHTML = `
                 <details>
-                    <summary>▽ ${sanitizedMSG}</summary>
-                    <div class="full-msg">---<br>Details:<br>${sanitizedDetails}</div>
+                    <summary>▽ ${MSGText}</summary>
+                    <div class="full-msg">---<br>Details:<br>${DetailsText}</div>
                 </details>
             `;
-
-            // Sanitize the entire HTML structure as an additional security measure
-            cell.innerHTML = DOMPurify.sanitize(sanitizedHTML, {
-                ALLOWED_TAGS: ['details', 'summary', 'div', 'br'],
-                ALLOWED_ATTR: ['class']
-            });
         } else {
 	    if (fullText.length > 40) {
 		const truncated = "▽ " + fullText.substring(0, 40);
