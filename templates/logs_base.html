@@ -1,0 +1,79 @@
+<!-- templates/base_logs.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div id="logs">
+    <!-- Logs Navigation -->
+    <div class="logs-navigate">
+      <!-- Button to navigate to Page 1 -->
+      <button class="button">
+        <a href="{{ url_for('logs.audit_logs') }}">
+          Audit Logs
+        </a>
+      </button>
+      <!-- Button to navigate to Page 2 -->
+      <button class="button">
+        <a href="{{ url_for('logs.access_logs') }}">
+          Access Logs
+        </a>
+      </button>
+      <!-- Button to navigate to Page 3 -->
+      <button class="button">
+        <a href="{{ url_for('logs.error_logs') }}">
+          Error Logs
+        </a>
+      </button>
+    </div>
+    
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for(current_endpoint) }}" class="filter-form">
+            <!-- Search Input -->
+            <input type="text" name="search" placeholder="Search logs..." value="{{ request.args.get('search', '') }}">
+        
+            <!-- Time Range Dropdown -->
+            <select id="time_range" class="time-range">
+                <option selected>📅Timestamp</option>
+                <option value="15m">Last 15 minutes</option>
+                <option value="1h">Last hour</option>
+                <option value="3h">Last 3 hours</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="1d">Last 24 hours</option>
+            </select>
+        
+            <!-- Date-Time Range Inputs -->
+            <div class="date-range">
+                <div>
+                   <label for="start_time">Start Time:</label>
+                   <input type="datetime-local" id="start_time" name="start_time" value="{{ request.args.get('start_time', '') }}">
+                </div>
+                <div>
+                    <label for="end_time">End Time:</label>
+                    <input type="datetime-local" id="end_time" name="end_time" value="{{ request.args.get('end_time', '') }}">
+               </div>
+            </div>
+           <button type="submit" class="button">Filter</button>
+        </form>
+    </div>
+
+    <!-- Placeholder for unique content -->
+    {% block logs_content %}
+    {% endblock %}
+
+    <p>Logs retrieved: {{ current_length }} out of {{ total_hits }} total matches.</p>
+
+    <div class="pagination">
+        <button class="button" id="prev" disabled>Previous</button>
+        <span id="page-info"></span>
+        <button class="button" id="next">Next</button>
+    </div>
+</div>
+
+<!-- Shared Scripts -->
+<script src="{{ url_for('static', filename='datetime-picker.js') }}"></script>
+<script src="{{ url_for('static', filename='page-pagination.js') }}"></script>
+<script src="{{ url_for('static', filename='expand-msg-cell.js') }}"></script>
+<script src="{{ url_for('static', filename='expand-row.js') }}"></script>
+<script src="{{ url_for('static', filename='logs-request-separator.js') }}"></script>
+<script src="{{ url_for('static', filename='timestamp-formatter.js') }}"></script>
+{% endblock %}
+
