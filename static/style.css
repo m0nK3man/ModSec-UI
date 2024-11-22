@@ -397,6 +397,14 @@ a {
 .severity-debug { background-color: #e6f7ff; }
 .severity-text { font-weight: bold; }
 
+/* Status-based row colors */
+[class^="status-1"] { background-color: #C9EDFF }
+[class^="status-2"] { background-color: #D4E9C5 }
+[class^="status-3"] { background-color: #FFF2B5 }
+[class^="status-4"] { background-color: #FFE3C9 }
+[class^="status-5"] { background-color: #FACFD6 }
+
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .filter-form {
