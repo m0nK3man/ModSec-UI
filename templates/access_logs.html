@@ -16,7 +16,7 @@
             </thead>
             <tbody>
                 {% for log in logs %}
-                <tr class="">
+                <tr class="status-{{ log.status }}">
                     <td class="timestamp-cell">
                         {{ log.timestamp }}
                     </td>
