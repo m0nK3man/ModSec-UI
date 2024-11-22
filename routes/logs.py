@@ -10,6 +10,11 @@ bp = Blueprint('logs', __name__)
 
 es_client = ElasticsearchClient()
 
+@bp.route('/logs', methods=['GET'])
+@login_required
+def redirect_to_audit_logs():
+    return redirect(url_for('logs.audit_logs'))
+
 @bp.route('/logs/audit', methods=['GET', 'POST'])
 @login_required
 def audit_logs():
