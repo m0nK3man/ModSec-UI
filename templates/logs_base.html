@@ -55,11 +55,11 @@
         </form>
     </div>
 
+    <p>Logs retrieved: {{ current_length }} out of {{ total_hits }} total matches.</p>
+
     <!-- Placeholder for unique content -->
     {% block logs_content %}
     {% endblock %}
-
-    <p>Logs retrieved: {{ current_length }} out of {{ total_hits }} total matches.</p>
 
     <div class="pagination">
         <button class="button" id="prev" disabled>Previous</button>
