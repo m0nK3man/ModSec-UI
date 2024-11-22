@@ -267,6 +267,16 @@ a {
 
 /* # ==================== Logs ==================== */
 
+.logs-navigate {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  position: absolute;
+  top: 70px;
+  right: 120px;
+}
+
 .filter-section {
     padding: 15px;
     background: #ffffff;

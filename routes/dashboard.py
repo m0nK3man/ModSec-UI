@@ -51,10 +51,11 @@ def dashboard():
             '6': 'Info',
             '7': 'Debug'
         }
-
+        
         # mapping severity
-        for entry in stats['severity_breakdown']:
-            entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
+        if stats:
+            for entry in stats['severity_breakdown']:
+                entry['severity'] = severity_mapping.get(entry['key'], 'UNKNOWN')
 
     except Exception as e:
         print(f"Error: {e}")

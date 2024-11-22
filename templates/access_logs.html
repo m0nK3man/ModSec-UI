@@ -2,9 +2,30 @@
 {% extends "base.html" %}
 {% block content %}
 <div id="logs">
+    <!-- Logs Navigation -->
+    <div class="logs-navigate">
+      <!-- Button to navigate to Page 1 -->
+      <button class="button">
+	<a href="{{ url_for('logs.audit_logs') }}">
+	  Audit Logs
+	</a>
+      </button>
+      <!-- Button to navigate to Page 2 -->
+      <button class="button">
+        <a href="{{ url_for('logs.access') }}">
+	  Access Logs
+        </a>
+      </button>
+      <!-- Button to navigate to Page 3 -->
+      <button class="button">
+        <a href="{{ url_for('logs.error') }}">
+	  Error Logs
+        </a>
+      </button>
+    </div>
     <!-- Logs Filter Section -->
     <div class="filter-section">
-        <form method="GET" action="{{ url_for('logs.logs') }}" class="filter-form">
+        <form method="GET" action="{{ url_for('logs.audit_logs') }}" class="filter-form">
 	    <!-- Search Input -->
             <input type="text" name="search" placeholder="Search logs..." value="{{ request.args.get('search', '') }}">
 	    <!-- Time Range Dropdown -->
