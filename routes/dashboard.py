@@ -39,7 +39,7 @@ def dashboard():
         start_time = request.args.get('start_time', None)
         end_time = request.args.get('end_time', None)
 
-        stats = es_client.get_stats(search_query=search_query, start_time=start_time, end_time=end_time)
+        stats = es_client.get_modsec_stats(search_query=search_query, start_time=start_time, end_time=end_time)
 
         severity_mapping = {
             '0': 'Emergency',

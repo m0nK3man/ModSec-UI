@@ -35,7 +35,7 @@ def logs():
             max_size = 1000
         
         # Get logs và query info
-        logs_response = es_client.get_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
+        logs_response = es_client.get_modsec_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
         logs = logs_response.get('logs', [])
         current_length = logs_response.get('current_length', 0)
         total_hits = logs_response.get('total_hits', 0)
