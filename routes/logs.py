@@ -78,10 +78,10 @@ def access_logs():
         max_size = calculate_max_size(time_diff)
 
         # Get logs và query info
-        #logs_response = es_client.get_access_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
-        #logs = logs_response.get('logs', [])
-        #current_length = logs_response.get('current_length', 0)
-        #total_hits = logs_response.get('total_hits', 0)
+        logs_response = es_client.get_access_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
+        logs = logs_response.get('logs', [])
+        current_length = logs_response.get('current_length', 0)
+        total_hits = logs_response.get('total_hits', 0)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -89,11 +89,11 @@ def access_logs():
         return redirect(url_for('logs.access_logs'))
 
     return render_template('access_logs.html',
-#                           logs=logs,
-#                           current_length=current_length,
-#                           total_hits=total_hits
+                           logs=logs,
+                           current_length=current_length,
+                           total_hits=total_hits,
                            current_endpoint='logs.access_logs',
-                            )
+                           )
 
 @bp.route('/logs/error', methods=['GET', 'POST'])
 @login_required

@@ -17,6 +17,7 @@ class ElasticsearchClient:
             ssl_show_warn=False 
         )
         self.index_modsec = ELASTICSEARCH_CONFIG['INDEX_MODSEC']
+        self.index_access = ELASTICSEARCH_CONFIG['INDEX_ACCESS']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
     def calculate_time_utc(self, base_time):
@@ -243,3 +244,95 @@ class ElasticsearchClient:
         except Exception as e:
             print(f"Error getting statistics: {e}")
             return {}
+
+    def get_access_logs(self, size=500, search_query=None, start_time=None, end_time=None):
+        try:
+            # Use provided size or default from config
+            size = size or self.max_results
+            
+            # Convert and validate times
+            if not start_time or not end_time:
+                return {"logs": [], "current_length": 0, "total_hits": 0}
+
+            # Convert times to UTC for Elasticsearch query
+            from_time_utc = self.calculate_time_utc(start_time)
+            to_time_utc = self.calculate_time_utc(end_time)
+
+            # Base query
+            query = {
+                "bool": {
+                    "must": [
+                        {
+                            "range": {
+                                "@timestamp": {
+                                    "gte": from_time_utc.isoformat(),
+                                    "lte": to_time_utc.isoformat()
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+            
+            query_fields = [
+                "@timestamp",
+                "http_host",
+                "http_referrer",
+                "http_user_agent",
+                "remote_addr",
+                "request",
+                "status",
+                "upstream_response_time"
+            ]
+            
+            # Add search query if provided
+            if search_query:
+                query["bool"]["must"].append({
+                    "query_string": {
+                        "query": search_query,
+                        "fields": query_fields
+                    }
+                })
+
+            # Execute search (limit return source for quick query)
+            response = self.es.search(
+                index=self.index_access,
+                body={
+                    "query": query,
+                    "sort": [{"@timestamp": {"order": "desc"}}],
+                    "size": size,
+                    "_source": query_fields
+                }
+            )
+
+            # Get current length
+            current_length = len(response['hits']['hits'])  # Number of results returned
+            # Get total matched documents
+            total_hits = response['hits']['total']['value']  # Total matched documents
+
+            # Process and format results
+            logs = []
+            for hit in response['hits']['hits']:
+                source = hit['_source']
+                log_entry = {
+                    'timestamp': source.get('@timestamp', 'N/A'),
+                    'http_host': source.get('http_host', 'N/A'),
+                    'http_user_agent': source.get('http_user_agent', 'N/A'),
+                    'client_ip': f"{source.get('remote_addr', 'N/A')}---{source.get('http_referrer', 'N/A')}",
+                    'remote_addr': source.get('remote_addr', 'N/A'),
+                    'request': source.get('request', 'N/A'),
+                    'status': source.get('status', 'N/A'),
+                    'upstream_response_time': source.get('upstream_response_time', 'N/A')
+                }
+                logs.append(log_entry)
+
+            return {
+                "logs": logs,
+                "current_length": current_length,
+                "total_hits": total_hits
+            }
+
+        except Exception as e:
+            print(f"Elasticsearch query error: {e}")
+            return {"logs": [], "current_length": 0, "total_hits": 0}
+

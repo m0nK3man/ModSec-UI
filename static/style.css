@@ -350,9 +350,7 @@ a {
     align-items: flex-end;
 }
 
-.logs-table .ruleid-cell,
-.logs-table .severity-cell,
-.logs-table .http-code-cell,
+.logs-table .small-cell
 {
     width: 80px; /* Adjust this value based on your needs */
     text-align: center;

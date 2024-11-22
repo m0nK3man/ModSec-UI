@@ -6,36 +6,38 @@
             <thead>
                 <tr>
                     <th>Timestamp</th>
-                    <th>Rule ID</th>
-                    <th>Severity</th>
+                    <th>HTTP Host</th>
                     <th>Client IP</th>
-                    <th>Host</th>
-                    <th>Status</th>
                     <th>User Agent</th>
-                    <th>Message</th>
+                    <th>Request</th>
+                    <th>Status</th>
+                    <th>Response Time</th>
                 </tr>
             </thead>
             <tbody>
                 {% for log in logs %}
-                <tr class="severity-">
+                <tr class="">
                     <td class="timestamp-cell">
-		        test
-		    </td>
+                        {{ log.timestamp }}
+                    </td>
+                    <td class="expand-cell" style="min-width: 150px;">
+                        {{ log.http_host }}
+                    </td>
+                    <td class="expand-cell" style="min-width: 150px;">
+                        {{ log.client_ip }}
+                    </td>
                     <td class="expand-cell">
-			test error
-		    </td>
-                    <td class="severity-cell">
-		    </td>
-                    <td class="expand-cell" style="min-width: 170px;">
-		    </td>
+                        {{ log.http_user_agent }}
+                    </td>
                     <td class="expand-cell">
-		    </td>
-                    <td class="http-code-cell">
-		    </td>
-                    <td class="expand-cell">
-		    </td>
-                    <td class="expand-cell">
-		    </td>
+                        {{ log.request }}
+                    </td>
+                    <td class="small-cell">
+                        {{ log.status }}
+                    </td>
+                    <td class="small-cell">
+                        {{ log.upstream_response_time }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
