@@ -1,0 +1,43 @@
+<!-- templates/error_logs.html -->
+{% extends "logs_base.html" %}
+{% block logs_content %} 
+<!-- Logs Table -->
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Rule ID</th>
+                    <th>Severity</th>
+                    <th>Client IP</th>
+                    <th>Host</th>
+                    <th>Status</th>
+                    <th>User Agent</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr class="severity-">
+                    <td class="timestamp-cell">
+		        test
+		    </td>
+                    <td class="expand-cell">
+			test error
+		    </td>
+                    <td class="severity-cell">
+		    </td>
+                    <td class="expand-cell" style="min-width: 170px;">
+		    </td>
+                    <td class="expand-cell">
+		    </td>
+                    <td class="http-code-cell">
+		    </td>
+                    <td class="expand-cell">
+		    </td>
+                    <td class="expand-cell">
+		    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endblock %}

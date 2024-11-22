@@ -16,35 +16,36 @@ class ElasticsearchClient:
             verify_certs=False,
             ssl_show_warn=False 
         )
-        self.index_pattern = ELASTICSEARCH_CONFIG['INDEX_PATTERN']
+        self.index_modsec = ELASTICSEARCH_CONFIG['INDEX_MODSEC']
         self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
 
-    def get_logs(self, size=500, search_query=None, start_time=None, end_time=None):
+    def calculate_time_utc(self, base_time):
+        # Set up timezones
+        tz_utc = pytz.UTC
+        tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
+
+        # Convert ISO format string to a timezone-aware datetime
+        utc_time = datetime.fromisoformat(base_time)
+
+        # If the input time is naive (no timezone info), assume it's in UTC+7
+        if utc_time.tzinfo is None:
+            utc_time = tz_utc7.localize(utc_time)
+
+        # Convert the time to UTC for Elasticsearch query
+        return utc_time.astimezone(tz_utc)
+
+    def get_modsec_logs(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
             # Use provided size or default from config
             size = size or self.max_results
-
-            # Set up timezone
-            tz_utc = pytz.UTC
-            tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
             
             # Convert and validate times
             if not start_time or not end_time:
                 return {"logs": [], "current_length": 0, "total_hits": 0}
-            
-            # Convert ISO format strings to timezone-aware datetimes
-            from_time = datetime.fromisoformat(start_time)
-            to_time = datetime.fromisoformat(end_time)
-
-            # If the input times are naive (no timezone info), assume they're in UTC+7
-            if from_time.tzinfo is None:
-                from_time = tz_utc7.localize(from_time)
-            if to_time.tzinfo is None:
-                to_time = tz_utc7.localize(to_time)
 
             # Convert times to UTC for Elasticsearch query
-            from_time_utc = from_time.astimezone(tz_utc)
-            to_time_utc = to_time.astimezone(tz_utc)
+            from_time_utc = self.calculate_time_utc(start_time)
+            to_time_utc = self.calculate_time_utc(end_time)
 
             # Base query
             query = {
@@ -61,49 +62,40 @@ class ElasticsearchClient:
                     ]
                 }
             }
+            
+            query_fields = [
+                "@timestamp",
+                "transaction.messages.message",
+                "transaction.messages.details.ruleId",
+                "transaction.messages.details.file",
+                "transaction.messages.details.severity",
+                "transaction.messages.details.data",
+                "transaction.client_ip",
+                "transaction.request.headers.Host",
+                "transaction.request.headers.host",
+                "transaction.request.uri",
+                "transaction.response.http_code",
+                "transaction.request.headers.User-Agent",
+                "transaction.request.headers.user-agent"
+            ]
+            
             # Add search query if provided
             if search_query:
                 query["bool"]["must"].append({
                     "query_string": {
                         "query": search_query,
-                        "fields": [
-                            "@timestamp",
-                            "transaction.messages.message",
-                            "transaction.messages.details.ruleId",
-                            "transaction.messages.details.severity",
-                            "transaction.messages.details.data",
-                            "transaction.client_ip",
-                            "transaction.request.headers.Host",
-                            "transaction.request.headers.host",
-                            "transaction.request.uri",
-                            "transaction.response.http_code",
-                            "transaction.request.headers.User-Agent",
-                            "transaction.request.headers.user-agent"
-                        ]
+                        "fields": query_fields
                     }
                 })
     
             # Execute search (limit return source for quick query)
             response = self.es.search(
-                index=self.index_pattern,
+                index=self.index_modsec,
                 body={
                     "query": query,
                     "sort": [{"@timestamp": {"order": "desc"}}],
                     "size": size,
-                    "_source": [
-                        "@timestamp",
-                        "transaction.messages.message",
-                        "transaction.messages.details.ruleId",
-                        "transaction.messages.details.severity",
-                        "transaction.messages.details.data",
-                        "transaction.client_ip",
-                        "transaction.request.headers.Host",
-                        "transaction.request.headers.host",
-                        "transaction.request.uri",
-                        "transaction.response.http_code",
-                        "transaction.request.headers.User-Agent",
-                        "transaction.request.headers.user-agent"
-                    ]
+                    "_source": query_fields
                 }
             )
 
@@ -127,18 +119,16 @@ class ElasticsearchClient:
 
                     uri = escape(source.get('transaction', {}).get('request', {}).get('uri', 'N/A'))
                     rule_id = msg.get('details', {}).get('ruleId', 'N/A')
+                    rule_file = msg.get('details', {}).get('file', 'N/A')
                     client_ip = source.get('transaction', {}).get('client_ip', 'N/A')
                     severity = msg.get('details', {}).get('severity', 'N/A')
                     http_code = source.get('transaction', {}).get('response', {}).get('http_code', 'N/A')
                     messages_message = msg.get('message', 'N/A')
                     messages_details = msg.get('details', {}).get('data', 'N/A')
 
-                    print(msg)
-
                     log_entry = {
                         'timestamp': source.get('@timestamp'),
-#                        'rule_id': f"{msg.get('details', {}).get('ruleId', 'N/A')}---{msg.get('details', {}).get('file', 'N/A')}",
-                        'rule_id': rule_id,
+                        'rule_id': f"{rule_id}---{rule_file}",
                         'severity': severity,
                         'client_ip': f"{client_ip}---{client_info}",
                         'request_host': f"{request_host}---{uri}",
@@ -158,38 +148,18 @@ class ElasticsearchClient:
             print(f"Elasticsearch query error: {e}")
             return {"logs": [], "current_length": 0, "total_hits": 0}
 
-    def get_stats(self, size=500, search_query=None, start_time=None, end_time=None):
+    def get_modsec_stats(self, size=500, search_query=None, start_time=None, end_time=None):
         try:
-            # Use provided size or default from config
+             # Use provided size or default from config
             size = size or self.max_results
-
-            # Set up timezone
-            tz_utc = pytz.UTC
-            tz_utc7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
-
-            if start_time and end_time:
-                # Convert ISO format strings to timezone-aware datetimes
-                from_time = datetime.fromisoformat(start_time)
-                to_time = datetime.fromisoformat(end_time)
-
-                # If the input times are naive (no timezone info), assume they're in UTC+7
-                if from_time.tzinfo is None:
-                    from_time = tz_utc7.localize(from_time)
-                if to_time.tzinfo is None:
-                    to_time = tz_utc7.localize(to_time)
-            else:
-                from_time = datetime.utcnow()
-                to_time = datetime.utcnow()
-
-                if from_time.tzinfo is None:
-                    from_time = tz_utc7.localize(from_time)
-                if to_time.tzinfo is None:
-                    to_time = tz_utc7.localize(to_time)
-                #return {}
+            
+            # Convert and validate times
+            if not start_time or not end_time:
+                return {}
 
             # Convert times to UTC for Elasticsearch query
-            from_time_utc = from_time.astimezone(tz_utc)
-            to_time_utc = to_time.astimezone(tz_utc)
+            from_time_utc = self.calculate_time_utc(start_time)
+            to_time_utc = self.calculate_time_utc(end_time)
 
             # Base query
             query = {
@@ -207,24 +177,28 @@ class ElasticsearchClient:
                 }
             }
             
+            query_fields = [
+                "@timestamp",
+                "transaction.messages.message",
+                "transaction.messages.details.ruleId",
+                "transaction.messages.details.file",
+                "transaction.messages.details.severity",
+                "transaction.messages.details.data",
+                "transaction.client_ip",
+                "transaction.request.headers.Host",
+                "transaction.request.headers.host",
+                "transaction.request.uri",
+                "transaction.response.http_code",
+                "transaction.request.headers.User-Agent",
+                "transaction.request.headers.user-agent"
+            ]
+            
             # Add search query if provided
             if search_query:
                 query["bool"]["must"].append({
                     "query_string": {
                         "query": search_query,
-                        "fields": [
-                            "transaction.time_stamp",
-                            "transaction.messages.message",
-                            "transaction.messages.details.ruleId",
-                            "transaction.messages.details.severity",
-                            "transaction.client_ip",
-                            "transaction.request.headers.Host",
-                            "transaction.request.headers.host",
-                            "transaction.request.uri",
-                            "transaction.response.http_code",
-                            "transaction.request.headers.User-Agent",
-                            "transaction.request.headers.user-agent"
-                        ]
+                        "fields": query_fields
                     }
                 })
             
@@ -252,7 +226,7 @@ class ElasticsearchClient:
 
             # Execute search
             response = self.es.search(
-                index=self.index_pattern,
+                index=self.index_modsec,
                 body={
                     "query": query,
                     "aggs": aggs,

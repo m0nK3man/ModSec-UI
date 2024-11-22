@@ -10,9 +10,14 @@ bp = Blueprint('logs', __name__)
 
 es_client = ElasticsearchClient()
 
-@bp.route('/logs', methods=['GET', 'POST'])
+@bp.route('/logs', methods=['GET'])
 @login_required
-def logs():
+def redirect_to_audit_logs():
+    return redirect(url_for('logs.audit_logs'))
+
+@bp.route('/logs/audit', methods=['GET', 'POST'])
+@login_required
+def audit_logs():
     try:
         # Get logs and statistics
         search_query = request.args.get('search', None)
@@ -22,20 +27,10 @@ def logs():
         # Determine size based on time range
         time_diff = count_time_range(start_time, end_time)
         # Default size
-        max_size = 500
-        if time_diff <= 1:
-            max_size = 300
-        elif time_diff <= 3:
-            max_size = 500
-        elif time_diff <= 6:
-            max_size = 800
-        elif time_diff <= 12:
-            max_size = 1000
-        else:
-            max_size = 1000
+        max_size = calculate_max_size(time_diff)
         
         # Get logs và query info
-        logs_response = es_client.get_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
+        logs_response = es_client.get_modsec_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
         logs = logs_response.get('logs', [])
         current_length = logs_response.get('current_length', 0)
         total_hits = logs_response.get('total_hits', 0)
@@ -52,18 +47,85 @@ def logs():
         }
 
         # mapping severity
-        for log in logs:
-            log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
+        if logs:
+            for log in logs:
+                log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
     
     except Exception as e:
         print(f"Error: {e}")
         flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for('logs.logs'))
+        return redirect(url_for('logs.audit_logs'))
 
-    return render_template('logs.html',
+    return render_template('audit_logs.html',
                            logs=logs,
                            current_length=current_length,
-                           total_hits=total_hits)
+                           total_hits=total_hits,
+                           current_endpoint='logs.audit_logs',
+                           )
+
+@bp.route('/logs/access', methods=['GET', 'POST'])
+@login_required
+def access_logs():
+    try:
+        # Get logs and statistics
+        search_query = request.args.get('search', None)
+        start_time = request.args.get('start_time', None)
+        end_time = request.args.get('end_time', None)
+
+        # Determine size based on time range
+        time_diff = count_time_range(start_time, end_time)
+        # Default size
+        max_size = calculate_max_size(time_diff)
+
+        # Get logs và query info
+        #logs_response = es_client.get_access_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
+        #logs = logs_response.get('logs', [])
+        #current_length = logs_response.get('current_length', 0)
+        #total_hits = logs_response.get('total_hits', 0)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for('logs.access_logs'))
+
+    return render_template('access_logs.html',
+#                           logs=logs,
+#                           current_length=current_length,
+#                           total_hits=total_hits
+                           current_endpoint='logs.access_logs',
+                            )
+
+@bp.route('/logs/error', methods=['GET', 'POST'])
+@login_required
+def error_logs():
+    try:
+        # Get logs and statistics
+        search_query = request.args.get('search', None)
+        start_time = request.args.get('start_time', None)
+        end_time = request.args.get('end_time', None)
+
+        # Determine size based on time range
+        time_diff = count_time_range(start_time, end_time)
+        # Default size
+        max_size = calculate_max_size(time_diff)
+
+        # Get logs và query info
+#        logs_response = es_client.get_modsec_logs(search_query=search_query, size=max_size, start_time=start_time, end_time=end_time)
+#        logs = logs_response.get('logs', [])
+#        current_length = logs_response.get('current_length', 0)
+#        total_hits = logs_response.get('total_hits', 0)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for('logs.error_logs'))
+
+    return render_template('error_logs.html',
+#                           logs=logs,
+#                           current_length=current_length,
+#                           total_hits=total_hits
+                           current_endpoint='logs.error_logs',
+                           )
 
 def count_time_range(start_time, end_time):
     if start_time and end_time:
@@ -90,3 +152,17 @@ def count_time_range(start_time, end_time):
     else:
         return 0
 
+def calculate_max_size(time_diff):
+    # Default size
+    max_size = 500
+    if time_diff <= 1:
+        max_size = 300
+    elif time_diff <= 3:
+        max_size = 500
+    elif time_diff <= 6:
+        max_size = 800
+    elif time_diff <= 12:
+        max_size = 1000
+    else:
+        max_size = 1000
+    return max_size
