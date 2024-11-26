@@ -36,14 +36,14 @@ def audit_logs():
         total_hits = logs_response.get('total_hits', 0)
 
         severity_mapping = {
-            '0': 'Emergency',
-            '1': 'Alert',
+#            '0': '',
+#            '1': 'Alert',
             '2': 'Critical',
             '3': 'Error',
             '4': 'Warning',
             '5': 'Notice',
-            '6': 'Info',
-            '7': 'Debug'
+#            '6': 'Info',
+#            '7': 'Debug'
         }
 
         # mapping severity

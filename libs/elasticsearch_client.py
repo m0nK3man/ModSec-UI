@@ -67,6 +67,7 @@ class ElasticsearchClient:
             query_fields = [
                 "@timestamp",
                 "transaction.messages.message",
+                "transaction.messages.details.match",
                 "transaction.messages.details.ruleId",
                 "transaction.messages.details.file",
                 "transaction.messages.details.severity",
@@ -96,7 +97,7 @@ class ElasticsearchClient:
                     "query": query,
                     "sort": [{"@timestamp": {"order": "desc"}}],
                     "size": size,
-                    "_source": query_fields
+                   # "_source": query_fields
                 }
             )
 
@@ -128,7 +129,7 @@ class ElasticsearchClient:
                     client_ip = source.get('transaction', {}).get('client_ip', 'N/A')
                     severity = msg.get('details', {}).get('severity', 'N/A')
                     http_code = source.get('transaction', {}).get('response', {}).get('http_code', 'N/A')
-                    messages_message = msg.get('message', 'N/A')
+                    messages_message = msg.get('message') or msg.get('details', {}).get('match', 'N/A')
                     messages_details = msg.get('details', {}).get('data', 'N/A')
 
                     log_entry = {
