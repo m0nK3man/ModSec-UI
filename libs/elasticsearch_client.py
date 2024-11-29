@@ -67,6 +67,7 @@ class ElasticsearchClient:
             query_fields = [
                 "@timestamp",
                 "transaction.messages.message",
+                "transaction.messages.details.match",
                 "transaction.messages.details.ruleId",
                 "transaction.messages.details.file",
                 "transaction.messages.details.severity",
@@ -96,7 +97,7 @@ class ElasticsearchClient:
                     "query": query,
                     "sort": [{"@timestamp": {"order": "desc"}}],
                     "size": size,
-                    "_source": query_fields
+                   # "_source": query_fields
                 }
             )
 
@@ -121,15 +122,19 @@ class ElasticsearchClient:
                     uri = escape(source.get('transaction', {}).get('request', {}).get('uri', 'N/A'))
                     rule_id = msg.get('details', {}).get('ruleId', 'N/A')
                     rule_file = msg.get('details', {}).get('file', 'N/A')
+                    rule_file_truncated = rule_file[rule_file.rfind("/") + 1:]
+                    rule_file_name = rule_file_truncated.replace(".conf", "")
+                    rule_file_name = rule_file_name.replace("-", " ").title()
+
                     client_ip = source.get('transaction', {}).get('client_ip', 'N/A')
                     severity = msg.get('details', {}).get('severity', 'N/A')
                     http_code = source.get('transaction', {}).get('response', {}).get('http_code', 'N/A')
-                    messages_message = msg.get('message', 'N/A')
+                    messages_message = msg.get('message') or msg.get('details', {}).get('match', 'N/A')
                     messages_details = msg.get('details', {}).get('data', 'N/A')
 
                     log_entry = {
                         'timestamp': source.get('@timestamp'),
-                        'rule_id': f"{rule_id}---{rule_file}",
+                        'rule_id': f"{rule_file_name}---{rule_id}",
                         'severity': severity,
                         'client_ip': f"{client_ip}---{client_info}",
                         'request_host': f"{request_host}---{uri}",
