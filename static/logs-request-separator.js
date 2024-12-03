@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (previousTime) {
       const timeDifference = Math.abs(currentDate - previousTime) / 1000; // Time difference in seconds
       if (timeDifference > 0) { // New group if the difference exceeds 60 seconds
-        console.log('cut')
 	group[group.length - 1].style.borderBottom = "2px solid #999"; // Style last row of the group
         group = []; // Reset the group
       }

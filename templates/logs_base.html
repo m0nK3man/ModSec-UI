@@ -55,25 +55,20 @@
         </form>
     </div>
 
-    <p>Logs retrieved: {{ current_length }} out of {{ total_hits }} total matches.</p>
+    <p>Results: {{ current_length }} requests out of {{ total_hits }} total requests.</p>
 
     <!-- Placeholder for unique content -->
     {% block logs_content %}
     {% endblock %}
 
-    <div class="pagination">
-        <button class="button" id="prev" disabled>Previous</button>
-        <span id="page-info"></span>
-        <button class="button" id="next">Next</button>
-    </div>
 </div>
 
 <!-- Shared Scripts -->
 <script src="{{ url_for('static', filename='datetime-picker.js') }}"></script>
-<script src="{{ url_for('static', filename='page-pagination.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-msg-cell.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-row.js') }}"></script>
 <script src="{{ url_for('static', filename='logs-request-separator.js') }}"></script>
 <script src="{{ url_for('static', filename='timestamp-formatter.js') }}"></script>
+
 {% endblock %}
 
