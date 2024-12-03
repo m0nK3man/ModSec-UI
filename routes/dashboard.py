@@ -51,7 +51,7 @@ def dashboard():
             '6': 'Info',
             '7': 'Debug'
         }
-
+        
         # Mapping severity for severity_breakdown
         if stats and 'severity_breakdown' in stats:
             for host, severities in stats['severity_breakdown'].items():

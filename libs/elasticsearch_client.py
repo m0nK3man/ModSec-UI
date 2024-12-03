@@ -235,7 +235,13 @@ class ElasticsearchClient:
                         "field": "transaction.client_ip.keyword",
                         "size": LOGS_CONFIG['MAX_STATS_ITEMS']
                     }
-                }
+                },
+                "top_status_code": {
+                    "terms": {
+                        "field": "transaction.response.http_code",
+                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                    }
+                },
             }
 
             # Execute search
@@ -260,7 +266,8 @@ class ElasticsearchClient:
             return {
                 'severity_breakdown': host_severity,
                 'top_rules': response['aggregations']['top_rules']['buckets'],
-                'top_ips': response['aggregations']['top_ips']['buckets']
+                'top_ips': response['aggregations']['top_ips']['buckets'],
+                'top_status_code': response['aggregations']['top_status_code']['buckets']
             }
 
         except Exception as e:

@@ -58,15 +58,20 @@
             <h3>Top Client IPs</h3>
             <canvas id="topIPsChart"></canvas>
         </div>
-	<div class="stat-card col-span-12">
+	<div class="stat-card col-span-8">
             <h3>Severity Breakdown by Host</h3>
             <canvas id="severityChartByHost"></canvas>
+        </div>
+	<div class="stat-card col-span-4">
+            <h3>Top Status Codes</h3>
+            <canvas id="topStatusCodeChart"></canvas>
         </div>
     </div>
 </div>
 
 <script type="text/javascript" src="static/datetime-picker.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Plugin for Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Plugin for data labels -->
 <script>
     // Severity Breakdown Chart
     const severityBreakdownRaw = {{ stats.get('severity_breakdown', {}) | tojson }};
@@ -114,10 +119,20 @@
             plugins: {
                 tooltip: {
                     mode: 'index',
-                    intersect: false
+                    intersect: true
+                },
+		datalabels: {
+                    anchor: 'end', // Position at the end of bars
+                    align: 'end', // Align text at the edge
+                    formatter: (value, context) => value > 0 ? value : '', // Show label only if value > 0
+                    color: '#000', // Text color
+                    font: {
+                        size: 12
+                    }
                 }
             }
-        }
+        },
+	plugins: [ChartDataLabels] // Activate the Data Labels plugin
     });
 
     // Top Rules Triggered Chart
@@ -170,6 +185,63 @@
                 }
             }
         }
+    });
+
+    // Top Status Codes Chart
+    const topStatusLabels = {{ stats.top_status_code | map(attribute='key') | list | tojson }};
+    const topStatusData = {{ stats.top_status_code | map(attribute='doc_count') | list | tojson }};
+    const topStatusCtx = document.getElementById('topStatusCodeChart').getContext('2d');
+    new Chart(topStatusCtx, {
+        type: 'pie',
+        data: {
+            labels: topStatusLabels,
+            datasets: [{
+                label: 'Top Status Codes ',
+                data: topStatusData,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)', // Green
+                    'rgba(54, 162, 235, 0.6)', // Blue
+                    'rgba(255, 99, 132, 0.6)', // Red
+                    'rgba(153, 102, 255, 0.6)' // Purple
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+		borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+	    plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((acc, value) => acc + value, 0);
+                            const value = context.raw;
+                            const percentage = ((value / total) * 100).toFixed(2);
+                            return `${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                },
+		datalabels: {
+                    color: '#000',
+                    font: {
+			size: 14
+                    },
+		    anchor: 'center',
+                    align: 'center',
+                    formatter: (value, context) => {
+			const total = context.dataset.data.reduce((acc, value) => acc + value, 0);
+                        const percentage = ((value / total) * 100).toFixed(2);
+                        return `${percentage}%`; // Show percentage
+                    }
+                }
+            }
+        },
+	plugins: [ChartDataLabels] // Activate the DataLabels plugin
     });
 </script>
 
