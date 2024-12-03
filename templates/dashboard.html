@@ -51,31 +51,99 @@
     <div class="stats-section">
         <div class="stat-card">
             <h3>Severity Breakdown</h3>
-            <ul>
-                {% for severity in stats.severity_breakdown %}
-                <li>{{ severity.severity }}: {{ severity.doc_count }}</li>
-                {% endfor %}
-            </ul>
+            <canvas id="severityChart"></canvas>
         </div>
         <div class="stat-card">
             <h3>Top Rules Triggered</h3>
-            <ul>
-                {% for rule in stats.top_rules %}
-                <li>Rule {{ rule.key }}: {{ rule.doc_count }}</li>
-                {% endfor %}
-            </ul>
+            <canvas id="topRulesChart"></canvas>
         </div>
         <div class="stat-card">
             <h3>Top Client IPs</h3>
-            <ul>
-                {% for ip in stats.top_ips %}
-                <li>{{ ip.key }}: {{ ip.doc_count }}</li>
-                {% endfor %}
-            </ul>
+            <canvas id="topIPsChart"></canvas>
         </div>
     </div>
 </div>
 
 <script type="text/javascript" src="static/datetime-picker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Severity Breakdown Chart
+    const severityLabels = {{ stats.severity_breakdown | map(attribute='severity') | list | tojson }};
+    const severityData = {{ stats.severity_breakdown | map(attribute='doc_count') | list | tojson }};
+    const severityCtx = document.getElementById('severityChart').getContext('2d');
+    new Chart(severityCtx, {
+        type: 'bar',
+        data: {
+            labels: severityLabels,
+            datasets: [{
+                label: 'Severity Count',
+                data: severityData,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Top Rules Triggered Chart
+    const topRulesLabels = {{ stats.top_rules | map(attribute='key') | list | tojson }};
+    const topRulesData = {{ stats.top_rules | map(attribute='doc_count') | list | tojson }};
+    const topRulesCtx = document.getElementById('topRulesChart').getContext('2d');
+    new Chart(topRulesCtx, {
+        type: 'bar',
+        data: {
+            labels: topRulesLabels,
+            datasets: [{
+                label: 'Rule Trigger Count',
+                data: topRulesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Top Client IPs Chart
+    const topIPsLabels = {{ stats.top_ips | map(attribute='key') | list | tojson }};
+    const topIPsData = {{ stats.top_ips | map(attribute='doc_count') | list | tojson }};
+    const topIPsCtx = document.getElementById('topIPsChart').getContext('2d');
+    new Chart(topIPsCtx, {
+        type: 'bar',
+        data: {
+            labels: topIPsLabels,
+            datasets: [{
+                label: 'IP Occurrences',
+                data: topIPsData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
 {% endblock %}

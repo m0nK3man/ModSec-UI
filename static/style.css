@@ -231,7 +231,7 @@ a {
 
 .stats-section {
     width: 100%;
-    min-width: 1000px;
+    min-width: 1200px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
@@ -240,29 +240,9 @@ a {
 
 .stat-card {
     background: #ffffff;
-    padding: 20px;
+    padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.stat-card h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.1em;
-}
-
-.stat-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.stat-card li {
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
 }
 
 /* # ==================== Logs ==================== */
