@@ -39,7 +39,7 @@ class ElasticsearchClient:
         try:
             # Use provided size or default from config
             size = size or self.max_results
-            
+
             # Convert and validate times
             if not start_time or not end_time:
                 return {"logs": [], "current_length": 0, "total_hits": 0}
@@ -210,10 +210,18 @@ class ElasticsearchClient:
             
             # Base arguments
             aggs = {
-                "severity_breakdown": {
+                "host_severity_breakdown": {
                     "terms": {
-                        "field": "transaction.messages.details.severity.keyword",
+                        "field": "transaction.request.headers.host.keyword",
                         "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                    },
+                    "aggs": {
+                        "severity_breakdown": {
+                            "terms": {
+                                "field": "transaction.messages.details.severity.keyword",
+                                "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                            }
+                        }
                     }
                 },
                 "top_rules": {
@@ -239,9 +247,18 @@ class ElasticsearchClient:
                     "size": size
                 }
             )
+
+	     # Parse results for host-severity breakdown
+            host_severity = {}
+            for host_bucket in response['aggregations']['host_severity_breakdown']['buckets']:
+                host = host_bucket['key']
+                severity_buckets = host_bucket['severity_breakdown']['buckets']
+                host_severity[host] = {
+                    severity['key']: severity['doc_count'] for severity in severity_buckets
+                }
             
             return {
-                'severity_breakdown': response['aggregations']['severity_breakdown']['buckets'],
+                'severity_breakdown': host_severity,
                 'top_rules': response['aggregations']['top_rules']['buckets'],
                 'top_ips': response['aggregations']['top_ips']['buckets']
             }

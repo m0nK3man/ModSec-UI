@@ -47,19 +47,20 @@
             <button type="submit" class="button">Filter</button>
         </form>
     </div>
+
     <!-- Statistics Section -->
-    <div class="stats-section">
-        <div class="stat-card">
-            <h3>Severity Breakdown</h3>
-            <canvas id="severityChart"></canvas>
-        </div>
-        <div class="stat-card">
+    <div class="stats-section grid grid-cols-12 gap-4" >
+        <div class="stat-card col-span-6">
             <h3>Top Rules Triggered</h3>
             <canvas id="topRulesChart"></canvas>
         </div>
-        <div class="stat-card">
+        <div class="stat-card col-span-6">
             <h3>Top Client IPs</h3>
             <canvas id="topIPsChart"></canvas>
+        </div>
+	<div class="stat-card col-span-12">
+            <h3>Severity Breakdown by Host</h3>
+            <canvas id="severityChartByHost"></canvas>
         </div>
     </div>
 </div>
@@ -68,26 +69,52 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Severity Breakdown Chart
-    const severityLabels = {{ stats.severity_breakdown | map(attribute='severity') | list | tojson }};
-    const severityData = {{ stats.severity_breakdown | map(attribute='doc_count') | list | tojson }};
-    const severityCtx = document.getElementById('severityChart').getContext('2d');
-    new Chart(severityCtx, {
+    const severityBreakdownRaw = {{ stats.get('severity_breakdown', {}) | tojson }};
+    // Filter out empty hosts
+    const severityBreakdown = Object.fromEntries(
+        Object.entries(severityBreakdownRaw).filter(([host, breakdown]) => 
+            Object.values(breakdown).some(count => count > 0) // Include only if there are non-zero counts
+        )
+    );
+    // Prepare chart data
+    const hosts = Object.keys(severityBreakdown);
+    const severities = ['Emergency', 'Critical', 'Warning']; // Define severity levels
+    const datasets = severities.map(severity => ({
+        label: severity,
+        data: hosts.map(host => severityBreakdown[host][severity] || 0), // Use 0 if severity level is not present
+        backgroundColor: {
+            'Emergency': 'rgba(255, 99, 132, 0.6)',
+            'Critical': 'rgba(255, 159, 64, 0.6)',
+            'Warning': 'rgba(255, 205, 86, 0.6)'
+        }[severity],
+        borderColor: {
+            'Emergency': 'rgba(255, 99, 132, 1)',
+            'Critical': 'rgba(255, 159, 64, 1)',
+            'Warning': 'rgba(255, 205, 86, 1)'
+        }[severity],
+        borderWidth: 1
+    }));
+
+    // Render Horizontal Bar Chart
+    const severityByHostCtx = document.getElementById('severityChartByHost').getContext('2d');
+    new Chart(severityByHostCtx, {
         type: 'bar',
         data: {
-            labels: severityLabels,
-            datasets: [{
-                label: 'Severity Count',
-                data: severityData,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
+            labels: hosts,
+            datasets: datasets
         },
         options: {
+            indexAxis: 'y', // Switch to horizontal bar
             responsive: true,
             scales: {
-                y: {
+                x: {
                     beginAtZero: true
+                }
+            },
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             }
         }
