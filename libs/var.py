@@ -27,5 +27,5 @@ LOGS_CONFIG = {
     'REFRESH_INTERVAL': int(os.getenv('LOGS_REFRESH_INTERVAL', 30)),  # in seconds
     'DEFAULT_TIME_RANGE': '15m',
     'STATS_REFRESH_INTERVAL': int(os.getenv('STATS_REFRESH_INTERVAL', 60)),  # in seconds
-    'MAX_STATS_ITEMS': int(os.getenv('MAX_STATS_ITEMS', 5))
+#    'MAX_STATS_ITEMS': int(os.getenv('MAX_STATS_ITEMS', 5))
 }

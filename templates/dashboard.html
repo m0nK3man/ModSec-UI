@@ -66,6 +66,14 @@
             <h3>Top Status Codes</h3>
             <canvas id="topStatusCodeChart"></canvas>
         </div>
+        <div class="stat-card col-span-6">
+            <h3>Top Attacks</h3>
+            <ul>
+                {% for atk in stats.top_attack %}
+                <li>{{ atk.key }}: {{ atk.doc_count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </div>
 

@@ -244,6 +244,32 @@ a {
 
 /* # ==================== Logs ==================== */
 
+#logs {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Exclude Firefox by targeting WebKit-based browsers */
+@supports (-webkit-appearance: none) {
+  #logs {
+    /* Apply this rule only for WebKit browsers (e.g., Chrome, Safari) */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Add a fallback for Firefox or different styling if needed */
+@-moz-document url-prefix() {
+  #logs {
+    /* Optional: Define a different rule for Firefox if required */
+    position: relative;
+    left: auto;
+    transform: none;
+  }
+}
+
 .logs-navigate {
   display: flex;
   justify-content: center;
