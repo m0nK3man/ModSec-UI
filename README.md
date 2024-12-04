@@ -1,50 +1,65 @@
 # Simple-ModSecurity-nginx-UI
 
 ## TODO
-+ [x] LOGIN (Authen)
-+ [x] Sửa config file và push lên git
+
++ [x] User & Authen
+  - [x] Login page
+  - [x] maintain session
+  - [ ]  Nếu status file là editing thì user khác lock edit
+  - [ ]  Xử lý push realtime status to existing user (user editing)
+
++ [x] Sync config
+  - [x] Sửa config file và push lên git
   - [x] Quản lý CD qua runner
   - [x] Runner xử lý config (Sync config cho nginx)
   - [ ] Runner xử lý config (Sync config cho haproxy)
-+ [ ]  Check các bộ rules bắt buộc !!!!!!! ko được disable
-+ [ ]  button pull rule default from source
-+ [x]  commit file .disabled/enabled
+
++ [x] Rules/config page
+  - [ ] button pull rule default from source
+  - [x] commit file .disabled/enabled
+  - [x] Get rules from db
+  - [x] Lấy thông tin info, status từ db parse ra fe
+  - [x] Bắt sự kiện change file/rename push to db
+  - [x] Nếu rule disable rename to .disable
+  - [x] Sort by rulecode
+
 + [ ]  Logs page
-  - [x]  limit max log query by time
-  - [x]  check lại hàm search logs elastic
+  - [x] limit max log query by time
+  - [x] check lại hàm search logs elastic
   - [x] xử lý limit log/lazy load
-  - [x]  log time range picker
-  - [ ]  Integrate exclusion tools to logs tab
-  - [x]  Sửa lại log query tránh bị xss
-  - [x]  quick search function
-  - [x]  sort by columns
-  - [x]  page pagination
-  - [x]  dynamic render logs table
-+ [x]  check lại css ghi dè
-+ [x]  sửa lại track config change giống rules
-+ [ ]  Rules exclusion tools
-+ [x]  sửa time range picker dynamic
-+ [ ]  Report summary (dashboard tab)
+  - [x] log time range picker
+  - [ ] Rules exclusion tools
+  - [ ] Integrate exclusion tools to logs tab
+  - [x] Sửa lại log query tránh bị xss
+  - [x] quick search function
+  - [x] sort by columns
+  - [x] page pagination
+  - [x] dynamic render logs table
+  - [x] sửa time range picker dynamic
+
++ [ ] Report summary (dashboard tab)
   - [ ] Report button
   - [x] Report chart
   - [ ] Report pdf 
+
 + [x]  Logs nav (access,error,audit,..)
   - [x] Audit logs
   - [x] Access logs
   - [ ] Error logs 
-+ [x]  Get rules from db
-  - [x]  Lấy thông tin info,status từ db parse ra fe
-  - [x]  Bắt sự kiện change file/rename push to db
-  - [x]  Nếu rule disable rename to .disable
-  - [x]  Sort by rulecode
-  - [x]  Nếu status file là editing thì user khác lock edit
-  - [ ]  Xử lý push realtime status to existing user (user editing)
-  - [ ]  Sửa lỗi absolute config path
-+ [x]  setup guide
-+ [ ]  setting config (IP, variables,...)
-+ [ ]  build docker
-+ [ ]  hint (search bar)
-+ [ ]  Quick script backupdb, viewdb, restoredb
+
++ [ ] Bugs
+  - [x] check lại css ghi dè
+  - [x] sửa lại track config change giống rules
+  - [ ] Check các bộ rules bắt buộc !!!!!!! ko được disable
+  - [ ] Sửa lỗi absolute config path
+
++ [x] Features
+  - [x] setup guide
+  - [ ] setting config (IP, variables,...)
+  - [ ] build docker
+  - [ ] hint (search bar)
+  - [x] Quick script viewdb
+  - [ ] Quick script backupdb, restoredb
 
 ## Setup
 
