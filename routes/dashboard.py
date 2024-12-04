@@ -42,14 +42,14 @@ def dashboard():
         stats = es_client.get_modsec_stats(search_query=search_query, start_time=start_time, end_time=end_time)
 
         severity_mapping = {
-            '0': 'Emergency',
-            '1': 'Alert',
+#            '0': 'Total',
+#            '1': 'Alert',
             '2': 'Critical',
             '3': 'Error',
             '4': 'Warning',
             '5': 'Notice',
-            '6': 'Info',
-            '7': 'Debug'
+#            '6': 'Info',
+#            '7': 'Debug'
         }
         
         # Mapping severity for severity_breakdown
