@@ -1,3 +1,4 @@
+import argparse
 from flask import Flask
 from routes import home, configuration, rules, dashboard, auth, logs
 from libs.database import db, login_manager
@@ -31,4 +32,7 @@ def load_user(user_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensure tables are created
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    parser = argparse.ArgumentParser(description="Run the Flask application with a custom port.")
+    parser.add_argument('-p', '--port', type=int, default=5000, help="Port number to run the Flask app on (default: 5000)")
+    args = parser.parse_args()
+    app.run(host="0.0.0.0", port=args.port, debug=True)
