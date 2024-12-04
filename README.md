@@ -38,6 +38,7 @@
   - [x] sửa time range picker dynamic
 
 + [ ] Report summary (dashboard tab)
+  - [x] Change waf mode
   - [ ] Report button
   - [x] Report chart
   - [ ] Report pdf 
