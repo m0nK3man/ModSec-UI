@@ -9,18 +9,29 @@
 + [ ]  Check các bộ rules bắt buộc !!!!!!! ko được disable
 + [ ]  button pull rule default from source
 + [x]  commit file .disabled/enabled
-+ [x]  limit max log query by time
++ [ ]  Logs page
+  - [x]  limit max log query by time
+  - [x]  check lại hàm search logs elastic
+  - [x] xử lý limit log/lazy load
+  - [x]  log time range picker
+  - [ ]  Integrate exclusion tools to logs tab
+  - [x]  Sửa lại log query tránh bị xss
+  - [x]  quick search function
+  - [x]  sort by columns
+  - [x]  page pagination
+  - [x]  dynamic render logs table
 + [x]  check lại css ghi dè
-+ [x]  check lại hàm search logs elastic
 + [x]  sửa lại track config change giống rules
-+ [x]  log time range picker
-+ [x]  xử lý limit log/lazy load
 + [ ]  Rules exclusion tools
-+ [ ]  Integrate exclusion tools to logs tab
-+ [x]  Sửa lại log query tránh bị xss
 + [x]  sửa time range picker dynamic
 + [ ]  Report summary (dashboard tab)
-+ [ ]  Logs nav (access,error,audit,..)
+  - [ ] Report button
+  - [x] Report chart
+  - [ ] Report pdf 
++ [x]  Logs nav (access,error,audit,..)
+  - [x] Audit logs
+  - [x] Access logs
+  - [ ] Error logs 
 + [x]  Get rules from db
   - [x]  Lấy thông tin info,status từ db parse ra fe
   - [x]  Bắt sự kiện change file/rename push to db
