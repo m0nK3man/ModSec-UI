@@ -39,7 +39,7 @@ class ElasticsearchClient:
         try:
             # Use provided size or default from config
             size = size or self.max_results
-            
+
             # Convert and validate times
             if not start_time or not end_time:
                 return {"logs": [], "current_length": 0, "total_hits": 0}
@@ -67,6 +67,7 @@ class ElasticsearchClient:
             query_fields = [
                 "@timestamp",
                 "transaction.messages.message",
+#                "transaction.messages.message.keyword",
                 "transaction.messages.details.match",
                 "transaction.messages.details.ruleId",
                 "transaction.messages.details.file",
@@ -186,6 +187,7 @@ class ElasticsearchClient:
             query_fields = [
                 "@timestamp",
                 "transaction.messages.message",
+                "transaction.messages.message.keyword",
                 "transaction.messages.details.ruleId",
                 "transaction.messages.details.file",
                 "transaction.messages.details.severity",
@@ -210,22 +212,42 @@ class ElasticsearchClient:
             
             # Base arguments
             aggs = {
-                "severity_breakdown": {
+                "host_severity_breakdown": {
                     "terms": {
-                        "field": "transaction.messages.details.severity.keyword",
-                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                        "field": "transaction.request.headers.host.keyword",
+                        "size": 10
+                    },
+                    "aggs": {
+                        "severity_breakdown": {
+                            "terms": {
+                                "field": "transaction.messages.details.severity.keyword",
+                                "size": 5
+                            }
+                        }
                     }
                 },
                 "top_rules": {
                     "terms": {
                         "field": "transaction.messages.details.ruleId.keyword",
-                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                        "size": 5
                     }
                 },
                 "top_ips": {
                     "terms": {
                         "field": "transaction.client_ip.keyword",
-                        "size": LOGS_CONFIG['MAX_STATS_ITEMS']
+                        "size": 5
+                    }
+                },
+                "top_status_code": {
+                    "terms": {
+                        "field": "transaction.response.http_code",
+                        "size": 10
+                    }
+                },
+                "top_attack": {
+                    "terms": {
+                        "field": "transaction.messages.message.keyword",
+                        "size": 100
                     }
                 }
             }
@@ -239,11 +261,28 @@ class ElasticsearchClient:
                     "size": size
                 }
             )
-            
+
+
+            # Parse results for host-severity breakdown
+            host_severity = {}
+            for host_bucket in response['aggregations']['host_severity_breakdown']['buckets']:
+                host = host_bucket['key']
+                severity_buckets = host_bucket['severity_breakdown']['buckets']
+                host_severity[host] = {
+                    severity['key']: severity['doc_count'] for severity in severity_buckets
+                }
+
+            top_attack = [
+                bucket for bucket in response['aggregations']['top_attack']['buckets']
+                if bucket['key'] != "" and "Anomaly Score Exceeded" not in bucket['key']
+            ]
+
             return {
-                'severity_breakdown': response['aggregations']['severity_breakdown']['buckets'],
-                'top_rules': response['aggregations']['top_rules']['buckets'],
-                'top_ips': response['aggregations']['top_ips']['buckets']
+                'severity_breakdown': host_severity,
+                'top_rules': response['aggregations']['top_rules']['buckets'][:5],
+                'top_ips': response['aggregations']['top_ips']['buckets'][:5],
+                'top_status_code': response['aggregations']['top_status_code']['buckets'][:10],
+                'top_attack': top_attack[:10]
             }
 
         except Exception as e:

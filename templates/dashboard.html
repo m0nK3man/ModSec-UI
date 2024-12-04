@@ -47,29 +47,30 @@
             <button type="submit" class="button">Filter</button>
         </form>
     </div>
+
     <!-- Statistics Section -->
-    <div class="stats-section">
-        <div class="stat-card">
-            <h3>Severity Breakdown</h3>
-            <ul>
-                {% for severity in stats.severity_breakdown %}
-                <li>{{ severity.severity }}: {{ severity.doc_count }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="stat-card">
+    <div class="stats-section grid grid-cols-12 gap-4" >
+        <div class="stat-card col-span-6">
             <h3>Top Rules Triggered</h3>
-            <ul>
-                {% for rule in stats.top_rules %}
-                <li>Rule {{ rule.key }}: {{ rule.doc_count }}</li>
-                {% endfor %}
-            </ul>
+            <canvas id="topRulesChart"></canvas>
         </div>
-        <div class="stat-card">
+        <div class="stat-card col-span-6">
             <h3>Top Client IPs</h3>
+            <canvas id="topIPsChart"></canvas>
+        </div>
+	<div class="stat-card col-span-8">
+            <h3>Severity Breakdown by Host</h3>
+            <canvas id="severityChartByHost"></canvas>
+        </div>
+	<div class="stat-card col-span-4">
+            <h3>Top Status Codes</h3>
+            <canvas id="topStatusCodeChart"></canvas>
+        </div>
+        <div class="stat-card col-span-6">
+            <h3>Top Attacks</h3>
             <ul>
-                {% for ip in stats.top_ips %}
-                <li>{{ ip.key }}: {{ ip.doc_count }}</li>
+                {% for atk in stats.top_attack %}
+                <li>{{ atk.key }}: {{ atk.doc_count }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -77,5 +78,179 @@
 </div>
 
 <script type="text/javascript" src="static/datetime-picker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Plugin for Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Plugin for data labels -->
+<script>
+    // Severity Breakdown Chart
+    const severityBreakdownRaw = {{ stats.get('severity_breakdown', {}) | tojson }};
+    // Filter out empty hosts
+    const severityBreakdown = Object.fromEntries(
+        Object.entries(severityBreakdownRaw).filter(([host, breakdown]) => 
+            Object.values(breakdown).some(count => count > 0) // Include only if there are non-zero counts
+        )
+    );
+    // Prepare chart data
+    const hosts = Object.keys(severityBreakdown);
+    const severities = ['Emergency', 'Critical', 'Warning']; // Define severity levels
+    const datasets = severities.map(severity => ({
+        label: severity,
+        data: hosts.map(host => severityBreakdown[host][severity] || 0), // Use 0 if severity level is not present
+        backgroundColor: {
+            'Emergency': 'rgba(255, 99, 132, 0.6)',
+            'Critical': 'rgba(255, 159, 64, 0.6)',
+            'Warning': 'rgba(255, 205, 86, 0.6)'
+        }[severity],
+        borderColor: {
+            'Emergency': 'rgba(255, 99, 132, 1)',
+            'Critical': 'rgba(255, 159, 64, 1)',
+            'Warning': 'rgba(255, 205, 86, 1)'
+        }[severity],
+        borderWidth: 1
+    }));
+
+    // Render Horizontal Bar Chart
+    const severityByHostCtx = document.getElementById('severityChartByHost').getContext('2d');
+    new Chart(severityByHostCtx, {
+        type: 'bar',
+        data: {
+            labels: hosts,
+            datasets: datasets
+        },
+        options: {
+            indexAxis: 'y', // Switch to horizontal bar
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: true
+                },
+		datalabels: {
+                    anchor: 'end', // Position at the end of bars
+                    align: 'end', // Align text at the edge
+                    formatter: (value, context) => value > 0 ? value : '', // Show label only if value > 0
+                    color: '#000', // Text color
+                    font: {
+                        size: 12
+                    }
+                }
+            }
+        },
+	plugins: [ChartDataLabels] // Activate the Data Labels plugin
+    });
+
+    // Top Rules Triggered Chart
+    const topRulesLabels = {{ stats.top_rules | map(attribute='key') | list | tojson }};
+    const topRulesData = {{ stats.top_rules | map(attribute='doc_count') | list | tojson }};
+    const topRulesCtx = document.getElementById('topRulesChart').getContext('2d');
+    new Chart(topRulesCtx, {
+        type: 'bar',
+        data: {
+            labels: topRulesLabels,
+            datasets: [{
+                label: 'Rule Trigger Count',
+                data: topRulesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Top Client IPs Chart
+    const topIPsLabels = {{ stats.top_ips | map(attribute='key') | list | tojson }};
+    const topIPsData = {{ stats.top_ips | map(attribute='doc_count') | list | tojson }};
+    const topIPsCtx = document.getElementById('topIPsChart').getContext('2d');
+    new Chart(topIPsCtx, {
+        type: 'bar',
+        data: {
+            labels: topIPsLabels,
+            datasets: [{
+                label: 'IP Occurrences',
+                data: topIPsData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Top Status Codes Chart
+    const topStatusLabels = {{ stats.top_status_code | map(attribute='key') | list | tojson }};
+    const topStatusData = {{ stats.top_status_code | map(attribute='doc_count') | list | tojson }};
+    const topStatusCtx = document.getElementById('topStatusCodeChart').getContext('2d');
+    new Chart(topStatusCtx, {
+        type: 'pie',
+        data: {
+            labels: topStatusLabels,
+            datasets: [{
+                label: 'Top Status Codes ',
+                data: topStatusData,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)', // Green
+                    'rgba(54, 162, 235, 0.6)', // Blue
+                    'rgba(255, 99, 132, 0.6)', // Red
+                    'rgba(153, 102, 255, 0.6)' // Purple
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+		borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+	    plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((acc, value) => acc + value, 0);
+                            const value = context.raw;
+                            const percentage = ((value / total) * 100).toFixed(2);
+                            return `${context.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                },
+		datalabels: {
+                    color: '#000',
+                    font: {
+			size: 14
+                    },
+		    anchor: 'center',
+                    align: 'center',
+                    formatter: (value, context) => {
+			const total = context.dataset.data.reduce((acc, value) => acc + value, 0);
+                        const percentage = ((value / total) * 100).toFixed(2);
+                        return `${percentage}%`; // Show percentage
+                    }
+                }
+            }
+        },
+	plugins: [ChartDataLabels] // Activate the DataLabels plugin
+    });
+</script>
 
 {% endblock %}

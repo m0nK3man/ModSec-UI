@@ -2,23 +2,19 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="rules-header">
-    <div class="mode-toggle">
-        <a href="{{ url_for('rules.rules', view_mode='view') }}"
-           class="button {% if view_mode == 'view' %}active{% endif %}">View Mode</a>
-        <a href="{{ url_for('rules.rules', view_mode='edit') }}"
-           class="button {% if view_mode == 'edit' %}active{% endif %}">Edit Mode</a>
-    </div>
+<form action="{{ url_for('rules.commit_changes_view') }}" method="post" class="commit-form rules-header">
+    <a href="{{ url_for('rules.rules', view_mode='view') }}"
+       class="button {% if view_mode == 'view' %}active{% endif %}">View Mode</a>
+    <a href="{{ url_for('rules.rules', view_mode='edit') }}"
+       class="button {% if view_mode == 'edit' %}active{% endif %}">Edit Mode</a>
 
-    {% if save_change %}
-    <form action="{{ url_for('rules.commit_changes_view') }}" method="post" class="commit-form">
-        <input type="hidden" name="view_mode" value="{{ view_mode }}">
-        <button type="submit" class="button commit">
-            Save Changes
-        </button>
-    </form>
-    {% endif %}
-</div>
+{% if save_change %}
+    <input type="hidden" name="view_mode" value="{{ view_mode }}">
+    <button type="submit" class="button commit">
+        Save Changes
+    </button>
+{% endif %}
+</form>
 
 <div class="rule-block">
     <h2>All Rules</h2>

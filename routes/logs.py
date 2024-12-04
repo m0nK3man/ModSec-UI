@@ -46,11 +46,12 @@ def audit_logs():
 #            '7': 'Debug'
         }
 
-        # mapping severity
+        # handle logs logic
         if logs:
             for log in logs:
                 log['severity'] = severity_mapping.get(log['severity'], 'UNKNOWN')
-    
+                log['timestamp'] = GMT_to_UTC7(log['timestamp'])
+
     except Exception as e:
         print(f"Error: {e}")
         flash(f"An error occurred: {str(e)}", "error")
@@ -166,3 +167,15 @@ def calculate_max_size(time_diff):
     else:
         max_size = 1000
     return max_size
+
+def GMT_to_UTC7(GMT_time):
+    # Parse timestamp to datetime object
+    timestamp = datetime.strptime(GMT_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # Convert to UTC+7
+    utc_plus_7 = pytz.timezone('Asia/Bangkok')  # UTC+7 timezone
+    timestamp_utc7 = timestamp.replace(tzinfo=pytz.timezone('UTC')).astimezone(utc_plus_7)
+
+    # Format the datetime to the desired output format
+    formatted_timestamp = timestamp_utc7.strftime("%d-%m-%y %H:%M:%S")
+    return formatted_timestamp

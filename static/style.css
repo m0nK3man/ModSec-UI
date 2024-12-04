@@ -55,12 +55,6 @@ a {
     background-color: #218838;
 }
 
-.mode-toggle {
-  position: absolute;
-  top: 150px;
-  left: 50px;
-}
-
 .button.active {
     background: #00b700;
 }
@@ -161,6 +155,16 @@ a {
 
 /* # ==================== Rules ==================== */
 
+.rules-header {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  position: absolute;
+  top: 70px;
+  right: 120px;
+}
+
 .rule-block {
     padding: 0 20px;
 }
@@ -231,41 +235,44 @@ a {
 
 .stats-section {
     width: 100%;
-    min-width: 1000px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    min-width: 1200px;
     margin-bottom: 20px;
 }
 
 .stat-card {
     background: #ffffff;
-    padding: 20px;
+    padding: 1.5rem;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.stat-card h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.1em;
-}
-
-.stat-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.stat-card li {
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-}
-
 /* # ==================== Logs ==================== */
+
+#logs {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Exclude Firefox by targeting WebKit-based browsers */
+@supports (-webkit-appearance: none) {
+  #logs {
+    /* Apply this rule only for WebKit browsers (e.g., Chrome, Safari) */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Add a fallback for Firefox or different styling if needed */
+@-moz-document url-prefix() {
+  #logs {
+    /* Optional: Define a different rule for Firefox if required */
+    position: relative;
+    left: auto;
+    transform: none;
+  }
+}
 
 .logs-navigate {
   display: flex;
@@ -440,12 +447,131 @@ summary {
     cursor: pointer;
 }
 
-.pagination {
-    margin-top: 10px;
+.dt-layout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.pagination button {
-    margin: 0 5px;
+.dt-layout-row div div > * {
+    padding: 5px 15px;
+}
+
+.dt-layout-row select,
+.dt-layout-row input {
+    border: 1px solid #ccc;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled, div.dt-container .dt-paging .dt-paging-button.disabled:hover, div.dt-container .dt-paging .dt-paging-button.disabled:active {
+  cursor: default;
+  color: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current, div.dt-container .dt-paging .dt-paging-button.current:hover {
+  color: inherit !important;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.05);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(230, 230, 230, 0.05)), color-stop(100%, rgba(0, 0, 0, 0.05)));
+  background: -webkit-linear-gradient(top, rgba(230, 230, 230, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
+  background: -moz-linear-gradient(top, rgba(230, 230, 230, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
+  background: -ms-linear-gradient(top, rgba(230, 230, 230, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
+  background: -o-linear-gradient(top, rgba(230, 230, 230, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
+  background: linear-gradient(to bottom, rgba(230, 230, 230, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
+}
+
+div.dt-container .dt-paging .dt-paging-button {
+  box-sizing: border-box;
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0.5em 1em;
+  margin-left: 2px;
+  text-align: center;
+  text-decoration: none !important;
+  cursor: pointer;
+  color: inherit !important;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+}
+
+table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before {
+  position: absolute;
+  display: block;
+  bottom: 50%;
+  content: "▲";
+  content: "▲"/"";
+}
+table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+  position: absolute;
+  display: block;
+  top: 50%;
+  content: "▼";
+  content: "▼"/"";
+}
+
+table.dataTable thead > tr > th.dt-orderable-asc, table.dataTable thead > tr > th.dt-orderable-desc, table.dataTable thead > tr > th.dt-ordering-asc, table.dataTable thead > tr > th.dt-ordering-desc,
+table.dataTable thead > tr > td.dt-orderable-asc,
+table.dataTable thead > tr > td.dt-orderable-desc,
+table.dataTable thead > tr > td.dt-ordering-asc,
+table.dataTable thead > tr > td.dt-ordering-desc {
+  position: relative;
+  padding-right: 30px;
+}
+
+table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order, table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+}
+table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead > tr > th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-orderable-asc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-orderable-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+  left: 0;
+  opacity: 0.125;
+  line-height: 9px;
+  font-size: 0.8em;
+}
+
+table.dataTable thead > tr > th.dt-orderable-asc, table.dataTable thead > tr > th.dt-orderable-desc,
+table.dataTable thead > tr > td.dt-orderable-asc,
+table.dataTable thead > tr > td.dt-orderable-desc {
+  cursor: pointer;
+}
+table.dataTable thead > tr > th.dt-orderable-asc:hover, table.dataTable thead > tr > th.dt-orderable-desc:hover,
+table.dataTable thead > tr > td.dt-orderable-asc:hover,
+table.dataTable thead > tr > td.dt-orderable-desc:hover {
+  outline: 2px solid rgba(0, 0, 0, 0.05);
+  outline-offset: -2px;
+}
+
+table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+  opacity: 0.6;
+}
+table.dataTable thead > tr > th.sorting_desc_disabled span.dt-column-order:after, table.dataTable thead > tr > th.sorting_asc_disabled span.dt-column-order:before,
+table.dataTable thead > tr > td.sorting_desc_disabled span.dt-column-order:after,
+table.dataTable thead > tr > td.sorting_asc_disabled span.dt-column-order:before {
+  display: none;
 }
 
 /* # ==================== Configuration ==================== */

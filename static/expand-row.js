@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+function expandAllRows() {
     // Add click event listeners to all summary elements
     document.querySelectorAll('summary').forEach(summary => {
-        summary.addEventListener('click', function(e) {
+        summary.addEventListener('dblclick', function(e) {
             // Prevent the default toggle behavior
             e.preventDefault();
-
+	    console.log(e)
             // Find the parent row
             const row = this.closest('tr');
 
@@ -32,4 +32,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+}
+
+// Lấy phần tử div cần theo dõi
+var divElement = document.querySelector('.logs-table');
+
+// Bắt sự kiện tùy chỉnh
+divElement.addEventListener('lengthChange', (event) => {
+//    console.log(`Div resized: Width=${event.detail.width}, Height=${event.detail.height}`);
+    expandAllRows();
 });
+
+// Theo dõi phần tử div
+observer.observe(divElement);

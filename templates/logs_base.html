@@ -2,29 +2,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Logs Navigation -->
+<div class="logs-navigate">
+  <!-- Button to navigate to Page 1 -->
+  <button class="button">
+    <a href="{{ url_for('logs.audit_logs') }}">
+      Audit Logs
+    </a>
+  </button>
+  <!-- Button to navigate to Page 2 -->
+  <button class="button">
+    <a href="{{ url_for('logs.access_logs') }}">
+      Access Logs
+    </a>
+  </button>
+  <!-- Button to navigate to Page 3 -->
+  <button class="button">
+    <a href="{{ url_for('logs.error_logs') }}">
+      Error Logs
+    </a>
+  </button>
+</div>
+
 <div id="logs">
-    <!-- Logs Navigation -->
-    <div class="logs-navigate">
-      <!-- Button to navigate to Page 1 -->
-      <button class="button">
-        <a href="{{ url_for('logs.audit_logs') }}">
-          Audit Logs
-        </a>
-      </button>
-      <!-- Button to navigate to Page 2 -->
-      <button class="button">
-        <a href="{{ url_for('logs.access_logs') }}">
-          Access Logs
-        </a>
-      </button>
-      <!-- Button to navigate to Page 3 -->
-      <button class="button">
-        <a href="{{ url_for('logs.error_logs') }}">
-          Error Logs
-        </a>
-      </button>
-    </div>
-    
     <div class="filter-section">
         <form method="GET" action="{{ url_for(current_endpoint) }}" class="filter-form">
             <!-- Search Input -->
@@ -55,25 +55,27 @@
         </form>
     </div>
 
-    <p>Logs retrieved: {{ current_length }} out of {{ total_hits }} total matches.</p>
+    <p>Results: {{ current_length }} requests out of {{ total_hits }} total requests.</p>
 
     <!-- Placeholder for unique content -->
     {% block logs_content %}
     {% endblock %}
 
-    <div class="pagination">
-        <button class="button" id="prev" disabled>Previous</button>
-        <span id="page-info"></span>
-        <button class="button" id="next">Next</button>
-    </div>
 </div>
 
 <!-- Shared Scripts -->
+<script src="{{ url_for('static', filename='size-observer.js') }}"></script>
 <script src="{{ url_for('static', filename='datetime-picker.js') }}"></script>
-<script src="{{ url_for('static', filename='page-pagination.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-msg-cell.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-row.js') }}"></script>
-<script src="{{ url_for('static', filename='logs-request-separator.js') }}"></script>
-<script src="{{ url_for('static', filename='timestamp-formatter.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script>
+new DataTable('.logs-table', {
+    order: [], // Disable default sorting
+    stateSave: true, // State saving
+});
+</script>
+
 {% endblock %}
 
