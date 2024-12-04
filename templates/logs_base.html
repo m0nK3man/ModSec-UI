@@ -2,29 +2,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Logs Navigation -->
+<div class="logs-navigate">
+  <!-- Button to navigate to Page 1 -->
+  <button class="button">
+    <a href="{{ url_for('logs.audit_logs') }}">
+      Audit Logs
+    </a>
+  </button>
+  <!-- Button to navigate to Page 2 -->
+  <button class="button">
+    <a href="{{ url_for('logs.access_logs') }}">
+      Access Logs
+    </a>
+  </button>
+  <!-- Button to navigate to Page 3 -->
+  <button class="button">
+    <a href="{{ url_for('logs.error_logs') }}">
+      Error Logs
+    </a>
+  </button>
+</div>
+
 <div id="logs">
-    <!-- Logs Navigation -->
-    <div class="logs-navigate">
-      <!-- Button to navigate to Page 1 -->
-      <button class="button">
-        <a href="{{ url_for('logs.audit_logs') }}">
-          Audit Logs
-        </a>
-      </button>
-      <!-- Button to navigate to Page 2 -->
-      <button class="button">
-        <a href="{{ url_for('logs.access_logs') }}">
-          Access Logs
-        </a>
-      </button>
-      <!-- Button to navigate to Page 3 -->
-      <button class="button">
-        <a href="{{ url_for('logs.error_logs') }}">
-          Error Logs
-        </a>
-      </button>
-    </div>
-    
     <div class="filter-section">
         <form method="GET" action="{{ url_for(current_endpoint) }}" class="filter-form">
             <!-- Search Input -->
