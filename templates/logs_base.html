@@ -64,11 +64,18 @@
 </div>
 
 <!-- Shared Scripts -->
+<script src="{{ url_for('static', filename='size-observer.js') }}"></script>
 <script src="{{ url_for('static', filename='datetime-picker.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-msg-cell.js') }}"></script>
 <script src="{{ url_for('static', filename='expand-row.js') }}"></script>
-<script src="{{ url_for('static', filename='logs-request-separator.js') }}"></script>
-<script src="{{ url_for('static', filename='timestamp-formatter.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+<script>
+new DataTable('.logs-table', {
+    order: [], // Disable default sorting
+    stateSave: true, // State saving
+});
+</script>
 
 {% endblock %}
 
