@@ -57,6 +57,10 @@
 + [x] Features
   - [x] setup guide
   - [ ] setting config (IP, variables,...)
+    - [ ] manage multi-nodes
+    - [ ] telebot tokens + test msg
+    - [ ] 
+  - [ ] telegram alerts
   - [ ] build docker
   - [ ] hint (search bar)
   - [x] Quick script viewdb
