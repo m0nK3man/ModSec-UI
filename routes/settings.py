@@ -1,5 +1,5 @@
 # routes/settings.py
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from controller.settings_func import load_config, save_config
 from libs.telegram_integration import send_test_message  # Import necessary modules
 import json
@@ -25,11 +25,12 @@ def settings():
         config["TELEGRAM_CHAT_ID"] = request.form.get('telegram_chat_id', config["TELEGRAM_CHAT_ID"])
         config["TELEGRAM_ALERT"] = request.form.get('telegram_alert') == 'on'
 
-        # debug
-        #print(config)
-
         # Save updated config to file
-        save_config(config)
+        if save_config(config):
+            flash("Configuration saved successfully!", "success")
+        else:
+            flash("Failed to save configuration. Please check file permissions or logs for details.", "error")
+
         return redirect(url_for('settings.settings'))
 
     # Compare the values from the form with the config values

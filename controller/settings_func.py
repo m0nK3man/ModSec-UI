@@ -41,6 +41,10 @@ def load_config():
         return DEFAULT_CONFIG
 
 def save_config(config):
-    with open(CONFIG_FILE, "w") as f:
-        json.dump(config, f, indent=4)
-
+    try:  # The `try` block starts here
+        with open(CONFIG_FILE, "w") as f:
+            json.dump(config, f, indent=4)
+        return True  # Return True if successful
+    except Exception as e:  # `except` must align with `try`
+        print(f"Error saving config: {e}")  # Log the error for debugging
+        return False  # Return False if there's an exception
