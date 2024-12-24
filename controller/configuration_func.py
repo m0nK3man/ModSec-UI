@@ -1,21 +1,22 @@
 # modsec_manager/configuration_func.py
 from libs.database import db
 from libs.utils import track_config_content
-from libs.var import MODSECURITY_CONF_PATH, CRS_CONF_PATH
 from models import ModsecRule
+from controller.settings_func import load_config
+config = load_config()
 
 def read_modsecurity_conf():
     """Read ModSecurity configuration and check for changes"""
     try:
-        with open(MODSECURITY_CONF_PATH, 'r') as f:
+        with open(config['MODSECURITY_CONF_PATH'], 'r') as f:
             content = f.read()
 
         # Get config status from database
-        config = db.session.query(ModsecRule).filter_by(rule_code='CONFIG_MODSEC').first()
+        modsecconfig = db.session.query(ModsecRule).filter_by(rule_code='CONFIG_MODSEC').first()
 
         return {
             'content': content,
-            'changed': config.is_content_change if config else False
+            'changed': modsecconfig.is_content_change if config else False
         }
     except Exception as e:
         print(f"Error reading modsecurity.conf: {e}")
@@ -24,15 +25,15 @@ def read_modsecurity_conf():
 def read_crs_conf():
     """Read CRS configuration and check for changes"""
     try:
-        with open(CRS_CONF_PATH, 'r') as f:
+        with open(config['CRS_CONF_PATH'], 'r') as f:
             content = f.read()
 
         # Get config status from database
-        config = db.session.query(ModsecRule).filter_by(rule_code='CONFIG_CRS').first()
+        crsconfig = db.session.query(ModsecRule).filter_by(rule_code='CONFIG_CRS').first()
 
         return {
             'content': content,
-            'changed': config.is_content_change if config else False
+            'changed': crsconfig.is_content_change if config else False
         }
     except Exception as e:
         print(f"Error reading crs-setup.conf: {e}")
@@ -41,7 +42,7 @@ def read_crs_conf():
 def save_modsecurity_conf(content):
     """Save ModSecurity configuration"""
     try:
-        with open(MODSECURITY_CONF_PATH, 'w') as f:
+        with open(config['MODSECURITY_CONF_PATH'], 'w') as f:
             f.write(content)
 
         # Track configuration content using the db session
@@ -54,7 +55,7 @@ def save_modsecurity_conf(content):
 def save_crs_conf(content):
     """Save CRS configuration"""
     try:
-        with open(CRS_CONF_PATH, 'w') as f:
+        with open(config['CRS_CONF_PATH'], 'w') as f:
             f.write(content)
 
         # Track configuration content using the db session

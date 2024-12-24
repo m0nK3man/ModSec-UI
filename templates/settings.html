@@ -1,0 +1,49 @@
+<!-- templates/configuration.html -->
+{% extends "base.html" %}
+{% block content %}
+<div id="settings">
+<form method="POST" action="/settings">
+    <div>
+    <label for="local_conf_path">Local Config Path:</label>
+    <input type="text" id="local_conf_path" name="local_conf_path" value="{{ config['LOCAL_CONF_PATH'] }}" readonly>
+    </div>
+    <div>
+    <label for="modsecurity_conf_path">ModSecurity Config Path:</label>
+    <input type="text" id="modsecurity_conf_path" name="modsecurity_conf_path" value="{{ config['MODSECURITY_CONF_PATH'] }}" readonly>
+    </div>
+    <div>
+    <label for="crs_conf_path">CRS Config Path:</label>
+    <input type="text" id="crs_conf_path" name="crs_conf_path" value="{{ config['CRS_CONF_PATH'] }}" readonly>
+    </div>
+    <div>
+    <label for="modsecurity_rules_dir">ModSecurity Rules Directory:</label>
+    <input type="text" id="modsecurity_rules_dir" name="modsecurity_rules_dir" value="{{ config['MODSECURITY_RULES_DIR'] }}" readonly>
+    </div>
+    <div>
+    <label for="elasticsearch_host">Elasticsearch Host:</label>
+    <input type="text" id="elasticsearch_host" name="elasticsearch_host" value="{{ config['ELASTICSEARCH_CONFIG']['HOST'] }}" required>
+    </div>
+    <div>
+    <label for="elasticsearch_user">Elasticsearch User:</label>
+    <input type="text" id="elasticsearch_user" name="elasticsearch_user" value="{{ config['ELASTICSEARCH_CONFIG']['USER'] }}" required>
+    </div>
+    <div>
+    <label for="elasticsearch_password">Elasticsearch Password:</label>
+    <input type="password" id="elasticsearch_password" name="elasticsearch_password" value="{{ config['ELASTICSEARCH_CONFIG']['PASSWORD'] }}" required>
+    </div>
+    <div>
+    <label for="logs_refresh_interval">Logs Refresh Interval (seconds):</label>
+    <input type="number" id="logs_refresh_interval" name="logs_refresh_interval" value="{{ config['LOGS_CONFIG']['REFRESH_INTERVAL'] }}" required>
+    </div>
+    <div>
+    <label for="telegram_bot_token">Telegram Bot Token:</label>
+    <input type="text" id="telegram_bot_token" name="telegram_bot_token" value="{{ config['TELEGRAM_BOT_TOKEN'] }}" required>
+    </div>
+    <div>
+    <label for="telegram_chat_id">Telegram Chat ID:</label>
+    <input type="text" id="telegram_chat_id" name="telegram_chat_id" value="{{ config['TELEGRAM_CHAT_ID'] }}" required>
+    </div>
+    <button class="button" type="submit">Save Settings</button>
+</form>
+</div>
+{% endblock %}

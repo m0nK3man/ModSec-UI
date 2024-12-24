@@ -608,3 +608,26 @@ table.dataTable thead > tr > td.sorting_asc_disabled span.dt-column-order:before
   width: 600px;
 }
 
+/* # ==================== Settings ==================== */
+
+#settings form > div {
+  margin: 15px 0px;
+}
+
+#settings form input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+}
+
+#settings form input[readonly] {
+  border: 1px solid #999;
+  background: #eee;
+}
+
+#settings form label {
+  width: 250px;
+  display: inline-block;
+}
+

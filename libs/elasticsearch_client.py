@@ -1,24 +1,25 @@
 # libs/elasticsearch_client.py
 from elasticsearch import Elasticsearch
 from datetime import datetime, timedelta
-from libs.var import ELASTICSEARCH_CONFIG, LOGS_CONFIG
 import pytz
 from html import escape
+from controller.settings_func import load_config
+config = load_config()
 
 class ElasticsearchClient:
     def __init__(self):
         self.es = Elasticsearch(
-            [ELASTICSEARCH_CONFIG['HOST']],
+            [config['ELASTICSEARCH_CONFIG']['HOST']],
             basic_auth=(
-                ELASTICSEARCH_CONFIG['USER'],
-                ELASTICSEARCH_CONFIG['PASSWORD']
+                config['ELASTICSEARCH_CONFIG']['USER'],
+                config['ELASTICSEARCH_CONFIG']['PASSWORD']
             ),
             verify_certs=False,
-            ssl_show_warn=False 
+            ssl_show_warn=False
         )
-        self.index_modsec = ELASTICSEARCH_CONFIG['INDEX_MODSEC']
-        self.index_access = ELASTICSEARCH_CONFIG['INDEX_ACCESS']
-        self.max_results = ELASTICSEARCH_CONFIG['MAX_RESULTS']
+        self.index_modsec = config['ELASTICSEARCH_CONFIG']['INDEX_MODSEC']
+        self.index_access = config['ELASTICSEARCH_CONFIG']['INDEX_ACCESS']
+        self.max_results = config['ELASTICSEARCH_CONFIG']['MAX_RESULTS']
 
     def calculate_time_utc(self, base_time):
         # Set up timezones

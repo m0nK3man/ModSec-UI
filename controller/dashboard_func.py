@@ -1,11 +1,12 @@
 from datetime import datetime
-from libs.var import MODSECURITY_CONF_PATH
 from libs.database import db  # Import db instead of Session
 from libs.utils import track_config_content
+from controller.settings_func import load_config
+config = load_config()
 
 def get_current_mode():
     try:
-        with open(MODSECURITY_CONF_PATH, 'r') as f:
+        with open(config['MODSECURITY_CONF_PATH'], 'r') as f:
             for line in f:
                 if "SecRuleEngine" in line:
                     return line.split()[1]
@@ -17,7 +18,7 @@ def set_mode(mode):
     """Set the WAF mode in the ModSecurity configuration."""
     try:
         # Read the existing configuration
-        with open(MODSECURITY_CONF_PATH, 'r') as f:
+        with open(config['MODSECURITY_CONF_PATH'], 'r') as f:
             lines = f.readlines()
 
         # Update the SecRuleEngine line with the new mode
@@ -27,7 +28,7 @@ def set_mode(mode):
                 break  # Exit after updating the mode
 
         # Write the updated configuration back to the file
-        with open(MODSECURITY_CONF_PATH, 'w') as f:
+        with open(config['MODSECURITY_CONF_PATH'], 'w') as f:
             f.writelines(lines)
 
         # Track the configuration change in the database
