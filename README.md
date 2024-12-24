@@ -64,7 +64,7 @@
   - [ ] build docker
   - [ ] hint (search bar)
   - [x] Quick script viewdb
-  - [ ] Quick script backupdb, restoredb
+  - [x] Quick script backupdb, restoredb
 
 ## Setup
 
