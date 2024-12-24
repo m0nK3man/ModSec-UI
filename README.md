@@ -59,7 +59,7 @@
   - [ ] setting config (IP, variables,...)
     - [ ] manage multi-nodes
     - [ ] telebot tokens + test msg
-    - [ ] 
+    - [ ] env variables (ELK ip, index, ...)
   - [ ] telegram alerts
   - [ ] build docker
   - [ ] hint (search bar)
