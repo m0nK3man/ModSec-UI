@@ -7,7 +7,7 @@
     "GIT_AUTHOR_NAME": "ModSecurity UI",
     "GIT_AUTHOR_EMAIL": "modsec-ui@bravo.com",
     "ELASTICSEARCH_CONFIG": {
-        "HOST": "https://172.16.20.31:9200",
+        "HOST": "https://192.168.140.231:9200",
         "USER": "elastic",
         "PASSWORD": "BravoSOC@2024",
         "INDEX_MODSEC": "modsec-*",
@@ -20,6 +20,6 @@
         "DEFAULT_TIME_RANGE": "15m",
         "STATS_REFRESH_INTERVAL": 60
     },
-    "TELEGRAM_BOT_TOKEN": "123",
-    "TELEGRAM_CHAT_ID": "123"
+    "TELEGRAM_BOT_TOKEN": "7038088512:AAEX987PaysZhSZ4ymDet3mx7-qxezAj5Qg",
+    "TELEGRAM_CHAT_ID": "1513161221"
 }
