@@ -56,10 +56,10 @@
 
 + [x] Features
   - [x] setup guide
-  - [ ] setting config (IP, variables,...)
-    - [ ] manage multi-nodes
+  - [ ] setting config
+    - [ ] manage multi-nodes (IP)
     - [ ] telebot tokens + test msg
-    - [ ] env variables (ELK ip, index, ...)
+    - [x] env variables (ELK ip, index, ...)
   - [ ] telegram alerts
   - [ ] build docker
   - [ ] hint (search bar)
