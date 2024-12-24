@@ -25,7 +25,8 @@ DEFAULT_CONFIG = {
         "STATS_REFRESH_INTERVAL": 60
     },
     "TELEGRAM_BOT_TOKEN": "",
-    "TELEGRAM_CHAT_ID": ""
+    "TELEGRAM_CHAT_ID": "",
+    "TELEGRAM_ALERT": False,
 }
 
 # Config file path

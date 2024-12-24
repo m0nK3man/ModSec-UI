@@ -67,6 +67,16 @@
             <span class="indicator" id="indicator_telegram_chat_id">✔</span>
         </div>
 
+        <!-- Telegram Alert On/OFF -->
+        <div>
+            <label for="telegram_alert">Telegram Alert:</label>
+            <label class="switch">
+                <input type="checkbox" id="telegram_alert" name="telegram_alert" {% if config['TELEGRAM_ALERT'] %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <span class="indicator" id="indicator_telegram_alert">✔</span>
+	</div>
+
         <!-- Save Settings -->
         <button class="button" type="submit">Save Settings</button>
         <a class="button" href="/settings?action=test_telegram">Send Test Message</a>
@@ -92,7 +102,8 @@
             elasticsearch_password: "{{ config['ELASTICSEARCH_CONFIG']['PASSWORD'] }}",
             logs_refresh_interval: "{{ config['LOGS_CONFIG']['REFRESH_INTERVAL'] }}",
             telegram_bot_token: "{{ config['TELEGRAM_BOT_TOKEN'] }}",
-            telegram_chat_id: "{{ config['TELEGRAM_CHAT_ID'] }}"
+            telegram_chat_id: "{{ config['TELEGRAM_CHAT_ID'] }}",
+            telegram_alert: "{{ config['TELEGRAM_ALERT'] }}",
         };
 
         // Helper function to compare and update indicators
@@ -115,7 +126,8 @@
             { id: "elasticsearch_password", original: originalConfig.elasticsearch_password },
             { id: "logs_refresh_interval", original: originalConfig.logs_refresh_interval },
             { id: "telegram_bot_token", original: originalConfig.telegram_bot_token },
-            { id: "telegram_chat_id", original: originalConfig.telegram_chat_id }
+            { id: "telegram_chat_id", original: originalConfig.telegram_chat_id },
+            { id: "telegram_alert", original: originalConfig.telegram_alert },
         ];
 
         fields.forEach(({ id, original }) => {
@@ -125,4 +137,3 @@
     });
 </script>
 {% endblock %}
-asd

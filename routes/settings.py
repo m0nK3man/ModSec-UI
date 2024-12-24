@@ -23,6 +23,10 @@ def settings():
         config["LOGS_CONFIG"]["REFRESH_INTERVAL"] = int(request.form.get('logs_refresh_interval', config["LOGS_CONFIG"]["REFRESH_INTERVAL"]))
         config["TELEGRAM_BOT_TOKEN"] = request.form.get('telegram_bot_token', config["TELEGRAM_BOT_TOKEN"])
         config["TELEGRAM_CHAT_ID"] = request.form.get('telegram_chat_id', config["TELEGRAM_CHAT_ID"])
+        config["TELEGRAM_ALERT"] = request.form.get('telegram_alert') == 'on'
+
+        # debug
+        #print(config)
 
         # Save updated config to file
         save_config(config)
@@ -40,6 +44,7 @@ def settings():
         "LOGS_REFRESH_INTERVAL": config["LOGS_CONFIG"]["REFRESH_INTERVAL"] == int(request.args.get("logs_refresh_interval", config["LOGS_CONFIG"]["REFRESH_INTERVAL"])),
         "TELEGRAM_BOT_TOKEN": config["TELEGRAM_BOT_TOKEN"] == request.args.get("telegram_bot_token", config["TELEGRAM_BOT_TOKEN"]),
         "TELEGRAM_CHAT_ID": config["TELEGRAM_CHAT_ID"] == request.args.get("telegram_chat_id", config["TELEGRAM_CHAT_ID"]),
+        "TELEGRAM_ALERT": config["TELEGRAM_ALERT"] == request.form.get('telegram_alert', config["TELEGRAM_ALERT"])
     }
 
     # Handle test Telegram message action
