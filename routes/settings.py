@@ -20,7 +20,6 @@ def settings():
         config["ELASTICSEARCH_CONFIG"]["HOST"] = request.form.get('elasticsearch_host', config["ELASTICSEARCH_CONFIG"]["HOST"])
         config["ELASTICSEARCH_CONFIG"]["USER"] = request.form.get('elasticsearch_user', config["ELASTICSEARCH_CONFIG"]["USER"])
         config["ELASTICSEARCH_CONFIG"]["PASSWORD"] = request.form.get('elasticsearch_password', config["ELASTICSEARCH_CONFIG"]["PASSWORD"])
-        config["LOGS_CONFIG"]["REFRESH_INTERVAL"] = int(request.form.get('logs_refresh_interval', config["LOGS_CONFIG"]["REFRESH_INTERVAL"]))
         config["TELEGRAM_BOT_TOKEN"] = request.form.get('telegram_bot_token', config["TELEGRAM_BOT_TOKEN"])
         config["TELEGRAM_CHAT_ID"] = request.form.get('telegram_chat_id', config["TELEGRAM_CHAT_ID"])
         config["TELEGRAM_ALERT"] = request.form.get('telegram_alert') == 'on'
@@ -29,7 +28,7 @@ def settings():
         if save_config(config):
             flash("Configuration saved successfully!", "success")
         else:
-            flash("Failed to save configuration. Please check file permissions or logs for details.", "error")
+            flash("Failed to save configuration!", "error")
 
         return redirect(url_for('settings.settings'))
 
@@ -42,7 +41,6 @@ def settings():
         "ELASTICSEARCH_HOST": config["ELASTICSEARCH_CONFIG"]["HOST"] == request.args.get("elasticsearch_host", config["ELASTICSEARCH_CONFIG"]["HOST"]),
         "ELASTICSEARCH_USER": config["ELASTICSEARCH_CONFIG"]["USER"] == request.args.get("elasticsearch_user", config["ELASTICSEARCH_CONFIG"]["USER"]),
         "ELASTICSEARCH_PASSWORD": config["ELASTICSEARCH_CONFIG"]["PASSWORD"] == request.args.get("elasticsearch_password", config["ELASTICSEARCH_CONFIG"]["PASSWORD"]),
-        "LOGS_REFRESH_INTERVAL": config["LOGS_CONFIG"]["REFRESH_INTERVAL"] == int(request.args.get("logs_refresh_interval", config["LOGS_CONFIG"]["REFRESH_INTERVAL"])),
         "TELEGRAM_BOT_TOKEN": config["TELEGRAM_BOT_TOKEN"] == request.args.get("telegram_bot_token", config["TELEGRAM_BOT_TOKEN"]),
         "TELEGRAM_CHAT_ID": config["TELEGRAM_CHAT_ID"] == request.args.get("telegram_chat_id", config["TELEGRAM_CHAT_ID"]),
         "TELEGRAM_ALERT": config["TELEGRAM_ALERT"] == request.form.get('telegram_alert', config["TELEGRAM_ALERT"])

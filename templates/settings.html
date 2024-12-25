@@ -43,14 +43,6 @@
             <span class="indicator" id="indicator_elasticsearch_password">✔</span>
         </div>
 
-        <!-- Logs Refresh Interval -->
-        <div>
-            <label for="logs_refresh_interval">Logs Refresh Interval (seconds):</label>
-            <input type="number" id="logs_refresh_interval" name="logs_refresh_interval" 
-                value="{{ config['LOGS_CONFIG']['REFRESH_INTERVAL'] }}" required>
-            <span class="indicator" id="indicator_logs_refresh_interval">✔</span>
-        </div>
-
         <!-- Telegram Bot Token -->
         <div>
             <label for="telegram_bot_token">Telegram Bot Token:</label>
@@ -100,7 +92,6 @@
             elasticsearch_host: "{{ config['ELASTICSEARCH_CONFIG']['HOST'] }}",
             elasticsearch_user: "{{ config['ELASTICSEARCH_CONFIG']['USER'] }}",
             elasticsearch_password: "{{ config['ELASTICSEARCH_CONFIG']['PASSWORD'] }}",
-            logs_refresh_interval: "{{ config['LOGS_CONFIG']['REFRESH_INTERVAL'] }}",
             telegram_bot_token: "{{ config['TELEGRAM_BOT_TOKEN'] }}",
             telegram_chat_id: "{{ config['TELEGRAM_CHAT_ID'] }}",
             telegram_alert: "{{ config['TELEGRAM_ALERT'] }}",
@@ -124,7 +115,6 @@
             { id: "elasticsearch_host", original: originalConfig.elasticsearch_host },
             { id: "elasticsearch_user", original: originalConfig.elasticsearch_user },
             { id: "elasticsearch_password", original: originalConfig.elasticsearch_password },
-            { id: "logs_refresh_interval", original: originalConfig.logs_refresh_interval },
             { id: "telegram_bot_token", original: originalConfig.telegram_bot_token },
             { id: "telegram_chat_id", original: originalConfig.telegram_chat_id },
             { id: "telegram_alert", original: originalConfig.telegram_alert },

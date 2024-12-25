@@ -19,31 +19,29 @@ DEFAULT_CONFIG = {
         "INDEX_ERROR": "nginx-error-logs-*",
         "MAX_RESULTS": 100
     },
-    "LOGS_CONFIG": {
-        "REFRESH_INTERVAL": 30,
-        "DEFAULT_TIME_RANGE": "15m",
-        "STATS_REFRESH_INTERVAL": 60
-    },
     "TELEGRAM_BOT_TOKEN": "",
     "TELEGRAM_CHAT_ID": "",
     "TELEGRAM_ALERT": False,
 }
 
 # Config file path
-CONFIG_FILE = "config.json"
+CONFIG_FILE = os.path.join(os.getcwd(), "config.json")
 
 # Load or initialize configuration
 def load_config():
     if os.path.exists(CONFIG_FILE):
+        print(f"Loading configuration from file: {CONFIG_FILE}")
         with open(CONFIG_FILE, "r") as f:
             return json.load(f)
     else:
+        print(f"Configuration file not found at {CONFIG_FILE}, using default settings.")
         return DEFAULT_CONFIG
 
 def save_config(config):
     try:  # The `try` block starts here
         with open(CONFIG_FILE, "w") as f:
             json.dump(config, f, indent=4)
+        print(f"Configuration saved to {CONFIG_FILE}")
         return True  # Return True if successful
     except Exception as e:  # `except` must align with `try`
         print(f"Error saving config: {e}")  # Log the error for debugging

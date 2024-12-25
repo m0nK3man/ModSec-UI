@@ -15,12 +15,7 @@
         "INDEX_ERROR": "nginx-error-logs-*",
         "MAX_RESULTS": 100
     },
-    "LOGS_CONFIG": {
-        "REFRESH_INTERVAL": 30,
-        "DEFAULT_TIME_RANGE": "15m",
-        "STATS_REFRESH_INTERVAL": 60
-    },
     "TELEGRAM_BOT_TOKEN": "7038088512:AAEX987PaysZhSZ4ymDet3mx7-qxezAj5Qg",
-    "TELEGRAM_CHAT_ID": "23681",
-    "TELEGRAM_ALERT": true
+    "TELEGRAM_CHAT_ID": "1513161221",
+    "TELEGRAM_ALERT": false
 }
