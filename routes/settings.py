@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from controller.settings_func import load_config, save_config
 from libs.telegram_integration import send_test_message  # Import necessary modules
+from flask_login import login_required
 import json
 
 bp = Blueprint('settings', __name__)
@@ -10,6 +11,7 @@ bp = Blueprint('settings', __name__)
 config = load_config()
 
 @bp.route('/settings', methods=['GET', 'POST'])
+@login_required
 def settings():
     if request.method == 'POST':
         # Update the config variables based on form inputs
@@ -51,30 +53,23 @@ def settings():
         bot_token = config.get("TELEGRAM_BOT_TOKEN")
         chat_id = config.get("TELEGRAM_CHAT_ID")
 
+        context = {
+            'config': config,
+            'comparison_flags': comparison_flags
+        }
+
         if not bot_token or not chat_id:
-            return render_template(
-                'settings.html',
-                config=config,
-                comparison_flags=comparison_flags,
-                error="Telegram Bot Token and Chat ID must be configured before sending a test message."
-            )
+            context['error'] = "Telegram Bot Token and Chat ID must be configured before sending a test message."
+            return render_template('settings.html', **context)
 
         # Send test message
         result = send_test_message(bot_token, chat_id)
         if result["success"]:
-            return render_template(
-                'settings.html',
-                config=config,
-                comparison_flags=comparison_flags,
-                success="Test message sent successfully!"
-            )
+            context['success'] = "Test message sent successfully!"
         else:
-            return render_template(
-                'settings.html',
-                config=config,
-                comparison_flags=comparison_flags,
-                error=f"Failed to send test message: {result['error']}"
-            )
+            context['error'] = f"Failed to send test message: {result['error']}"
+
+        return render_template('settings.html', **context)
 
     # Render settings page
     return render_template('settings.html', config=config, comparison_flags=comparison_flags)
