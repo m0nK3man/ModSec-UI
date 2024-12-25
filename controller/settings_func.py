@@ -30,7 +30,7 @@ CONFIG_FILE = os.path.join(os.getcwd(), "config.json")
 # Load or initialize configuration
 def load_config():
     if os.path.exists(CONFIG_FILE):
-        print(f"Loading configuration from file: {CONFIG_FILE}")
+#        print(f"Loading configuration from file: {CONFIG_FILE}")
         with open(CONFIG_FILE, "r") as f:
             return json.load(f)
     else:
