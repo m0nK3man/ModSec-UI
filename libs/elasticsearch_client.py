@@ -381,3 +381,92 @@ class ElasticsearchClient:
             print(f"Elasticsearch query error: {e}")
             return {"logs": [], "current_length": 0, "total_hits": 0}
 
+
+    def get_host_msg(self, size=500, search_query=None, start_time=None, end_time=None):
+        try:
+             # Use provided size or default from config
+            size = size or self.max_results
+
+            # Convert and validate times
+            if not start_time or not end_time:
+                return {}
+
+            # Base query
+            query = {
+                "bool": {
+                    "must": [
+                        {
+                            "range": {
+                                "@timestamp": {
+                                    "gte": start_time,
+                                    "lte": end_time
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+
+            query_fields = [
+                "@timestamp",
+                "transaction.messages.message",
+                "transaction.messages.message.keyword",
+                "transaction.request.headers.Host",
+                "transaction.request.headers.host",
+            ]
+
+            # Add search query if provided
+            if search_query:
+                query["bool"]["must"].append({
+                    "query_string": {
+                        "query": search_query,
+                        "fields": query_fields
+                    }
+                })
+
+            # Base arguments
+            aggs = {
+                "host_msg_breakdown": {
+                    "terms": {
+                        "field": "transaction.request.headers.host.keyword",
+                        "size": 10
+                    },
+                    "aggs": {
+                        "msg_breakdown": {
+                            "terms": {
+                                "field": "transaction.messages.message.keyword",
+                                "size": 7
+                            }
+                        }
+                    }
+                }
+            }
+
+            # Execute search
+            response = self.es.search(
+                index=self.index_modsec,
+                body={
+                    "query": query,
+                    "aggs": aggs,
+                    "size": size
+                }
+            )
+
+            # Parse results for host-msg breakdown
+            host_msg = {}
+            for host_bucket in response['aggregations']['host_msg_breakdown']['buckets']:
+                host = host_bucket['key']
+                msg_buckets = host_bucket['msg_breakdown']['buckets']
+                host_msg[host] = {
+                    msg['key']: msg['doc_count']
+                    for msg in msg_buckets 
+                    if "Anomaly Score Exceeded" not in msg['key'] and "Host header is a numeric IP address" not in msg['key']
+                }
+
+            return {
+                'msg_breakdown': host_msg,
+            }
+
+        except Exception as e:
+            print(f"Error getting statistics: {e}")
+            return {}

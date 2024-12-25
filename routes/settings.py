@@ -1,7 +1,7 @@
 # routes/settings.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from controller.settings_func import load_config, save_config
-from libs.telegram_integration import send_test_message  # Import necessary modules
+from libs.telegram_integration import send_test_message, send_alert  # Import necessary modules
 from flask_login import login_required
 import json
 
@@ -63,11 +63,21 @@ def settings():
             return render_template('settings.html', **context)
 
         # Send test message
-        result = send_test_message(bot_token, chat_id)
-        if result["success"]:
-            context['success'] = "Test message sent successfully!"
-        else:
-            context['error'] = f"Failed to send test message: {result['error']}"
+        try:
+#           result = send_test_message(bot_token, chat_id)
+            result = send_alert(bot_token, chat_id)
+
+            # Check if result is valid and contains "success"
+            if result and isinstance(result, dict) and result.get("success"):
+                context['success'] = "Test message sent successfully!"
+            else:
+                # Handle the failure and print the error if available
+                error_msg = result.get('error', 'Unknown error') if result else 'No response from Telegram API'
+                context['error'] = f"Failed to send test message: {error_msg}"
+
+        except Exception as e:
+            # Catch any exception that might occur during message sending
+            context['error'] = f"An unexpected error occurred: {str(e)}"
 
         return render_template('settings.html', **context)
 
