@@ -1,14 +1,57 @@
 # routes/settings.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import atexit  # Add this import statement at the top of your file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Flask
 from controller.settings_func import load_config, save_config
-from libs.telegram_integration import send_test_message, send_alert  # Import necessary modules
+from libs.telegram_integration import send_alert, send_test_message
 from flask_login import login_required
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
 import json
 
 bp = Blueprint('settings', __name__)
 
 # Load configuration
 config = load_config()
+
+# Initialize the scheduler
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+def daily_alert():
+    """Function to send an alert if TELEGRAM_ALERT is enabled."""
+    if config.get("TELEGRAM_ALERT"):
+        bot_token = config.get("TELEGRAM_BOT_TOKEN")
+        chat_id = config.get("TELEGRAM_CHAT_ID")
+
+        if not bot_token or not chat_id:
+            print(f"[{datetime.now()}] Error: Telegram Bot Token or Chat ID is missing.")
+            return {"success": False, "message": "Bot Token or Chat ID is missing."}
+
+        try:
+            result = send_alert(bot_token, chat_id)
+            if result and result.get("success"):
+                print(f"[{datetime.now()}] Alert sent successfully.")
+                return {"success": True, "message": "Alert sent successfully."}
+            else:
+                error_msg = result.get("error", "Unknown error") if result else "No response from Telegram API"
+                print(f"[{datetime.now()}] Failed to send alert: {error_msg}")
+                return {"success": False, "message": f"Failed to send alert: {error_msg}"}
+        except Exception as e:
+            print(f"[{datetime.now()}] An unexpected error occurred while sending alert: {str(e)}")
+            return {"success": False, "message": f"Unexpected error: {str(e)}"}
+    else:
+        print(f"[{datetime.now()}] Telegram Alert is disabled.")
+        return {"success": False, "message": "Telegram Alert is disabled."}
+
+# Add job to scheduler
+scheduler.add_job(
+    daily_alert,                 # Function to call
+    trigger='cron',              # Use cron scheduling
+    hour=23,                     # At 23:00
+    minute=0,                    # At minute 0
+    id="daily_alert_job",        # Unique job ID
+    replace_existing=True        # Replace the job if it already exists
+)
 
 @bp.route('/settings', methods=['GET', 'POST'])
 @login_required
@@ -64,8 +107,7 @@ def settings():
 
         # Send test message
         try:
-#           result = send_test_message(bot_token, chat_id)
-            result = send_alert(bot_token, chat_id)
+            result = send_test_message(bot_token, chat_id)
 
             # Check if result is valid and contains "success"
             if result and isinstance(result, dict) and result.get("success"):
@@ -83,3 +125,9 @@ def settings():
 
     # Render settings page
     return render_template('settings.html', config=config, comparison_flags=comparison_flags)
+
+@atexit.register
+def shutdown_scheduler():
+    """Cleanup the scheduler jobs when the app shuts down."""
+    print(f"[{datetime.now()}] Shutting down the scheduler...")
+    scheduler.remove_job('daily_alert_job')

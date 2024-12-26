@@ -17,5 +17,5 @@
     },
     "TELEGRAM_BOT_TOKEN": "7038088512:AAEX987PaysZhSZ4ymDet3mx7-qxezAj5Qg",
     "TELEGRAM_CHAT_ID": "1513161221",
-    "TELEGRAM_ALERT": false
+    "TELEGRAM_ALERT": true
 }
