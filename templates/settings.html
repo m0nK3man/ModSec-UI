@@ -1,0 +1,129 @@
+<!-- templates/settings.html -->
+{% extends "base.html" %}
+{% block content %}
+<div id="settings">
+    <form method="POST" action="/settings">
+        <!-- Local Config Path -->
+        <div>
+            <label for="local_conf_path">Local Config Path:</label>
+            <input type="text" id="local_conf_path" name="local_conf_path" 
+                value="{{ config['LOCAL_CONF_PATH'] }}" readonly>
+            <span class="indicator" id="indicator_local_conf_path">✔</span>
+        </div>
+
+        <!-- ModSecurity Config Path -->
+        <div>
+            <label for="modsecurity_conf_path">ModSecurity Config Path:</label>
+            <input type="text" id="modsecurity_conf_path" name="modsecurity_conf_path" 
+                value="{{ config['MODSECURITY_CONF_PATH'] }}" readonly>
+            <span class="indicator" id="indicator_modsecurity_conf_path">✔</span>
+        </div>
+
+        <!-- Elasticsearch Host -->
+        <div>
+            <label for="elasticsearch_host">Elasticsearch Host:</label>
+            <input type="text" id="elasticsearch_host" name="elasticsearch_host" 
+                value="{{ config['ELASTICSEARCH_CONFIG']['HOST'] }}" required>
+            <span class="indicator" id="indicator_elasticsearch_host">✔</span>
+        </div>
+
+        <!-- Elasticsearch User -->
+        <div>
+            <label for="elasticsearch_user">Elasticsearch User:</label>
+            <input type="text" id="elasticsearch_user" name="elasticsearch_user" 
+                value="{{ config['ELASTICSEARCH_CONFIG']['USER'] }}" required>
+            <span class="indicator" id="indicator_elasticsearch_user">✔</span>
+        </div>
+
+        <!-- Elasticsearch Password -->
+        <div>
+            <label for="elasticsearch_password">Elasticsearch Password:</label>
+            <input type="password" id="elasticsearch_password" name="elasticsearch_password" 
+                value="{{ config['ELASTICSEARCH_CONFIG']['PASSWORD'] }}" required>
+            <span class="indicator" id="indicator_elasticsearch_password">✔</span>
+        </div>
+
+        <!-- Telegram Bot Token -->
+        <div>
+            <label for="telegram_bot_token">Telegram Bot Token:</label>
+            <input type="text" id="telegram_bot_token" name="telegram_bot_token" 
+                value="{{ config['TELEGRAM_BOT_TOKEN'] }}" required>
+            <span class="indicator" id="indicator_telegram_bot_token">✔</span>
+        </div>
+
+        <!-- Telegram Chat ID -->
+        <div>
+            <label for="telegram_chat_id">Telegram Chat ID:</label>
+            <input type="text" id="telegram_chat_id" name="telegram_chat_id" 
+                value="{{ config['TELEGRAM_CHAT_ID'] }}" required>
+            <span class="indicator" id="indicator_telegram_chat_id">✔</span>
+        </div>
+
+        <!-- Telegram Alert On/OFF -->
+        <div>
+            <label for="telegram_alert">Telegram Alert:</label>
+            <label class="switch">
+                <input type="checkbox" id="telegram_alert" name="telegram_alert" {% if config['TELEGRAM_ALERT'] %}checked{% endif %}>
+                <span class="slider round"></span>
+            </label>
+            <span class="indicator" id="indicator_telegram_alert">✔</span>
+	</div>
+
+        <!-- Save Settings -->
+        <button class="button" type="submit">Save Settings</button>
+        <a href="/settings?action=test_telegram" class="button">Send Test Message</a>
+    </form>
+
+    <!-- Display success or error messages -->
+    {% if success %}
+    <p style="color: green;">{{ success }}</p>
+    {% elif error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</div>
+
+<script>
+    // JavaScript for real-time comparison
+    document.addEventListener("DOMContentLoaded", () => {
+        // Store original config values from backend
+        const originalConfig = {
+            local_conf_path: "{{ config['LOCAL_CONF_PATH'] }}",
+            modsecurity_conf_path: "{{ config['MODSECURITY_CONF_PATH'] }}",
+            elasticsearch_host: "{{ config['ELASTICSEARCH_CONFIG']['HOST'] }}",
+            elasticsearch_user: "{{ config['ELASTICSEARCH_CONFIG']['USER'] }}",
+            elasticsearch_password: "{{ config['ELASTICSEARCH_CONFIG']['PASSWORD'] }}",
+            telegram_bot_token: "{{ config['TELEGRAM_BOT_TOKEN'] }}",
+            telegram_chat_id: "{{ config['TELEGRAM_CHAT_ID'] }}",
+            telegram_alert: "{{ config['TELEGRAM_ALERT'] }}",
+        };
+
+        // Helper function to compare and update indicators
+        function updateIndicator(fieldId, originalValue) {
+            const inputField = document.getElementById(fieldId);
+            const indicator = document.getElementById(`indicator_${fieldId}`);
+            if (inputField.value === originalValue) {
+                indicator.textContent = "✔";
+                indicator.style.color = "green";
+            } else {
+                indicator.textContent = "✘";
+                indicator.style.color = "red";
+            }
+        }
+
+        // Add event listeners to all fields
+        const fields = [
+            { id: "elasticsearch_host", original: originalConfig.elasticsearch_host },
+            { id: "elasticsearch_user", original: originalConfig.elasticsearch_user },
+            { id: "elasticsearch_password", original: originalConfig.elasticsearch_password },
+            { id: "telegram_bot_token", original: originalConfig.telegram_bot_token },
+            { id: "telegram_chat_id", original: originalConfig.telegram_chat_id },
+            { id: "telegram_alert", original: originalConfig.telegram_alert },
+        ];
+
+        fields.forEach(({ id, original }) => {
+            const field = document.getElementById(id);
+            field.addEventListener("input", () => updateIndicator(id, original));
+        });
+    });
+</script>
+{% endblock %}

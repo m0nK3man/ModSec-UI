@@ -1,12 +1,10 @@
 from models import ModsecRule
-import hashlib
 from datetime import datetime
-from libs.var import *
-import os
-import logging
 from functools import wraps
 from flask import current_app, jsonify
-import traceback
+import traceback, os, hashlib, logging
+from controller.settings_func import load_config
+config = load_config()
 
 def track_rule_content(session, rule_path, content):
     """Track changes to rule files in the database"""

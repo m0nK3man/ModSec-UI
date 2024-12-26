@@ -1,6 +1,6 @@
 import argparse
 from flask import Flask
-from routes import home, configuration, rules, dashboard, auth, logs
+from routes import home, configuration, rules, dashboard, auth, logs, settings
 from libs.database import db, login_manager
 from models import User  # Create this file and class
 from flask_moment import Moment
@@ -24,6 +24,7 @@ app.register_blueprint(logs.bp)
 app.register_blueprint(rules.bp)
 app.register_blueprint(configuration.bp)
 app.register_blueprint(auth.bp)
+app.register_blueprint(settings.bp)
 
 @login_manager.user_loader
 def load_user(user_id):

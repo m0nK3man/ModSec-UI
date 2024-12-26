@@ -4,7 +4,8 @@ import hashlib
 from datetime import datetime
 from libs.database import db  # Import db instead of Session
 from models import ModsecRule
-from libs.var import *
+from controller.settings_func import load_config
+config = load_config()
 
 def push_changes():
     """Push committed changes to the remote Git repository"""
@@ -29,8 +30,8 @@ def commit_to_git(modified_entries):
     commit_message = _create_commit_message(modified_entries)
     repo.index.commit(
         commit_message,
-        author=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL),
-        committer=git.Actor(GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL)
+        author=git.Actor(config['GIT_AUTHOR_NAME'], config['GIT_AUTHOR_EMAIL']),
+        committer=git.Actor(config['GIT_AUTHOR_NAME'], config['GIT_AUTHOR_EMAIL'])
     )
 
 def reset_modification_flags(modified_entries):
@@ -43,11 +44,11 @@ def update_content_hash(modified_entries):
     for entry in modified_entries:
         # Determine the file path for each entry
         if entry.rule_code == 'CONFIG_MODSEC':
-            file_path = os.path.join(LOCAL_CONF_PATH, "modsecurity.conf")
+            file_path = os.path.join(config['LOCAL_CONF_PATH'], "modsecurity.conf")
         elif entry.rule_code == 'CONFIG_CRS':
-            file_path = os.path.join(LOCAL_CONF_PATH, "crs/crs-setup.conf")
+            file_path = os.path.join(config['LOCAL_CONF_PATH'], "crs/crs-setup.conf")
         else:
-            file_path = os.path.join(LOCAL_CONF_PATH, "crs/rules", entry.rule_path)
+            file_path = os.path.join(config['LOCAL_CONF_PATH'], "crs/rules", entry.rule_path)
 
         with open(file_path, "rb") as f:
             entry.content_hash = hashlib.md5(f.read()).hexdigest()
@@ -56,7 +57,7 @@ def rename_filepath_with_status(modified_entries):
     """Rename filepath with status for modified entries."""
     for rule in modified_entries:
         # Determine the file path for each entry
-        origin_file_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
+        origin_file_path = os.path.join(config['MODSECURITY_RULES_DIR'], rule.rule_path)
         new_rule_path = rule.rule_path
         # mismatch: if rule is enabled and rulepath is disable -> rulepath rename to enable
         if rule.is_enabled and rule.rule_path.endswith(".disable"):
@@ -66,7 +67,7 @@ def rename_filepath_with_status(modified_entries):
         if (not rule.is_enabled) and rule.rule_path.endswith(".conf"):
             new_rule_path = f"{rule.rule_path}.disable"  # Add the '.disable' suffix
 
-        os.rename(origin_file_path, os.path.join(MODSECURITY_RULES_DIR, new_rule_path))
+        os.rename(origin_file_path, os.path.join(config['MODSECURITY_RULES_DIR'], new_rule_path))
         rule.rule_path = new_rule_path  # Update rule path in database
 
 def commit_changes():
@@ -103,10 +104,10 @@ def commit_changes():
 def _get_repo():
     """Initialize or get the Git repository"""
     try:
-        return git.Repo(GIT_REPO_PATH)
+        return git.Repo(config['GIT_REPO_PATH'])
     except git.exc.InvalidGitRepositoryError:
         # Initialize new repository if it doesn't exist
-        return git.Repo.init(GIT_REPO_PATH)
+        return git.Repo.init(config['GIT_REPO_PATH'])
 
 def _create_commit_message(modified_entries):
     """Create a detailed commit message based on database changes"""

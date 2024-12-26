@@ -2,7 +2,8 @@ import os
 from libs.database import db
 from libs.utils import track_rule_content, update_is_modified
 from models import ModsecRule
-from libs.var import MODSECURITY_RULES_DIR
+from controller.settings_func import load_config
+config = load_config()
 
 def list_rules():
     """List all rules with their change status from the database"""
@@ -15,7 +16,7 @@ def list_rules():
         ).all()
 
         for rule in rules:
-            rule_path = os.path.join(MODSECURITY_RULES_DIR, rule.rule_path)
+            rule_path = os.path.join(config['MODSECURITY_RULES_DIR'], rule.rule_path)
             if os.path.exists(rule_path):
                 with open(rule_path, "r") as f:
                     content = f.read()
@@ -42,7 +43,7 @@ def save_rule(filename, content):
     """Save rule content and track changes in database"""
     try:
         # Save file content
-        with open(os.path.join(MODSECURITY_RULES_DIR, filename), "w") as f:
+        with open(os.path.join(config['MODSECURITY_RULES_DIR'], filename), "w") as f:
             f.write(content)
 
         # Track change in database

@@ -55,7 +55,13 @@
                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm">
                         Logout
                     </a>
-                    {% endif %}
+		    <div class="hidden md:ml-6 md:flex md:space-x-8">
+			<a href="{{ url_for('settings.settings') }}"
+                           class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-800">
+                            <img src="https://cdn-icons-png.flaticon.com/512/126/126472.png" style="width: 25px;">
+                        </a>
+		    </div>
+		    {% endif %}
                 </div>
             </div>
         </div>
