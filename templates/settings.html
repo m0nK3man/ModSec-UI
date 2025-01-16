@@ -51,11 +51,11 @@
                 <div class="instance-row">
                     <input type="text" name="instance_name[]" placeholder="Instance Name" value="{{ name }}" required>
                     <input type="text" name="instance_ip[]" placeholder="Instance IP" value="{{ ip }}" required>
-                    <button type="button" onclick="removeInstance(this)">Remove</button>
+                    <button type="button" class="button" onclick="removeInstance(this)" style="background-color: red;">Remove</button>
                 </div>
                 {% endfor %}
             </div>
-            <button type="button" onclick="addInstance()">Add Instance</button>
+            <button type="button" class="button" onclick="addInstance()">Add Instance</button>
         </div>
 
         <!-- Telegram Bot Token -->
@@ -149,7 +149,7 @@
         newRow.innerHTML = `
             <input type="text" name="instance_name[]" placeholder="Instance Name" required>
             <input type="text" name="instance_ip[]" placeholder="Instance IP" required>
-            <button type="button" onclick="removeInstance(this)">Remove</button>
+            <button type="button" class="button" onclick="removeInstance(this)" style="background-color: red;">Remove</button>
         `;
         container.appendChild(newRow);
     }
