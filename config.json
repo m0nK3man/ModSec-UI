@@ -20,7 +20,6 @@
     "TELEGRAM_ALERT": false,
     "Instances": {
         "haproxy": "192.168.33.44",
-        "haproxyfpt": "192.168.140.66",
-        "test": "12345687"
+        "haproxyfpt": "192.168.140.66"
     }
 }
