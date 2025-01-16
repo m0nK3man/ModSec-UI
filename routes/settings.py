@@ -26,6 +26,20 @@ def settings():
         config["TELEGRAM_CHAT_ID"] = request.form.get('telegram_chat_id', config["TELEGRAM_CHAT_ID"])
         config["TELEGRAM_ALERT"] = request.form.get('telegram_alert') == 'on'
 
+        # Update Instances
+        if "Instances" not in config:
+            config["Instances"] = {}  # Add default if not present
+
+        instance_names = request.form.getlist('instance_name[]')
+        instance_ips = request.form.getlist('instance_ip[]')
+
+        # Validate instances and update config
+        if len(instance_names) == len(instance_ips):
+            config["Instances"] = {name: ip for name, ip in zip(instance_names, instance_ips)}
+        else:
+            flash("Mismatch between instance names and IPs. Please check your input.", "error")
+            return redirect(url_for('settings.settings'))
+
         # Save updated config to file
         if save_config(config):
             flash("Configuration saved successfully!", "success")

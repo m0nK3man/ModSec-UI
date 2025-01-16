@@ -43,6 +43,21 @@
             <span class="indicator" id="indicator_elasticsearch_password">✔</span>
         </div>
 
+        <div>
+            <label>Instances:</label>
+            <div id="instances-container">
+                <!-- Render danh sách Instances từ config -->
+                {% for name, ip in config['Instances'].items() %}
+                <div class="instance-row">
+                    <input type="text" name="instance_name[]" placeholder="Instance Name" value="{{ name }}" required>
+                    <input type="text" name="instance_ip[]" placeholder="Instance IP" value="{{ ip }}" required>
+                    <button type="button" onclick="removeInstance(this)">Remove</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addInstance()">Add Instance</button>
+        </div>
+
         <!-- Telegram Bot Token -->
         <div>
             <label for="telegram_bot_token">Telegram Bot Token:</label>
@@ -126,4 +141,22 @@
         });
     });
 </script>
+<script>
+    function addInstance() {
+        const container = document.getElementById("instances-container");
+        const newRow = document.createElement("div");
+        newRow.className = "instance-row";
+        newRow.innerHTML = `
+            <input type="text" name="instance_name[]" placeholder="Instance Name" required>
+            <input type="text" name="instance_ip[]" placeholder="Instance IP" required>
+            <button type="button" onclick="removeInstance(this)">Remove</button>
+        `;
+        container.appendChild(newRow);
+    }
+
+    function removeInstance(button) {
+        button.parentElement.remove();
+    }
+</script>
+
 {% endblock %}

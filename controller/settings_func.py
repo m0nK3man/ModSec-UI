@@ -18,6 +18,7 @@ DEFAULT_CONFIG = {
         "INDEX_ACCESS": "nginx-access-logs-*",
         "INDEX_ERROR": "nginx-error-logs-*",
         "MAX_RESULTS": 100
+    "Instances": {}
     },
     "TELEGRAM_BOT_TOKEN": "",
     "TELEGRAM_CHAT_ID": "",
