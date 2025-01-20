@@ -19,7 +19,10 @@
     "TELEGRAM_CHAT_ID": "1513161221",
     "TELEGRAM_ALERT": false,
     "Instances": {
-        "haproxy": "192.168.33.44",
-        "haproxyfpt": "192.168.140.66"
+        "tes-instances2": "3215634",
+        "abcd": "65425",
+        "test instance abcd": "765",
+        "plarawe": "63214",
+        "work instance": "654"
     }
 }

@@ -1,6 +1,6 @@
 # routes/settings.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from controller.settings_func import load_config, save_config
+from controller.settings_func import load_config, save_config, sync_local_conf_dirs
 from libs.telegram_integration import send_test_message  # Import necessary modules
 from flask_login import login_required
 import json
@@ -31,17 +31,20 @@ def settings():
 
         # Validate instances and update config
         if len(instance_names) == len(instance_ips):
-            config["Instances"] = {name: ip for name, ip in zip(instance_names, instance_ips)}
+            instances = {name: ip for name, ip in zip(instance_names, instance_ips)}
+            config["Instances"] = instances
+
+            # Synchronize directories with the updated instances
+            sync_local_conf_dirs(instances)
+
+            # Save updated config to file
+            if save_config(config):
+                flash("Configuration and directories updated successfully!", "success")
+            else:
+                flash("Failed to save configuration!", "error")
         else:
             flash("Mismatch between instance names and IPs. Please check your input.", "error")
-            return redirect(url_for('settings.settings'))
-
-        # Save updated config to file
-        if save_config(config):
-            flash("Configuration saved successfully!", "success")
-        else:
-            flash("Failed to save configuration!", "error")
-
+        
         return redirect(url_for('settings.settings'))
 
     # Compare the values from the form with the config values
